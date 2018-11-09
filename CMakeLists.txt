@@ -7,7 +7,7 @@ set(VERSION_RELEASE 1)
 
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_RELEASE})
 
-option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_TESTS "Build tests" ON)
 
 add_subdirectory(src)
 
