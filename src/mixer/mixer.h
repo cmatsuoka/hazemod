@@ -2,18 +2,19 @@
 #define HAZE_MIXER_MIXER_H_
 
 #include <vector>
+#include <array>
 #include <memory>
 #include <mixer/sample.h>
 #include <mixer/channel.h>
 
 
-template <typename T>
 class Mixer {
     int rate;
     std::vector<Sample> sample;
-    std::shared_ptr<Channel[]> channel;
+    Channel *channel;
 public:
     Mixer(int);
+    template<typename T>
     void mix(T *, size_t);               // mix sample data
     void load_sample(void *, uint32_t);  // load sample data
     void set_sample(int, int);           // set active sample

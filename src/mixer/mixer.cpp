@@ -1,10 +1,10 @@
-#include "mixer.h"
+#include <mixer/mixer.h>
 #include <memory>
 
 constexpr int DefaultRate = 44100;
 
-template<typename T>
-Mixer<T>::Mixer(int num)
+Mixer::Mixer(int num)
 {
-    channel = std::make_shared<Channel[]>(num);
+    //channel = std::make_shared<Channel[]>(num);
+    channel = new Channel[num];
 }

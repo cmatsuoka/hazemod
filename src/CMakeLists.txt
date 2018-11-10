@@ -6,6 +6,7 @@ add_library(hazemod SHARED
     mixer/channel.cpp
     mixer/sample.cpp
     mixer/mixer.cpp
+    player/pt21a.cpp
 )
 
 set_target_properties(hazemod PROPERTIES
