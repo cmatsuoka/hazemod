@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <memory>
-#include "sample.h"
-#include "channel.h"
+#include <mixer/sample.h>
+#include <mixer/channel.h>
 
 
 template <typename T>

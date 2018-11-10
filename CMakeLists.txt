@@ -9,6 +9,8 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_RELEASE})
 
 option(BUILD_TESTS "Build tests" ON)
 
+set(CMAKE_CXX_STANDARD 17)
+
 add_subdirectory(src)
 
 if(BUILD_TESTS)

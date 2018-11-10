@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../src/mixer/linear.h"
+#include <mixer/linear.h>
 
 TEST_SUITE("interpolator_linear") {
     TEST_CASE("name") {

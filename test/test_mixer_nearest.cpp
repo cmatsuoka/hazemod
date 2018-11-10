@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../src/mixer/nearest.h"
+#include <mixer/nearest.h>
 
 TEST_SUITE("interpolator_nearest") {
     TEST_CASE("name") {

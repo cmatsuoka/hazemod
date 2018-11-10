@@ -1,1 +1,1 @@
-#include "sample.h"
+#include <mixer/sample.h>
