@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.3)
 project(hazemod)
 
 set(VERSION_MAJOR 0)
@@ -10,6 +10,7 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_RELEASE})
 option(BUILD_TESTS "Build tests" ON)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 add_subdirectory(src)
 
