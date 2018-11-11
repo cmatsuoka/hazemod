@@ -45,7 +45,7 @@ public:
     }
 
     uint32_t read32b(uint32_t ofs) {
-        check_buffer_size(ofs + 2);
+        check_buffer_size(ofs + 4);
         return (static_cast<uint32_t>(data[ofs]) << 24) |
                (static_cast<uint32_t>(data[ofs + 1]) << 16) |
                (static_cast<uint32_t>(data[ofs + 2]) << 8) |
@@ -53,7 +53,7 @@ public:
     }
 
     uint32_t read32l(uint32_t ofs) {
-        check_buffer_size(ofs + 2);
+        check_buffer_size(ofs + 4);
         return (static_cast<uint32_t>(data[ofs + 3]) << 24) |
                (static_cast<uint32_t>(data[ofs + 2]) << 16) |
                (static_cast<uint32_t>(data[ofs + 1]) << 8) |
