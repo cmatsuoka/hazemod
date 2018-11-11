@@ -2,7 +2,6 @@
 #define HAZE_H_
 
 #include <string>
-#include <vector>
 
 
 namespace haze {
@@ -12,6 +11,14 @@ struct ProbeInfo {
     std::string title;
 };
 
+
+class HazePlayer {
+    void *data;
+    uint32_t data_size;
+    std::string player_id;
+public:
+    HazePlayer(void *, uint32_t, std::string const& = "");
+};
 
 
 }  // namespace haze
