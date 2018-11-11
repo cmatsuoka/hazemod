@@ -4,7 +4,7 @@
 #define MAGIC_M_K_ MAGIC4('M', '.', 'K', '.')
 
 
-bool ModFormat::probe(void *buf, uint32_t size, haze::ProbeInfo& info)
+bool ModFormat::probe(void *buf, uint32_t size, ProbeInfo& info)
 {
     DataBuffer d(buf, size);
 

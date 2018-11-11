@@ -3,21 +3,20 @@
 
 #include <string>
 
-
 namespace haze {
 
-struct ProbeInfo {
-    std::string id;
+struct ModuleInfo {
     std::string title;
 };
 
 
 class HazePlayer {
     void *data;
-    uint32_t data_size;
+    int data_size;
     std::string player_id;
 public:
-    HazePlayer(void *, uint32_t, std::string const& = "");
+    HazePlayer(void *, int, std::string const& = "");
+    HazePlayer& info(ModuleInfo&);
 };
 
 

@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.9)
 
 include_directories(.)
 
+#add_definitions(-DHAZE_SYM_EXPORT)
+#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 add_library(hazemod SHARED
     util/util.cpp
     format/mod.cpp

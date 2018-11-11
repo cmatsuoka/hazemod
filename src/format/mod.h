@@ -7,7 +7,7 @@
 class ModFormat : public Format {
 public:
     ModFormat() : Format("mod") {}
-    bool probe(void *, uint32_t, haze::ProbeInfo&) override;
+    bool probe(void *, uint32_t, ProbeInfo&) override;
 };
 
 #endif  // HAZE_FORMAT_MOD_H_
