@@ -65,4 +65,13 @@ TEST_SUITE("databuffer") {
         CHECK_THROWS_AS(d.read32l(5), std::runtime_error);
     }
 
+    TEST_CASE("databuffer::read_string") {
+        uint8_t b[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+        DataBuffer d(b, 8);
+        CHECK(d.read_string(0, 3) == "abc");
+        CHECK(d.read_string(1, 3) == "bcd");
+        CHECK(d.read_string(5, 3) == "fgh");
+        CHECK_THROWS_AS(d.read_string(5, 4), std::runtime_error);
+    }
+
 }

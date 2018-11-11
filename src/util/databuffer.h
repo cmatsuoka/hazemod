@@ -2,6 +2,7 @@
 #define HAZE_UTIL_DATABUFFER_H
 
 #include <cstdint>
+#include <cstring>
 #include <stdexcept>
 #include "util/util.h"
 
@@ -58,6 +59,21 @@ public:
                (static_cast<uint32_t>(data[ofs + 2]) << 16) |
                (static_cast<uint32_t>(data[ofs + 1]) << 8) |
                static_cast<uint32_t>(data[ofs]);
+    }
+
+    std::string read_string(uint32_t ofs, uint32_t size) {
+        check_buffer_size(ofs + size);
+        char *buf = new char[size + 1];
+        memcpy(buf, data + ofs, size);
+        for (int i = 0; i < size; i++) {
+            if (!isprint(buf[i])) {
+                buf[i] = '.';
+            }
+        }
+        buf[size] = '\0';
+        auto ret = std::string(buf);
+        delete buf;
+        return ret;
     }
 
     void check_buffer_size(uint32_t end) {

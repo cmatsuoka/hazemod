@@ -4,6 +4,7 @@ include_directories(.)
 
 add_library(hazemod SHARED
     util/util.cpp
+    format/mod.cpp
     mixer/channel.cpp
     mixer/sample.cpp
     mixer/mixer.cpp
