@@ -1,4 +1,4 @@
-#include <mixer/channel.h>
+#include "mixer/channel.h"
 
 constexpr int MaxChannelVolume = 1024;
 

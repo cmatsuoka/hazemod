@@ -1,7 +1,7 @@
 #ifndef MIXER_LINEAR_H
 #define MIXER_LINEAR_H_
 
-#include "interpolator.h"
+#include "mixer/interpolator.h"
 
 
 class LinearInterpolator : public Interpolator {

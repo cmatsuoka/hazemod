@@ -2,8 +2,8 @@
 #define HAZE_PLAYER_PT21A_H_
 
 #include <cstdint>
-#include <mixer/mixer.h>
-#include <player/player.h>
+#include "mixer/mixer.h"
+#include "player/player.h"
 
 
 struct PT21A_ChannelData {
@@ -57,7 +57,7 @@ class PT21A_Player : public Player {
     uint8_t cia_tempo;
 
 public:
-    PT21A_Player(Mixer&);
+    PT21A_Player(Mixer&, void *, uint32_t);
     void start() override;
 };
 

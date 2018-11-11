@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.9)
 include_directories(.)
 
 add_library(hazemod SHARED
+    util/util.cpp
     mixer/channel.cpp
     mixer/sample.cpp
     mixer/mixer.cpp

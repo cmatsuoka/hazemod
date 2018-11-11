@@ -1,7 +1,8 @@
 #ifndef MIXER_NEAREST_H_
 #define MIXER_NEAREST_H_
 
-#include "interpolator.h"
+#include "mixer/interpolator.h"
+
 
 class NearestNeighbor : public Interpolator {
 public:

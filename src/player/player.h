@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include "util/databuffer.h"
+#include "util/options.h"
 
 
 struct PlayerInfo {
@@ -23,6 +25,9 @@ class Player {
     std::vector<std::string> accepts_;
 
 protected:
+    DataBuffer mdata;
+    Options options;
+
     int speed_;
     float tempo_;
     float time_;
@@ -35,7 +40,7 @@ protected:
     // TODO: scan_data
     bool inside_loop;
 
-    Mixer& mixer_;
+    Mixer& mixer;
 
 public:
     Player(std::string const& id,
@@ -43,7 +48,8 @@ public:
            std::string const& description,
            std::string const& author,
            std::vector<std::string> accepts,
-           Mixer& mixer) :
+           Mixer& m,
+           void *buf, const uint32_t size) :
         id_(id),
         name_(name),
         description_(description),
@@ -54,7 +60,8 @@ public:
         time_(0.0f),
         initial_speed_(6),
         initial_tempo_(125.0f),
-        mixer_(mixer)
+        mixer(m),
+        mdata(buf, size)
     {
     }
     virtual void start() = 0;

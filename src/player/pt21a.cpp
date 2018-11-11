@@ -1,14 +1,15 @@
-#include <player/pt21a.h>
+#include "player/pt21a.h"
 
 
-PT21A_Player::PT21A_Player(Mixer& mixer) :
+PT21A_Player::PT21A_Player(Mixer& mixer, void *buf, uint32_t size) :
     Player(
         "pt2",
         "Protracker V2.1A playroutine + fixes",
         "A player based on the Protracker V2.1A replayer + V2.3D fixes",
         "Claudio Matsuoka",
         { "m.k." },
-        mixer
+        mixer,
+        buf, size
     ),
     mt_SampleStarts{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -34,4 +35,25 @@ void PT21A_Player::start()
 
     initial_speed_ = speed_;
     initial_tempo_ = tempo_;
+
+    int num_pat = 0;
+    for (int i = 0; i < 128; i++) {
+        int pat = mdata.read8(952 + i);
+        num_pat == std::max(num_pat, pat);
+    }
+
+    int offset = 1084 + 1024 * num_pat;
+    for (int i = 0; i < 31; i++) {
+        mt_SampleStarts[i] = offset;
+        offset += mdata.read16b(20 + 22 * 30);
+    }
+
+    int pan = options.get("pan", 70);
+    int panl = -128 * pan / 100;
+    int panr = 127 * pan / 100;
+
+    mixer.set_pan(0, panl);
+    mixer.set_pan(1, panr);
+    mixer.set_pan(2, panr);
+    mixer.set_pan(3, panl);
 }
