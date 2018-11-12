@@ -3,21 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <haze.h>
 #include "util/databuffer.h"
 #include "util/options.h"
 
 
-struct PlayerInfo {
-    int pos;
-    int row;
-    int frame;
-    int song;
-    int speed;
-    float tempo;
-    float time;
-};
-
-class Player {
+class Player : public haze::Player_ {
     std::string id_;
     std::string name_;
     std::string description_;
@@ -64,10 +55,7 @@ public:
         mdata(buf, size)
     {
     }
-    virtual void start() = 0;
-    virtual void play() = 0;
-    virtual void reset() = 0;
-    virtual void info(PlayerInfo&) = 0;
+
 };
 
 

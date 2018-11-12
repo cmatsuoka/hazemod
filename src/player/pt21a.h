@@ -107,6 +107,9 @@ public:
     PT21A_Player(Mixer&, void *, uint32_t);
     void start() override;
     void play() override;
+    void reset() override;
+    void info(haze::PlayerInfo&) override;
+
 };
 
 

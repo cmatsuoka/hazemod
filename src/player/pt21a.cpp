@@ -74,6 +74,14 @@ void PT21A_Player::play()
     mt_music();
 }
 
+void PT21A_Player::reset()
+{
+}
+
+void PT21A_Player::info(haze::PlayerInfo& pi)
+{
+}
+
 //----------------------------------------------------------------------
 
 namespace {
