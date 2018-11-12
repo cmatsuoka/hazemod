@@ -13,7 +13,6 @@ struct ModuleInfo {
     std::string creator;      // The program used to create this module (usually a tracker)
     std::string player;       // The primary player for this format
     int channels;             // The number of channels used in the module
-    int time;                 // Total replay time in ms
 };
 
 struct PlayerInfo {
@@ -40,10 +39,11 @@ class HazePlayer {
     Player_* player;
 public:
     HazePlayer(void *, int, std::string const& = "");
-    HazePlayer& module_info(ModuleInfo&);
     template<typename T> HazePlayer& fill(T *, int, bool = false);
 };
 
+
+bool probe(void *, int, ModuleInfo&);
 
 }  // namespace haze
 

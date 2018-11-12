@@ -19,6 +19,7 @@ int main(int argc, char** argv)
 {
     char *name = argv[1];
 
+    // load module data
     int fd = open(argv[1], O_RDONLY, 0);
     if (fd < 0) {
         std::cerr << "Error: " << std::strerror(errno) << std::endl;
@@ -38,10 +39,25 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
+
+    // probe module format
+    haze::ModuleInfo mi;
+    if (!haze::probe(data, size, mi)) {
+        std::cerr << "Unrecognized module format" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    std::cout << "Format  : " << mi.description << std::endl;
+    std::cout << "Creator : " << mi.creator << std::endl;
+    std::cout << "Channels: " << mi.channels << std::endl;
+    std::cout << "Title   : " << mi.title << std::endl;
+
+    // play module
     auto hz = haze::HazePlayer(data, size);
-    haze::ModuleInfo info;
-    hz.info(info);
-    std::cout << "Title: " << info.title << std::endl;
+
+
+    // ...
+
+
 
     munmap(data, size);
     close(fd);
