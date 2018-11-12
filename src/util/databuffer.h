@@ -65,7 +65,7 @@ public:
         check_buffer_size(ofs + size);
         char *buf = new char[size + 1];
         memcpy(buf, data + ofs, size);
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size && buf[i] != '\0'; i++) {
             if (!isprint(buf[i])) {
                 buf[i] = '.';
             }
