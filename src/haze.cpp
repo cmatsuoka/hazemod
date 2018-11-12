@@ -17,7 +17,7 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& id) :
     player = new PT21A_Player(m, buf, size);
 }
 
-HazePlayer& HazePlayer::info(ModuleInfo& info)
+HazePlayer& HazePlayer::module_info(ModuleInfo& info)
 {
     info.title = "fixme";
     return *this;

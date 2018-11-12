@@ -7,7 +7,13 @@
 namespace haze {
 
 struct ModuleInfo {
-    std::string title;
+    std::string title;        // The module title
+    std::string format_id;    // The module format identifier
+    std::string description;  // The module format description
+    std::string creator;      // The program used to create this module (usually a tracker)
+    std::string player;       // The primary player for this format
+    int channels;             // The number of channels used in the module
+    int time;                 // Total replay time in ms
 };
 
 struct PlayerInfo {
@@ -34,7 +40,7 @@ class HazePlayer {
     Player_* player;
 public:
     HazePlayer(void *, int, std::string const& = "");
-    HazePlayer& info(ModuleInfo&);
+    HazePlayer& module_info(ModuleInfo&);
     template<typename T> HazePlayer& fill(T *, int, bool = false);
 };
 

@@ -82,6 +82,10 @@ void PT21A_Player::info(haze::PlayerInfo& pi)
 {
 }
 
+void PT21A_Player::info(haze::PlayerInfo& pi)
+{
+}
+
 //----------------------------------------------------------------------
 
 namespace {
