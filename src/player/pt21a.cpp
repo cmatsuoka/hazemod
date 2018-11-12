@@ -1,5 +1,16 @@
 #include "player/pt21a.h"
 
+// PT2.1A Replayer
+//
+// Based on the Protracker V2.1A replayer in m68k assembly language written
+// by Peter "CRAYON" Hanning / Mushroom Studios in 1992. Original label and
+// variable names used whenever possible.
+//
+// Bug fixes backported from Protracker 2.3D:
+// * Mask finetune when playing voice
+// * Mask note value in note delay command processing
+// * Fix period table lookup by adding trailing zero values
+
 
 PT21A_Player::PT21A_Player(Mixer& mixer, void *buf, uint32_t size) :
     Player(
