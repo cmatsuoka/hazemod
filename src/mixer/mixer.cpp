@@ -22,6 +22,7 @@ void Mixer::set_volume(int chn, int val)
     if (chn >= num_channels) {
         return;
     }
+    channel[chn].set_volume(val);
 }
 
 void Mixer::set_pan(int chn, int val)
@@ -29,20 +30,22 @@ void Mixer::set_pan(int chn, int val)
     if (chn >= num_channels) {
         return;
     }
+    channel[chn].set_pan(val);
 }
 
-void Mixer::set_voicepos(int chn, float val)
+void Mixer::set_voicepos(int chn, double val)
 {
     if (chn >= num_channels) {
         return;
     }
 }
 
-void Mixer::set_period(int chn, float val)
+void Mixer::set_period(int chn, double val)
 {
     if (chn >= num_channels) {
         return;
     }
+    channel[chn].set_period(val);
 }
 
 void Mixer::enable_filter(bool val)

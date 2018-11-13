@@ -4,8 +4,8 @@ constexpr int MaxChannelVolume = 1024;
 
 
 Channel::Channel() :
-    pos_(0),
-    frac_(0),
+    pos_(0.0),
+    period_(0.0),
     volbase_(MaxChannelVolume),
     volume_(MaxChannelVolume),
     pan_(0),

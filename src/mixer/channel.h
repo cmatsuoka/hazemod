@@ -6,8 +6,8 @@
 
 
 class Channel {
-    uint32_t pos_;
-    uint16_t frac_;
+    double pos_;
+    double period_;
     int volbase_;
     int volume_;
     int pan_;
@@ -22,13 +22,12 @@ class Channel {
 public:
     Channel();
     uint32_t pos() { return pos_; }
-    int frac() { return frac_; }
-    void add_step(uint32_t val) {
-        pos_ += (val >> 16);
-        frac_ += (val & 0xffff);
+    int frac() { return int(double(1 << 16) * (pos_ - int(pos_))); }
+    void add_step(double val) {
+        pos_ += val;
         if (loop_) {
             if (pos_ >= loop_end_) {
-                pos_ = loop_start_;
+                pos_ -= (loop_end_ - loop_start_);
             }
         } else {
             if (pos_ >= end_) {
@@ -38,8 +37,10 @@ public:
     }
     void set_volume(int val) { volume_ = std::clamp(val, 0, volbase_); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
+    void set_period(double val) { period_ = val; }
     int volume() { return volume_; }
     int pan() { return pan_; }
+    double period() { return period_; }
     bool loop() { return loop_; }
 };
 

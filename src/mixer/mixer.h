@@ -26,8 +26,8 @@ public:
     int channels() { return num_channels; }  // get number of mixer channels
     void set_volume(int, int);               // set channel volume
     void set_pan(int, int);                  // set channel pan
-    void set_voicepos(int, float);           // set voice position
-    void set_period(int, float);             // set period
+    void set_voicepos(int, double);          // set voice position
+    void set_period(int, double);            // set period
     void enable_filter(bool);
 };  // Mixer
 
