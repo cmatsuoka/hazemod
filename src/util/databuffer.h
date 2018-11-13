@@ -23,29 +23,29 @@ public:
 
     uint32_t size() { return data_size; }
 
-    uint8_t read8(uint32_t ofs) {
+    uint8_t read8(uint32_t ofs) const {
         check_buffer_size(ofs + 1);
         return data[ofs];
     }    
 
-    int8_t read8i(uint32_t ofs) {
+    int8_t read8i(uint32_t ofs) const {
         check_buffer_size(ofs + 1);
         return static_cast<int8_t>(data[ofs]);
     }    
 
-    uint16_t read16b(uint32_t ofs) {
+    uint16_t read16b(uint32_t ofs) const {
         check_buffer_size(ofs + 2);
         return (static_cast<uint16_t>(data[ofs]) << 8) |
                static_cast<uint16_t>(data[ofs + 1]);
     }
 
-    uint16_t read16l(uint32_t ofs) {
+    uint16_t read16l(uint32_t ofs) const {
         check_buffer_size(ofs + 2);
         return (static_cast<uint16_t>(data[ofs + 1]) << 8) |
                static_cast<uint16_t>(data[ofs]);
     }
 
-    uint32_t read32b(uint32_t ofs) {
+    uint32_t read32b(uint32_t ofs) const {
         check_buffer_size(ofs + 4);
         return (static_cast<uint32_t>(data[ofs]) << 24) |
                (static_cast<uint32_t>(data[ofs + 1]) << 16) |
@@ -53,7 +53,7 @@ public:
                static_cast<uint32_t>(data[ofs + 3]);
     }
 
-    uint32_t read32l(uint32_t ofs) {
+    uint32_t read32l(uint32_t ofs) const {
         check_buffer_size(ofs + 4);
         return (static_cast<uint32_t>(data[ofs + 3]) << 24) |
                (static_cast<uint32_t>(data[ofs + 2]) << 16) |
@@ -61,7 +61,7 @@ public:
                static_cast<uint32_t>(data[ofs]);
     }
 
-    std::string read_string(uint32_t ofs, uint32_t size) {
+    std::string read_string(uint32_t ofs, uint32_t size) const {
         check_buffer_size(ofs + size);
         char *buf = new char[size + 1];
         memcpy(buf, data + ofs, size);
@@ -76,7 +76,7 @@ public:
         return ret;
     }
 
-    void check_buffer_size(uint32_t end) {
+    void check_buffer_size(uint32_t end) const {
         if (end > data_size || end <= 0) {
             throw std::runtime_error(string_format("short read (want %d bytes, have %d)", end, data_size));
         }

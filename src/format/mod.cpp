@@ -1,4 +1,6 @@
 #include "mod.h"
+#include <unordered_set>
+#include <unordered_map>
 #include <haze.h>
 #include "util/databuffer.h"
 
@@ -6,6 +8,8 @@
 
 
 namespace {
+
+// Known module variants
 
 enum TrackerID {
     Unknown,
@@ -26,6 +30,8 @@ enum TrackerID {
     UnknownOrConverted,
     ProtrackerClone
 };
+
+// Known module magic IDs
 
 struct Magic {
     uint32_t  magic;
@@ -50,15 +56,41 @@ Magic magic[13] = {
     { MAGIC4('N', 'S', 'M', 'S'), true,  Unknown,        4 }   // in Kingdom.mod
 };
 
+// Default player based on module format variant
+
+struct PlayerID {
+    std::string name;
+    std::string player_id;
+};
+
+std::unordered_map<TrackerID, PlayerID> tracker_map = {
+    { Unknown,            { "unknown tracker",  "pt2" } },
+    { Protracker,         { "Protracker",       "pt2" } },
+    { Noisetracker,       { "Noisetracker",     "nt"  } },
+    { Soundtracker,       { "Soundtracker",     "pt2" } },
+    { Screamtracker3,     { "Scream Tracker 3", "st3" } },
+    { FastTracker,        { "Fast Tracker",     "ft"  } },
+    { FastTracker2,       { "Fast Tracker",     "ft2" } },
+    { TakeTracker,        { "TakeTracker",      "ft2" } },
+    { Octalyser,          { "Octalyser",        "ft"  } },
+    { DigitalTracker,     { "Digital Tracker",  "pt2" } },
+    { ModsGrave,          { "Mod's Grave",      "ft"  } },
+    { FlexTrax,           { "FlexTrax",         "pt2" } },
+    { OpenMPT,            { "OpenMPT",          "pt2" } },
+    { Converted,          { "Converted",        "pt2" } },
+    { ConvertedST,        { "Converted 15-ins", "nt"  } },
+    { UnknownOrConverted, { "Unknown tracker",  "pt2" } },
+    { ProtrackerClone,    { "Protracker clone", "pt2" } }
+};
+
 
 }  // namespace
 
 
 
-
 bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
 {
-    DataBuffer d(buf, size);
+    const DataBuffer d(buf, size);
 
     auto magic = d.read32b(1080);
 
@@ -80,7 +112,7 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
 
 namespace {
 
-uint16_t standard_notes[36] = {
+std::unordered_set<uint16_t> standard_notes = {
     856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453,
     428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226,
     214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113
@@ -91,7 +123,7 @@ uint16_t standard_notes[36] = {
 // routine used in oxdz and libxmp.
 
 
-bool has_large_instruments(DataBuffer& d)
+bool has_large_instruments(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -105,7 +137,7 @@ bool has_large_instruments(DataBuffer& d)
 }
 
 // Check if has instruments with repeat length 0 
-bool has_replen_0(DataBuffer& d)
+bool has_replen_0(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -119,7 +151,7 @@ bool has_replen_0(DataBuffer& d)
 }
 
 // Check if has instruments with size 0 and volume > 0
-bool empty_ins_has_volume(DataBuffer& d)
+bool empty_ins_has_volume(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -133,7 +165,7 @@ bool empty_ins_has_volume(DataBuffer& d)
     return false;
 }
 
-bool size_1_and_volume_0(DataBuffer& d)
+bool size_1_and_volume_0(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -147,7 +179,7 @@ bool size_1_and_volume_0(DataBuffer& d)
     return false;
 }
 
-bool has_st_instruments(DataBuffer& d)
+bool has_st_instruments(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -173,7 +205,7 @@ bool has_st_instruments(DataBuffer& d)
     return true;
 }
 
-bool has_ins_15_to_31(DataBuffer& d)
+bool has_ins_15_to_31(DataBuffer const& d)
 {
     for (int i = 15; i < 31; i++) {
         int ofs = 20 + 30 * i;
@@ -187,7 +219,7 @@ bool has_ins_15_to_31(DataBuffer& d)
     return false;
 }
 
-TrackerID get_tracker_id(DataBuffer& d)
+TrackerID get_tracker_id(DataBuffer const& d, const int num_pat)
 {
     TrackerID tracker_id = Unknown;
     bool detected = false;
@@ -234,12 +266,6 @@ TrackerID get_tracker_id(DataBuffer& d)
     bool empty_ins_with_vol = empty_ins_has_volume(d);
 
     int restart = d.read8(951);
-
-    int num_pat = 0;
-    for (int i = 0; i < 128; i++) {
-        int pat = d.read8(952 + i);
-        num_pat == std::max(num_pat, pat);
-    }
 
     if (restart == num_pat) {
         tracker_id = chn == 4 ? Soundtracker : Unknown;
@@ -320,10 +346,81 @@ TrackerID get_tracker_id(DataBuffer& d)
     return tracker_id;
 }
 
+// Check if module uses only standard tracker octaves
+bool has_standard_octaves(DataBuffer const& d, const int num_pat, const int num_ch)
+{
+    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+        uint32_t ev = d.read32b(1084 + i);
+        int note = (ev & 0x0fff0000) >> 16;
 
+        if (note != 0 && (note < 109 || note > 907)) {
+            return false;
+        }
+    }
+    return true;
+}
 
+// Check if module uses only standard tracker notes
+bool has_standard_notes(DataBuffer const& d, const int num_pat, const int num_ch)
+{
+    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+        uint32_t ev = d.read32b(1084 + i);
+        int note = (ev & 0x0fff0000) >> 16;
+
+        if (note != 0 && standard_notes.find(note) == standard_notes.end()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Check if module uses only NoiseTracker commands
+bool has_only_nt_cmds(DataBuffer const& d, const int num_pat, const int num_ch)
+{
+    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+        uint32_t ev = d.read32b(1084 + i);
+        uint8_t cmd = (ev & 0x0000ff00) >> 8;
+        uint8_t cmdlo = ev & 0x000000ff;
+
+        if ((cmd > 0x06 && cmd < 0x0a) || (cmd == 0x0e && cmdlo > 1)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+TrackerID id(DataBuffer const& d)
+{
+    int num_pat = 0;
+    for (int i = 0; i < 128; i++) {
+        int pat = d.read8(952 + i);
+        num_pat == std::max(num_pat, pat);
+    }
+
+    auto tracker_id = get_tracker_id(d, num_pat);
+    uint8_t restart = d.read8(951);
+
+    if (tracker_id == Noisetracker) {
+        if (!has_only_nt_cmds(d, num_pat, 4) || !has_standard_notes(d, num_pat, 4)) {
+            tracker_id = Unknown;
+        }
+    } else if (tracker_id == Soundtracker) {
+        if (!has_standard_notes(d, num_pat, 4)) {
+            tracker_id = Unknown;
+        }
+    } else if (tracker_id == Protracker) {
+        if (restart != 0x7f || !has_standard_octaves(d, num_pat, 4)) {
+            tracker_id = Unknown;
+        }
+    }
+
+    // FIXME: are we really limited to 4 channels here?
+    if (tracker_id == Unknown && restart == 0x7f && !has_standard_octaves(d, num_pat, 4)) {
+        tracker_id = Screamtracker3;
+    }
+
+    return tracker_id;
+}
 
 
 }  // namespace
-
-
