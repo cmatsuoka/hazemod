@@ -83,6 +83,8 @@ std::unordered_map<TrackerID, PlayerID> tracker_map = {
     { ProtrackerClone,    { "Protracker clone", "pt2" } }
 };
 
+TrackerID id(DataBuffer const&);
+
 
 }  // namespace
 
@@ -92,21 +94,53 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
 {
     const DataBuffer d(buf, size);
 
-    auto magic = d.read32b(1080);
+    uint32_t m = d.read32b(1080);
 
-    switch (magic) {
-    case MAGIC_M_K_:
-        // TODO: check player acceptance
-        mi.format_id = "m.k.";
-        mi.title = d.read_string(0, 20);
-        mi.description = "Amiga Protracker/Compatible";
-        mi.creator = "unknown tracker";
-        mi.channels = 4;
-        mi.player = "pt21a";
-        return true;
+    // Check for known magic ID
+    // FIXME: prevent false positives
+
+    int num_ch = 0;
+    for (auto entry : magic) {
+        if (m == entry.magic) {
+            num_ch = entry.ch;
+            break;
+        }
     }
 
-    return false;
+    if (num_ch == 0) {
+        if (isdigit(m >> 24) && ((m & 0x00ffffff) == MAGIC4(0, 'C', 'H', 'N'))) {
+            num_ch = (m >> 24) - '0';
+        } else if (isdigit(m >> 24) && isdigit((m & 0x00ff0000) >> 16) && ((m & 0x0000ffff) == MAGIC4(0, 0, 'C', 'H'))) {
+            num_ch = ((m >> 24) - '0') * 10 + (((m & 0x00ff0000) >> 16) - '0');
+        }
+    }
+
+    if (num_ch == 0) {
+        return false;
+    }
+
+    // Magic found, identify tracker
+    // FIXME: handle Mod's Grave WOW
+
+    auto fmt = ::id(d);
+    auto trk = tracker_map[fmt];
+
+    std::string player = trk.player_id;;
+    std::string format_id = "m.k.";
+
+    if (num_ch != 4) {
+        format_id = (num_ch <= 8) ? "xchn" : "xxch";
+    }
+
+    // TODO: check player acceptance
+    mi.format_id = format_id;
+    mi.title = d.read_string(0, 20);
+    mi.description = "Amiga Protracker/Compatible";
+    mi.creator = trk.name;
+    mi.channels = num_ch;
+    mi.player = player;
+
+    return true;
 }
 
 
