@@ -175,7 +175,7 @@ bool has_replen_0(DataBuffer const& d)
 {
     for (int i = 0; i < 31; i++) {
         int ofs = 20 + 30 * i;
-        int replen = d.read16b(28);
+        int replen = d.read16b(ofs + 28);
 
         if (replen == 0) {
             return true;
@@ -330,7 +330,7 @@ TrackerID get_tracker_id(DataBuffer const& d, const int num_pat)
             for (int i = 0; i < 31; i++) {
                 int ofs = 20 + 30 * i;
                 int size = d.read16b(ofs + 22);
-                int replen = d.read16b(28);
+                int replen = d.read16b(ofs + 28);
 
                 if (size != 0 || replen != 1) {
                     continue;
@@ -383,7 +383,7 @@ TrackerID get_tracker_id(DataBuffer const& d, const int num_pat)
 // Check if module uses only standard tracker octaves
 bool has_standard_octaves(DataBuffer const& d, const int num_pat, const int num_ch)
 {
-    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+    for (int i = 0; i < 64 * num_pat * num_ch * 4; i += 4) {
         uint32_t ev = d.read32b(1084 + i);
         int note = (ev & 0x0fff0000) >> 16;
 
@@ -397,7 +397,7 @@ bool has_standard_octaves(DataBuffer const& d, const int num_pat, const int num_
 // Check if module uses only standard tracker notes
 bool has_standard_notes(DataBuffer const& d, const int num_pat, const int num_ch)
 {
-    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+    for (int i = 0; i < 64 * num_pat * num_ch * 4; i += 4) {
         uint32_t ev = d.read32b(1084 + i);
         int note = (ev & 0x0fff0000) >> 16;
 
@@ -411,7 +411,7 @@ bool has_standard_notes(DataBuffer const& d, const int num_pat, const int num_ch
 // Check if module uses only NoiseTracker commands
 bool has_only_nt_cmds(DataBuffer const& d, const int num_pat, const int num_ch)
 {
-    for (int i = 0; i < 64 * num_pat * num_ch; i++) {
+    for (int i = 0; i < 64 * num_pat * num_ch * 4; i += 4) {
         uint32_t ev = d.read32b(1084 + i);
         uint8_t cmd = (ev & 0x0000ff00) >> 8;
         uint8_t cmdlo = ev & 0x000000ff;
@@ -428,7 +428,7 @@ TrackerID id(DataBuffer const& d)
     int num_pat = 0;
     for (int i = 0; i < 128; i++) {
         int pat = d.read8(952 + i);
-        num_pat == std::max(num_pat, pat);
+        num_pat = std::max(num_pat, pat);
     }
 
     auto tracker_id = get_tracker_id(d, num_pat);
