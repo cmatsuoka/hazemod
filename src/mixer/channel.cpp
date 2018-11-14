@@ -4,7 +4,8 @@
 #include "mixer/linear.h"
 
 
-Channel::Channel(InterpolatorType typ) :
+Channel::Channel(int num, InterpolatorType typ) :
+    num_(num),
     pos_(0.0),
     period_(0.0),
     volume_(1023),
@@ -20,6 +21,11 @@ Channel::Channel(InterpolatorType typ) :
 {
     set_interpolator(typ);
 };
+
+Channel::~Channel()
+{
+    delete itp_;
+}
 
 void Channel::set_interpolator(InterpolatorType typ)
 {

@@ -27,6 +27,7 @@ struct PlayerInfo {
 
 class Player_ {
 public:
+    virtual ~Player_() {};
     virtual void start() = 0;
     virtual void play() = 0;
     virtual void reset() = 0;
@@ -38,9 +39,10 @@ class HazePlayer {
     void *data;
     int data_size;
     std::string player_id;
-    Player_ *player;
+    Player_ *player_;
 public:
     HazePlayer(void *, int, std::string const& = "");
+    ~HazePlayer();
     HazePlayer& fill(int16_t *, int);
 };
 

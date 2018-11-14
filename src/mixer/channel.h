@@ -8,6 +8,7 @@
 
 
 class Channel {
+    int num_;
     uint32_t pos_;
     uint16_t frac_;
     double period_;
@@ -43,7 +44,8 @@ protected:
     }
 
 public:
-    Channel(InterpolatorType);
+    Channel(int, InterpolatorType);
+    ~Channel();
 
     uint16_t sample() {
         uint16_t val = itp_->sample(frac_); 

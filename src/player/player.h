@@ -39,8 +39,8 @@ public:
            std::string const& description,
            std::string const& author,
            std::vector<std::string> accepts,
-           Mixer *m,
-           void *buf, const uint32_t size) :
+           void *buf, const uint32_t size,
+           int ch, int sr) :
         id_(id),
         name_(name),
         description_(description),
@@ -51,9 +51,13 @@ public:
         time_(0.0f),
         initial_speed_(6),
         initial_tempo_(125.0f),
-        mixer_(m),
         mdata(buf, size)
     {
+        mixer_ = new Mixer(ch, sr);
+    }
+
+    virtual ~Player() {
+        delete mixer_;
     }
 
     Mixer *mixer() { return mixer_; }

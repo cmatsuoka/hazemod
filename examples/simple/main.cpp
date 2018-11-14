@@ -60,8 +60,10 @@ int main(int argc, char** argv)
 
     // ...
 
-
+    delete [] buffer;
 
     munmap(data, size);
     close(fd);
+
+    return 0;
 }

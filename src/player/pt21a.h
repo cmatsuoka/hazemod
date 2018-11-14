@@ -104,7 +104,8 @@ class PT21A_Player : public Player {
     void mt_FunkIt(int);
     void mt_UpdateFunk(int);
 public:
-    PT21A_Player(Mixer *, void *, uint32_t);
+    PT21A_Player(void *, uint32_t, int);
+    virtual ~PT21A_Player();
     void start() override;
     void play() override;
     void reset() override;

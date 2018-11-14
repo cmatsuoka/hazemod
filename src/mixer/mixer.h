@@ -12,9 +12,10 @@ class Mixer {
     int srate;
     int num_channels;
     std::vector<Sample> sample;
-    std::vector<Channel> channel;
+    std::vector<Channel *> channel;
 public:
     Mixer(int, int);
+    ~Mixer();
     void mix(int16_t *, int);                // mix sample data
     int rate() { return srate; }
     void add_sample(void *, uint32_t);       // load sample data
