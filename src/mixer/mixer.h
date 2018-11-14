@@ -9,14 +9,15 @@
 
 
 class Mixer {
-    int rate;
+    int srate;
     int num_channels;
     std::vector<Sample> sample;
     std::vector<Channel> channel;
 public:
-    Mixer(int);
-    void mix(uint16_t *, int);               // mix sample data
-    void load_sample(void *, uint32_t);      // load sample data
+    Mixer(int, int);
+    void mix(int16_t *, int);                // mix sample data
+    int rate() { return srate; }
+    void add_sample(void *, uint32_t);       // load sample data
     void set_sample(int, int);               // set active sample
     void set_start(int, uint32_t);           // set sample start offset
     void set_end(int, uint32_t);             // set sample end offset

@@ -15,14 +15,14 @@ TEST_SUITE("interpolator_nearest") {
         CHECK(itp.sample(0xc000) == 0);
 
         int8_t x = 100;
-        itp.add(x);
+        itp.add8(x);
         CHECK(itp.sample(0) == 25600);
         CHECK(itp.sample(0x4000) == 25600);
         CHECK(itp.sample(0x8000) == 25600);
         CHECK(itp.sample(0xc000) == 25600);
 
         x = 0;
-        itp.add(x);
+        itp.add8(x);
         CHECK(itp.sample(0) == 0);
         CHECK(itp.sample(0x4000) == 0);
         CHECK(itp.sample(0x8000) == 0);

@@ -11,7 +11,6 @@ class Channel {
     uint32_t pos_;
     uint16_t frac_;
     double period_;
-    int volbase_;
     int volume_;
     int pan_;
     bool mute_;            // channel is muted
@@ -44,7 +43,7 @@ protected:
     }
 
 public:
-    Channel();
+    Channel(InterpolatorType);
 
     uint16_t sample() {
         uint16_t val = itp_->sample(frac_); 
@@ -53,20 +52,21 @@ public:
         if (prev != pos_) {
             itp_->add(smp_.get(pos_));
         }
-        return val;
+        return (val * volume_) >> 10;
     }
 
     uint32_t pos() { return pos_; }
 
     int frac() { return int(double(1 << 16) * (pos_ - int(pos_))); }
 
-    void set_volume(int val) { volume_ = std::clamp(val, 0, volbase_); }
+    void set_volume(int val) { volume_ = std::clamp(val, 0, 1023); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
     void set_period(double val) { period_ = val; }
     int volume() { return volume_; }
     int pan() { return pan_; }
     double period() { return period_; }
     bool loop() { return loop_; }
+    void set_interpolator(InterpolatorType);
 };
 
 #endif  // HAZE_MIXER_CHANNEL_H_

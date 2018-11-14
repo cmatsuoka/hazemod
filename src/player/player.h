@@ -31,7 +31,7 @@ protected:
     // TODO: scan_data
     bool inside_loop;
 
-    Mixer& mixer;
+    Mixer *mixer_;
 
 public:
     Player(std::string const& id,
@@ -39,7 +39,7 @@ public:
            std::string const& description,
            std::string const& author,
            std::vector<std::string> accepts,
-           Mixer& m,
+           Mixer *m,
            void *buf, const uint32_t size) :
         id_(id),
         name_(name),
@@ -51,11 +51,14 @@ public:
         time_(0.0f),
         initial_speed_(6),
         initial_tempo_(125.0f),
-        mixer(m),
+        mixer_(m),
         mdata(buf, size)
     {
     }
 
+    Mixer *mixer() { return mixer_; }
+
+    void fill(int16_t *buf, int size) override { mixer_->mix(buf, size); }
 };
 
 

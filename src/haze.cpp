@@ -18,13 +18,13 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& id) :
     data_size(size),
     player_id(id)
 {
-    Mixer m(4);
+    Mixer *m = new Mixer(4, 44100);
     player = new PT21A_Player(m, buf, size);
 }
 
-template<typename T>
-HazePlayer& HazePlayer::fill(T *buf, int size, bool loop)
+HazePlayer& HazePlayer::fill(int16_t *buf, int size)
 {
+    player->fill(buf, size);
     return *this;
 }
 

@@ -54,6 +54,9 @@ int main(int argc, char** argv)
     // play module
     auto hz = haze::HazePlayer(data, size);
 
+    int16_t *buffer = new int16_t[256];
+
+    hz.fill(buffer, 256);
 
     // ...
 

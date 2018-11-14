@@ -6,6 +6,12 @@
 
 #define SMIX_SHIFT 16
 
+enum InterpolatorType {
+    NearestNeighborInterpolatorType,
+    LinearInterpolatorType,
+    SplineInterpolatorType
+};
+
 
 class Interpolator {
 protected:
