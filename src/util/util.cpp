@@ -1,3 +1,7 @@
+#ifdef WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "util/util.h"
 #include <cstdarg>
 #include <cstring>

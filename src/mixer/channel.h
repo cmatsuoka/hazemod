@@ -10,7 +10,7 @@
 class Channel {
     int num_;
     uint32_t pos_;
-    uint16_t frac_;
+    uint32_t frac_;
     double period_;
     int volume_;
     int pan_;
@@ -28,7 +28,7 @@ class Channel {
 protected:
     void add_step() {
         // TODO: handle bidir loops
-        frac_ += (1 << 16) * period_;
+        frac_ += static_cast<uint32_t>((1 << 16) * period_);
         pos_ += frac_ >> 16;
         frac_ &= (1 << 16) - 1;
 
@@ -48,7 +48,7 @@ public:
     ~Channel();
 
     uint16_t sample() {
-        uint16_t val = itp_->sample(frac_); 
+        uint32_t val = itp_->sample(frac_);
         uint32_t prev = pos_;
         add_step();
         if (prev != pos_) {

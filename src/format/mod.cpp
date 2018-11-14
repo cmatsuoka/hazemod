@@ -1,6 +1,7 @@
 #include "mod.h"
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
 #include <haze.h>
 #include "util/databuffer.h"
 
