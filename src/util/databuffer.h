@@ -63,7 +63,7 @@ public:
 
     std::string read_string(uint32_t ofs, uint32_t size) const {
         check_buffer_size(ofs + size);
-        char *buf = new char[size + 1];
+        char buf[size + 1];
         memcpy(buf, data + ofs, size);
         for (int i = 0; i < size && buf[i] != '\0'; i++) {
             if (!isprint(buf[i])) {
@@ -72,7 +72,6 @@ public:
         }
         buf[size] = '\0';
         auto ret = std::string(buf);
-        delete buf;
         return ret;
     }
 
