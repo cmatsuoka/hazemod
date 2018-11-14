@@ -14,7 +14,7 @@ public:
     Interpolator(): b0(0), b1(0), b2(0) {};
     virtual int32_t sample(uint16_t t) = 0;
     virtual std::string name() = 0;
-    void add(int8_t y) { b2 = b1; b1 = b0; b0 = y; b0 <<= 8; }
+    void add8(int8_t y) { b2 = b1; b1 = b0; b0 = y; b0 <<= 8; }
     void add(int16_t y) { b2 = b1; b1 = b0; b0 = y; }
 };
 

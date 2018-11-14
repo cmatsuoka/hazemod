@@ -1,5 +1,5 @@
 #include "mixer/mixer.h"
-#include <memory>
+#include <cstring>
 
 constexpr int DefaultRate = 44100;
 
@@ -7,7 +7,7 @@ constexpr int DefaultRate = 44100;
 Mixer::Mixer(int num)
 {
     num_channels = num;
-    channel = new Channel[num];
+    channel.resize(num);
 }
 
 void Mixer::set_start(int chn, unsigned int val)
@@ -50,4 +50,15 @@ void Mixer::set_period(int chn, double val)
 
 void Mixer::enable_filter(bool val)
 {
+}
+
+void Mixer::mix(uint16_t *buf, int size)
+{
+    std::memset(buf, 0, size * sizeof(uint16_t));
+
+    for (uint16_t *b = buf; b < (buf + size); b++) {
+        for (auto c : channel) {
+            *b += c.sample();
+        }
+    }
 }

@@ -12,11 +12,10 @@ class Mixer {
     int rate;
     int num_channels;
     std::vector<Sample> sample;
-    Channel *channel;
+    std::vector<Channel> channel;
 public:
     Mixer(int);
-    template<typename T>
-    void mix(T *, size_t);                   // mix sample data
+    void mix(uint16_t *, int);               // mix sample data
     void load_sample(void *, uint32_t);      // load sample data
     void set_sample(int, int);               // set active sample
     void set_start(int, uint32_t);           // set sample start offset

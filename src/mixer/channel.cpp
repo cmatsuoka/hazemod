@@ -14,6 +14,8 @@ Channel::Channel() :
     finish_(false),
     loop_start_(0),
     loop_end_(0),
-    end_(0)
+    end_(0),
+    smp_(empty_sample),
+    itp_(nullptr)
 {
 };
