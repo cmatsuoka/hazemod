@@ -1,4 +1,4 @@
-#ifndef MIXER_LINEAR_H
+#ifndef MIXER_LINEAR_H_
 #define MIXER_LINEAR_H_
 
 #include "mixer/interpolator.h"

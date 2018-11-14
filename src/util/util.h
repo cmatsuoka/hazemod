@@ -4,7 +4,7 @@
 #include <string>
 
 
-std::string string_format(std::string const&, ...);
+std::string string_format(const char *, ...);
 
 
 #endif  // HAZE_UTIL_UTIL_H_
