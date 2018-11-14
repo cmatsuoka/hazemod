@@ -46,12 +46,12 @@ public:
         description_(description),
         author_(author),
         accepts_(accepts),
+        mdata(buf, size),
         speed_(6),
         tempo_(125.0f),
         time_(0.0f),
         initial_speed_(6),
-        initial_tempo_(125.0f),
-        mdata(buf, size)
+        initial_tempo_(125.0f)
     {
         mixer_ = new Mixer(ch, sr);
     }

@@ -20,3 +20,10 @@ set_target_properties(hazemod PROPERTIES
     SOVERSION ${VERSION_MAJOR}
     LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib
 )
+
+if(MSVC)
+    target_compile_options(hazemod PRIVATE /W4)
+else(MSVC)
+    target_compile_options(hazemod PRIVATE -Wall)
+endif(MSVC)
+
