@@ -1,5 +1,5 @@
-#ifndef HAZE_MIXER_CHANNEL_H_
-#define HAZE_MIXER_CHANNEL_H_
+#ifndef HAZE_MIXER_VOICE_H_
+#define HAZE_MIXER_VOICE_H_
 
 #include <algorithm>
 #include <cstdint>
@@ -7,7 +7,7 @@
 #include "mixer/interpolator.h"
 
 
-class Channel {
+class Voice {
     int num_;
     uint32_t pos_;
     uint32_t frac_;
@@ -45,15 +45,15 @@ protected:
     }
 
 public:
-    Channel(int, InterpolatorType);
-    ~Channel();
+    Voice(int, InterpolatorType);
+    ~Voice();
 
     uint16_t do_sample() {
         uint32_t val = itp_->sample(frac_);
         uint32_t prev = pos_;
         add_step();
         if (prev != pos_) {
-            itp_->add(smp_.get(pos_));
+            itp_->add8(smp_.get(pos_));
         }
         return (val * volume_) >> 10;
     }
@@ -83,4 +83,4 @@ public:
     Sample& smp() { return smp_; }
 };
 
-#endif  // HAZE_MIXER_CHANNEL_H_
+#endif  // HAZE_MIXER_VOICE_H_

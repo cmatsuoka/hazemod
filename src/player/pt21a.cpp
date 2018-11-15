@@ -243,7 +243,6 @@ void PT21A_Player::mt_GetNewNote()
     for (int chn = 0; chn < 3; chn++) {
         auto& ch = mt_chantemp[chn];
         mixer_->set_loop_start(chn, ch.n_loopstart);
-printf("loopstart=%d replen=%d -> LOOP END: %d\n", ch.n_loopstart, ch.n_replen, ch.n_loopstart + ch.n_replen * 2);
         mixer_->set_loop_end(chn, ch.n_loopstart + ch.n_replen * 2);
         mixer_->enable_loop(chn, ch.n_replen > 1);
     }

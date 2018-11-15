@@ -6,10 +6,6 @@
 // Sample flags
 constexpr uint32_t Sample16Bits = 1 << 0;
 
-// Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
-// Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
-constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
-
 
 class Sample {
     uint32_t flags_;
@@ -17,14 +13,14 @@ class Sample {
     uint32_t size_;
     double rate_;
 public:
-    Sample() : data_(nullptr), size_(0), rate_(C4PalRate) {}
+    Sample() : data_(nullptr), size_(0), rate_(1.0) {}
 
-    Sample(void *buf, uint32_t size) : data_(buf), size_(size) {}
+    Sample(void *buf, uint32_t size, double rate = 1.0) : data_(buf), size_(size), rate_(rate) {}
 
     int16_t get(uint32_t pos) {
-        return (flags_ & Sample16Bits) ?
+        return (pos >= size_) ? 0 : (flags_ & Sample16Bits) ?
             static_cast<int16_t *>(data_)[pos] :
-            static_cast<uint8_t *>(data_)[pos] << 8;
+            uint16_t(static_cast<uint8_t *>(data_)[pos]) - 128;  // convert to signed
     }
 
     uint32_t size() { return size_; }

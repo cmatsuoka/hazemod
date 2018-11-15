@@ -8,7 +8,7 @@ include_directories(.)
 add_library(hazemod SHARED
     util/util.cpp
     format/mod.cpp
-    mixer/channel.cpp
+    mixer/voice.cpp
     mixer/sample.cpp
     mixer/mixer.cpp
     player/pt21a.cpp

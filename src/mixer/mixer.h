@@ -5,17 +5,22 @@
 #include <array>
 #include <memory>
 #include "mixer/sample.h"
-#include "mixer/channel.h"
+#include "mixer/voice.h"
 
+// Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
+// Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
+constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
 constexpr double C4Period = 428.0;
 constexpr double PalRate = 250.0;
+constexpr uint32_t Lim16_lo = -32768;
+constexpr uint32_t Lim16_hi = 32767;
 
 
 class Mixer {
     int srate;
-    int num_channels;
+    int num_voices;
     std::vector<Sample> sample;
-    std::vector<Channel *> channel;
+    std::vector<Voice *> voice;
 public:
     Mixer(int, int);
     ~Mixer();
@@ -29,9 +34,9 @@ public:
     void set_loop_start(int, uint32_t);      // set loop start offset
     void set_loop_end(int, uint32_t);        // set loop end offset
     void enable_loop(int, bool);             // enable or disable sample loop
-    int channels() { return num_channels; }  // get number of mixer channels
-    void set_volume(int, int);               // set channel volume
-    void set_pan(int, int);                  // set channel pan
+    int voices() { return num_voices; }      // get number of mixer voices
+    void set_volume(int, int);               // set voice volume
+    void set_pan(int, int);                  // set voice pan
     void set_voicepos(int, double);          // set voice position
     void set_period(int, double);            // set period
     void enable_filter(bool);

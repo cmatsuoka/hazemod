@@ -1,10 +1,10 @@
-#include "mixer/channel.h"
+#include "mixer/voice.h"
 #include <stdexcept>
 #include "mixer/nearest.h"
 #include "mixer/linear.h"
 
 
-Channel::Channel(int num, InterpolatorType typ) :
+Voice::Voice(int num, InterpolatorType typ) :
     num_(num),
     pos_(0.0),
     step_(0.0),
@@ -23,12 +23,12 @@ Channel::Channel(int num, InterpolatorType typ) :
     set_interpolator(typ);
 };
 
-Channel::~Channel()
+Voice::~Voice()
 {
     delete itp_;
 }
 
-void Channel::set_interpolator(InterpolatorType typ)
+void Voice::set_interpolator(InterpolatorType typ)
 {
     if (itp_ != nullptr) {
         delete itp_;
