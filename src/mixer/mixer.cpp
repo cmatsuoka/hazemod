@@ -23,9 +23,9 @@ Mixer::~Mixer()
     }
 }
 
-void Mixer::add_sample(void *buf, uint32_t size)
+void Mixer::add_sample(void *buf, uint32_t size, double rate, uint32_t flags)
 {
-    Sample s(buf, size);
+    Sample s(buf, size, rate, flags);
     sample.push_back(s);
 }
 
@@ -115,22 +115,30 @@ void Mixer::enable_filter(bool val)
 
 void Mixer::mix(int16_t *buf, int size)
 {
-    for (int16_t *b = buf; b < (buf + size); b++) {
-        uint32_t val = 0;
+    int16_t *b = buf;
+    while (b < buf + size) {
+        int32_t l = 0, r = 0;
         for (auto v : voice) {
-            val += v->do_sample();
+            int32_t val = v->do_sample();
+            r += val * (0x80 - v->pan());
+            l += val * (0x80 + v->pan());
         }
-        *b = std::clamp(val >> 12, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(l >> 17, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(r >> 17, Lim16_lo, Lim16_hi);
     }
 }
 
 void Mixer::mix(float *buf, int size)
 {
-    for (float *b = buf; b < (buf + size); b++) {
-        uint32_t val = 0;
+    float *b = buf;
+    while (b < buf + size) {
+        int32_t l = 0, r = 0;
         for (auto v : voice) {
-            val += v->do_sample();
+            int32_t val = v->do_sample();
+            r += val * (0x80 - v->pan());
+            l += val * (0x80 + v->pan());
         }
-        *b = val / (1 << 31);
+        //*b++ = std::clamp(l / (1 << 31), -1.0f, 1.0f);
+        //*b++ = std::clamp(r / (1 << 31), -1.0f, 1.0f);
     }
 }

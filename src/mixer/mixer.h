@@ -12,8 +12,8 @@
 constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
 constexpr double C4Period = 428.0;
 constexpr double PalRate = 250.0;
-constexpr uint32_t Lim16_lo = -32768;
-constexpr uint32_t Lim16_hi = 32767;
+constexpr int32_t Lim16_lo = -32768;
+constexpr int32_t Lim16_hi = 32767;
 
 
 class Mixer {
@@ -25,9 +25,9 @@ public:
     Mixer(int, int);
     ~Mixer();
     void mix(int16_t *, int);                // mix sample data
-    void mix(float *, int);                  //
+    void mix(float *, int);
     int rate() { return srate; }
-    void add_sample(void *, uint32_t);       // load sample data
+    void add_sample(void *, uint32_t, double = 1.0, uint32_t = 0); // load sample data
     void set_sample(int, int);               // set active sample
     void set_start(int, uint32_t);           // set sample start offset
     void set_end(int, uint32_t);             // set sample end offset

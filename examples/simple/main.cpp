@@ -9,7 +9,7 @@
 #include <fstream>
 #include <haze.h>
 
-#define BUFFER_SIZE 16
+#define BUFFER_SIZE 1024
 
 
 size_t getFilesize(const char* filename) {
