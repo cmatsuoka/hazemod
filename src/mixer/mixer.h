@@ -7,6 +7,9 @@
 #include "mixer/sample.h"
 #include "mixer/channel.h"
 
+constexpr double C4Period = 428.0;
+constexpr double PalRate = 250.0;
+
 
 class Mixer {
     int srate;
@@ -25,6 +28,7 @@ public:
     void set_end(int, uint32_t);             // set sample end offset
     void set_loop_start(int, uint32_t);      // set loop start offset
     void set_loop_end(int, uint32_t);        // set loop end offset
+    void enable_loop(int, bool);             // enable or disable sample loop
     int channels() { return num_channels; }  // get number of mixer channels
     void set_volume(int, int);               // set channel volume
     void set_pan(int, int);                  // set channel pan

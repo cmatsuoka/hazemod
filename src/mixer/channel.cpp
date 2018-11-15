@@ -13,9 +13,10 @@ Channel::Channel(int num, InterpolatorType typ) :
     mute_(false),
     loop_(false),
     finish_(false),
+    start_(0),
+    end_(0),
     loop_start_(0),
     loop_end_(0),
-    end_(0),
     smp_(empty_sample),
     itp_(nullptr)
 {

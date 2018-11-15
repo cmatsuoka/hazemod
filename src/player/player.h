@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <haze.h>
 #include "util/databuffer.h"
 #include "util/options.h"
@@ -24,6 +25,9 @@ protected:
     float time_;
     int initial_speed_;
     float initial_tempo_;
+    float tempo_factor_;
+    uint32_t frame_size_;
+    uint32_t frame_remain_;
 
     int loop_count;
     int end_point;
@@ -32,6 +36,19 @@ protected:
     bool inside_loop;
 
     Mixer *mixer_;
+
+    template<typename T> void fill_buffer_(T *buf, uint32_t size) {
+        while (size > 0) {
+            if (frame_remain_ == 0) {
+                play();
+                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
+            }
+            uint32_t to_fill = std::min(size, frame_remain_);
+            mixer_->mix(buf, to_fill);
+            size -= to_fill;
+            frame_remain_ -= to_fill;
+        }
+    }
 
 public:
     Player(std::string const& id,
@@ -51,7 +68,10 @@ public:
         tempo_(125.0f),
         time_(0.0f),
         initial_speed_(6),
-        initial_tempo_(125.0f)
+        initial_tempo_(125.0f),
+        tempo_factor_(1.0f),
+        frame_size_(0),
+        frame_remain_(0)
     {
         mixer_ = new Mixer(ch, sr);
     }
@@ -62,8 +82,15 @@ public:
 
     Mixer *mixer() { return mixer_; }
 
-    void fill(int16_t *buf, int size) override { mixer_->mix(buf, size); }
-    void fill(float *buf, int size) override { mixer_->mix(buf, size); }
+    uint32_t frame_size() { return frame_size_; }
+
+    void fill(int16_t *buf, int size) override {
+        fill_buffer_<int16_t>(buf, size);
+    }
+
+    void fill(float *buf, int size) override {
+        fill_buffer_<float>(buf, size);
+    }
 };
 
 

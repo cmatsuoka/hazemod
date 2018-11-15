@@ -3,12 +3,6 @@
 #include <memory>
 #include <mixer/channel.h>
 
-// Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
-// Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
-constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
-constexpr double C4Period = 428.0;
-constexpr double PalRate = 250.0;
-
 
 Mixer::Mixer(int num, int sr) :
     srate(sr),
@@ -34,11 +28,52 @@ void Mixer::add_sample(void *buf, uint32_t size)
     sample.push_back(s);
 }
 
-void Mixer::set_start(int chn, unsigned int val)
+void Mixer::set_sample(int chn, int val)
+{
+    if (chn >= num_channels || val >= sample.size()) {
+        return;
+    }
+    channel[chn]->set_smp(sample[val]);
+}
+
+void Mixer::set_start(int chn, uint32_t val)
 {
     if (chn >= num_channels) {
         return;
     }
+    channel[chn]->set_start(val);
+}
+
+void Mixer::set_end(int chn, uint32_t val)
+{
+    if (chn >= num_channels) {
+        return;
+    }
+    channel[chn]->set_end(val);
+}
+
+void Mixer::set_loop_start(int chn, uint32_t val)
+{
+    if (chn >= num_channels) {
+        return;
+    }
+    channel[chn]->set_loop_start(val);
+}
+
+void Mixer::set_loop_end(int chn, uint32_t val)
+{
+    if (chn >= num_channels) {
+        return;
+    }
+    channel[chn]->set_loop_end(val);
+}
+
+void Mixer::enable_loop(int chn, bool val)
+{
+    if (chn >= num_channels) {
+        return;
+    }
+    channel[chn]->enable_loop(val);
 }
 
 void Mixer::set_volume(int chn, int val)
@@ -66,6 +101,7 @@ void Mixer::set_voicepos(int chn, double val)
 
 void Mixer::set_period(int chn, double val)
 {
+printf("set_period: %d: %f\n", chn, val);
     if (chn >= num_channels) {
         return;
     }
@@ -82,7 +118,7 @@ void Mixer::mix(int16_t *buf, int size)
     for (int16_t *b = buf; b < (buf + size); b++) {
         uint32_t v = 0;
         for (auto c : channel) {
-            v += c->sample();
+            v += c->do_sample();
         }
         *b = v >> 16;
     }
@@ -93,7 +129,7 @@ void Mixer::mix(float *buf, int size)
     for (float *b = buf; b < (buf + size); b++) {
         uint32_t v = 0;
         for (auto c : channel) {
-            v += c->sample();
+            v += c->do_sample();
         }
         *b = v / (1 << 31);
     }

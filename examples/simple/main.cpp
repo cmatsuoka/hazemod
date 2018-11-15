@@ -9,6 +9,8 @@
 #include <fstream>
 #include <haze.h>
 
+#define BUFFER_SIZE 16
+
 
 size_t getFilesize(const char* filename) {
     struct stat st;
@@ -60,12 +62,12 @@ int main(int argc, char** argv)
     // play module
     auto hz = haze::HazePlayer(data, size);
 
-    int16_t *buffer = new int16_t[256];
+    int16_t *buffer = new int16_t[BUFFER_SIZE];
 
     std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);
 
-    hz.fill(buffer, 256);
-    outfile.write(reinterpret_cast<char *>(buffer), 256 * sizeof(int16_t));
+    hz.fill(buffer, BUFFER_SIZE);
+    outfile.write(reinterpret_cast<char *>(buffer), BUFFER_SIZE * sizeof(int16_t));
 
     outfile.close();
 

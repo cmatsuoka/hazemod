@@ -17,6 +17,7 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& id) :
     player_id(id)
 {
     player_ = new PT21A_Player(buf, size, 44100);
+    player_->start();
 }
 
 HazePlayer::~HazePlayer()

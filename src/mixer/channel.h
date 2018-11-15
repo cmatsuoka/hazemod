@@ -19,9 +19,10 @@ class Channel {
     bool finish_;          // single-shot sample finished
     bool bidir_;           // loop is bidirectional
     bool forward_;         // current loop direction
+    uint32_t start_;
+    uint32_t end_;
     uint32_t loop_start_;
     uint32_t loop_end_;
-    uint32_t end_;
     Sample& smp_;
     Interpolator *itp_;
 
@@ -47,7 +48,7 @@ public:
     Channel(int, InterpolatorType);
     ~Channel();
 
-    uint16_t sample() {
+    uint16_t do_sample() {
         uint32_t val = itp_->sample(frac_);
         uint32_t prev = pos_;
         add_step();
@@ -61,8 +62,14 @@ public:
 
     int frac() { return int(double(1 << 16) * (pos_ - int(pos_))); }
 
+    void set_start(uint32_t val) { start_ = pos_ = val; }
+    void set_end(uint32_t val) { end_ = val; }
+    void set_loop_start(uint32_t val) { loop_start_ = val; }
+    void set_loop_end(uint32_t val) { loop_end_ = val; }
+    void enable_loop(bool val) { loop_ = val; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 1023); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
+    void set_smp(Sample& smp) { smp_ = smp; }
 
     void set_step(double val) {
         step_ = val;
