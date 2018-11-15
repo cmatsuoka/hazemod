@@ -24,7 +24,7 @@ PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     ),
     mt_SampleStarts{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    mt_SongDataPtr(0),
+    //mt_SongDataPtr(0),
     mt_speed(6),
     mt_counter(0),
     mt_SongPos(0),

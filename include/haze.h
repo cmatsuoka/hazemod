@@ -36,8 +36,6 @@ public:
 };
 
 class HazePlayer {
-    void *data;
-    int data_size;
     std::string player_id;
     Player_ *player_;
 public:

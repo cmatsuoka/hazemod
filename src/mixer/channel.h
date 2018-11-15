@@ -11,7 +11,7 @@ class Channel {
     int num_;
     uint32_t pos_;
     uint32_t frac_;
-    double period_;
+    double step_;
     int volume_;
     int pan_;
     bool mute_;            // channel is muted
@@ -28,7 +28,7 @@ class Channel {
 protected:
     void add_step() {
         // TODO: handle bidir loops
-        frac_ += static_cast<uint32_t>((1 << 16) * period_);
+        frac_ += static_cast<uint32_t>((1 << 16) * step_);
         pos_ += frac_ >> 16;
         frac_ &= (1 << 16) - 1;
 
@@ -63,12 +63,17 @@ public:
 
     void set_volume(int val) { volume_ = std::clamp(val, 0, 1023); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
-    void set_period(double val) { period_ = val; }
+
+    void set_step(double val) {
+        step_ = val;
+    }
+
     int volume() { return volume_; }
     int pan() { return pan_; }
-    double period() { return period_; }
+    double step() { return step_; }
     bool loop() { return loop_; }
     void set_interpolator(InterpolatorType);
+    Sample& smp() { return smp_; }
 };
 
 #endif  // HAZE_MIXER_CHANNEL_H_

@@ -14,8 +14,6 @@ bool probe(void *buf, int size, ModuleInfo& mi)
 }
 
 HazePlayer::HazePlayer(void *buf, int size, std::string const& id) :
-    data(buf),
-    data_size(size),
     player_id(id)
 {
     player_ = new PT21A_Player(buf, size, 44100);

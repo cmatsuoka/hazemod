@@ -7,7 +7,7 @@
 Channel::Channel(int num, InterpolatorType typ) :
     num_(num),
     pos_(0.0),
-    period_(0.0),
+    step_(0.0),
     volume_(1023),
     pan_(0),
     mute_(false),

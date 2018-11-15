@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 #include <haze.h>
 
 
@@ -17,6 +18,11 @@ size_t getFilesize(const char* filename) {
 
 int main(int argc, char** argv)
 {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
+        exit(EXIT_SUCCESS);
+    }
+
     char *name = argv[1];
 
     // load module data
@@ -56,9 +62,12 @@ int main(int argc, char** argv)
 
     int16_t *buffer = new int16_t[256];
 
-    hz.fill(buffer, 256);
+    std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);
 
-    // ...
+    hz.fill(buffer, 256);
+    outfile.write(reinterpret_cast<char *>(buffer), 256 * sizeof(int16_t));
+
+    outfile.close();
 
     delete [] buffer;
 

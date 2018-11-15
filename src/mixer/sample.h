@@ -11,6 +11,7 @@ class Sample {
     uint32_t flags_;
     void *data_;
     uint32_t size_;
+    double rate_;
 public:
     Sample() : data_(nullptr), size_(0) {}
 
@@ -23,6 +24,7 @@ public:
     }
 
     uint32_t size() { return size_; }
+    double rate() { return rate_; }
 };
 
 extern Sample empty_sample;

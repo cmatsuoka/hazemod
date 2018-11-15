@@ -3,8 +3,11 @@
 #include <memory>
 #include <mixer/channel.h>
 
-
-constexpr int DefaultRate = 44100;
+// Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
+// Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
+constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
+constexpr double C4Period = 428.0;
+constexpr double PalRate = 250.0;
 
 
 Mixer::Mixer(int num, int sr) :
@@ -66,7 +69,8 @@ void Mixer::set_period(int chn, double val)
     if (chn >= num_channels) {
         return;
     }
-    channel[chn]->set_period(val);
+    Channel *ch = channel[chn];
+    ch->set_step(C4Period * C4PalRate * ch->smp().rate() / srate / val);
 }
 
 void Mixer::enable_filter(bool val)

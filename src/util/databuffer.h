@@ -72,7 +72,7 @@ public:
         }
         buf[size] = '\0';
         auto ret = std::string(buf);
-		delete buf;
+		delete [] buf;
         return ret;
     }
 

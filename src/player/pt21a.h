@@ -41,7 +41,7 @@ class PT21A_Player : public Player {
 
     PT21A_ChannelData mt_chantemp[4];
     uint32_t mt_SampleStarts[31];
-    uint32_t mt_SongDataPtr;
+    //uint32_t mt_SongDataPtr;
 
     uint8_t mt_speed;
     uint8_t mt_counter;
