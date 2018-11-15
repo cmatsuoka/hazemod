@@ -53,7 +53,7 @@ public:
         uint32_t prev = pos_;
         add_step();
         if (prev != pos_) {
-            itp_->add8(smp_.get(pos_));
+            itp_->add(smp_.get(pos_));
         }
         return (val * volume_) >> 10;
     }

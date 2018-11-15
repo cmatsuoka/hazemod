@@ -28,7 +28,7 @@ public:
     int16_t get(uint32_t pos) {
         return (pos >= size_) ? 0 : (flags_ & Sample16Bits) ?
             static_cast<int16_t *>(data_)[pos] :
-            uint16_t(static_cast<uint8_t *>(data_)[pos]) - 128;  // convert to signed
+            (uint16_t(static_cast<uint8_t *>(data_)[pos]) - 128) << 8;  // convert to signed
     }
 
     uint32_t size() { return size_; }

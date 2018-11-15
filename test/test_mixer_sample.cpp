@@ -12,8 +12,8 @@ TEST_SUITE("sample") {
         Sample sample2(data, 8);
         CHECK(sample2.size() == 8);
         CHECK(sample2.rate() == 1.0);
-        CHECK(sample2.get(0) == -127);
-        CHECK(sample2.get(7) == -120);
+        CHECK(sample2.get(0) == -32512);
+        CHECK(sample2.get(7) == -30720);
     }
 
     TEST_CASE("sample::16bit") {
