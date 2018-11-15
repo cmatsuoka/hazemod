@@ -79,11 +79,22 @@ void Mixer::enable_filter(bool val)
 
 void Mixer::mix(int16_t *buf, int size)
 {
-    std::memset(buf, 0, size * sizeof(uint16_t));
-
     for (int16_t *b = buf; b < (buf + size); b++) {
+        uint32_t v = 0;
         for (auto c : channel) {
-            *b += c->sample();
+            v += c->sample();
         }
+        *b = v >> 16;
+    }
+}
+
+void Mixer::mix(float *buf, int size)
+{
+    for (float *b = buf; b < (buf + size); b++) {
+        uint32_t v = 0;
+        for (auto c : channel) {
+            v += c->sample();
+        }
+        *b = v / (1 << 31);
     }
 }

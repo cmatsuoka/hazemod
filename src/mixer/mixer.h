@@ -17,6 +17,7 @@ public:
     Mixer(int, int);
     ~Mixer();
     void mix(int16_t *, int);                // mix sample data
+    void mix(float *, int);                  //
     int rate() { return srate; }
     void add_sample(void *, uint32_t);       // load sample data
     void set_sample(int, int);               // set active sample

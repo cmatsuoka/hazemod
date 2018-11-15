@@ -63,6 +63,7 @@ public:
     Mixer *mixer() { return mixer_; }
 
     void fill(int16_t *buf, int size) override { mixer_->mix(buf, size); }
+    void fill(float *buf, int size) override { mixer_->mix(buf, size); }
 };
 
 

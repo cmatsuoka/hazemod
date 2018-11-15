@@ -33,6 +33,7 @@ public:
     virtual void reset() = 0;
     virtual void info(PlayerInfo&) = 0;
     virtual void fill(int16_t *, int) = 0;
+    virtual void fill(float *, int) = 0;
 };
 
 class HazePlayer {
@@ -42,6 +43,7 @@ public:
     HazePlayer(void *, int, std::string const& = "");
     ~HazePlayer();
     HazePlayer& fill(int16_t *, int);
+    HazePlayer& fill(float *, int);
 };
 
 
