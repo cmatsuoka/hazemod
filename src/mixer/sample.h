@@ -13,9 +13,17 @@ class Sample {
     uint32_t size_;
     double rate_;
 public:
-    Sample() : data_(nullptr), size_(0), rate_(1.0) {}
+    Sample(uint32_t flags = 0) :
+        flags_(flags),
+        data_(nullptr),
+        size_(0),
+        rate_(1.0) {}
 
-    Sample(void *buf, uint32_t size, double rate = 1.0) : data_(buf), size_(size), rate_(rate) {}
+    Sample(void *buf, uint32_t size, double rate = 1.0, uint32_t flags = 0) :
+        flags_(flags),
+        data_(buf),
+        size_(size),
+        rate_(rate) {}
 
     int16_t get(uint32_t pos) {
         return (pos >= size_) ? 0 : (flags_ & Sample16Bits) ?
