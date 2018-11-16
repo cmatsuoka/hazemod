@@ -19,7 +19,6 @@ std::string string_format(const char *fmt, ...)
 
     while (true) {
         formatted.reset(new char[n]);   // Wrap the plain char array into the unique_ptr
-        strcpy(&formatted[0], fmt);
 
         va_start(ap, fmt);
         final_n = vsnprintf(&formatted[0], n, fmt, ap);
