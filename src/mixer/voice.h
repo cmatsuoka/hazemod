@@ -35,7 +35,10 @@ protected:
         frac_ &= (1 << 16) - 1;
 
         if (loop_) {
-            if (pos_ >= loop_end_) {
+            if (loop_end_ <= loop_start_) {
+                loop_end_ = loop_start_ + 1;
+            }
+            while (pos_ >= loop_end_) {
                 pos_ -= (loop_end_ - loop_start_);
             }
         } else {
@@ -52,6 +55,9 @@ public:
     int num() { return num_; }
 
     int32_t get() {
+        if (finish_) {
+            return 0;
+        }
         if (prev_ != pos_) {
             auto x = sample_.get(pos_);
             itp_->put(x);
@@ -70,11 +76,10 @@ public:
     void set_loop_start(uint32_t val) { loop_start_ = val; }
     void set_loop_end(uint32_t val) { loop_end_ = val; }
     void enable_loop(bool val) { loop_ = val; }
-    void set_volume(int val) { volume_ = std::clamp(val, 0, 1024); }
+    void set_volume(int val) { volume_ = std::clamp(val, 0, 256); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
     void set_sample(Sample& sample) { sample_ = sample; }
     void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
-
 
     void set_step(double val) {
         step_ = val;

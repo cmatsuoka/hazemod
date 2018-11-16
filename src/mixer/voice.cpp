@@ -9,7 +9,7 @@ Voice::Voice(int num, InterpolatorType typ) :
     pos_(0),
     frac_(0),
     step_(0.0),
-    volume_(1023),
+    volume_(256),
     pan_(0),
     mute_(false),
     loop_(false),

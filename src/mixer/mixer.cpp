@@ -118,12 +118,12 @@ void Mixer::mix(int16_t *buf, int size)
     while (b < buf + size) {
         int32_t l = 0, r = 0;
         for (auto v : voice) {
-            int32_t val = v->get() * v->volume();
-            r += val * (0x80 - v->pan());
-            l += val * (0x80 + v->pan());
+            int32_t val = (v->get() * v->volume());
+            r += (val * (0x80 - v->pan())) >> 8;
+            l += (val * (0x80 + v->pan())) >> 8;
         }
-        *b++ = std::clamp(l >> 18, Lim16_lo, Lim16_hi);
-        *b++ = std::clamp(r >> 18, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(l >> 8, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(r >> 8, Lim16_lo, Lim16_hi);
     }
 }
 

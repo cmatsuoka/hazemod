@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
     std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 400; i++) {
         hz.fill(buffer, BUFFER_SIZE);
         outfile.write(reinterpret_cast<char *>(buffer), BUFFER_SIZE);
     }

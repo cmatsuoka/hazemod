@@ -61,7 +61,7 @@ void PT21A_Player::start()
     int offset = 1084 + 1024 * num_pat;
     for (int i = 0; i < 31; i++) {
         mt_SampleStarts[i] = offset;
-        offset += mdata.read16b(20 + 22 + 30 * i);
+        offset += mdata.read16b(20 + 22 + 30 * i) * 2;
     }
 
     mixer_->add_sample(mdata.ptr(0), mdata.size());
@@ -241,7 +241,7 @@ void PT21A_Player::mt_GetNewNote()
     mt_PlayVoice(pat, 3);
 
     // mt_SetDMA
-    for (int chn = 0; chn < 3; chn++) {
+    for (int chn = 0; chn < 4; chn++) {
         auto& ch = mt_chantemp[chn];
         mixer_->set_loop_start(chn, ch.n_loopstart);
         mixer_->set_loop_end(chn, ch.n_loopstart + ch.n_replen * 2);
@@ -284,14 +284,14 @@ void PT21A_Player::mt_PlayVoice(int pat, int chn)
             ch.n_length = repeat + ch.n_replen;
             ch.n_replen = mdata.read16b(ofs + 6);      // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
             int vol = mdata.read8(ofs + 3);
-            mixer_->set_volume(chn, vol << 4);         // MOVE.W  D0,8(A5)        ; Set volume
+            mixer_->set_volume(chn, vol << 2);         // MOVE.W  D0,8(A5)        ; Set volume
         } else {
             // mt_NoLoop
             ch.n_loopstart = ch.n_start;
             ch.n_wavestart = ch.n_start;
             ch.n_replen = mdata.read16b(ofs + 6);      // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
             int vol = mdata.read8(ofs + 3);
-            mixer_->set_volume(chn, vol << 4);         // MOVE.W  D0,8(A5)        ; Set volume
+            mixer_->set_volume(chn, vol << 2);         // MOVE.W  D0,8(A5)        ; Set volume
         }
     }
 
@@ -426,7 +426,7 @@ void PT21A_Player::mt_CheckEfx(int chn)
 
     if (cmd != 0x7) {
         int vol = mt_chantemp[chn].n_volume;
-        mixer_->set_volume(chn, vol << 4);
+        mixer_->set_volume(chn, vol << 2);
     }
 }
 
@@ -699,7 +699,7 @@ void PT21A_Player::mt_Tremolo(int chn)
     }
 
     // mt_TremoloOk
-    mixer_->set_volume(chn, volume << 4);  // MOVE.W  D0,8(A5)
+    mixer_->set_volume(chn, volume << 2);  // MOVE.W  D0,8(A5)
     ch.n_tremolopos += (ch.n_tremolocmd >> 2) & 0x3c;
 }
 
@@ -729,7 +729,7 @@ void PT21A_Player::mt_VolSlideUp(int chn, int val)
     if (ch.n_volume > 0x40) {
         ch.n_volume = 0x40;
     }
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 4);
+    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);
 }
 
 void PT21A_Player::mt_VolSlideDown(int chn)
@@ -741,7 +741,7 @@ void PT21A_Player::mt_VolSlideDown(int chn)
     } else {
         ch.n_volume = 0;
     }
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 4);
+    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);
 }
 
 void PT21A_Player::mt_PositionJump(int chn)
@@ -760,7 +760,7 @@ void PT21A_Player::mt_VolumeChange(int chn)
         ch.n_cmdlo = 0x40;
     }
     ch.n_volume = ch.n_cmdlo;
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 4);  // MOVE.W  D0,8(A5)
+    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);  // MOVE.W  D0,8(A5)
 }
 
 void PT21A_Player::mt_PatternBreak(int chn)

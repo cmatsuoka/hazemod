@@ -33,6 +33,7 @@ TEST_SUITE("mixer_voice") {
         Voice v(0, NearestInterpolatorType);
         v.set_sample(s);
         v.set_start(0);
+        v.set_end(8);
         v.set_step(1.5);
         CHECK(v.get() == 0x10);
         CHECK(v.get() == 0x20);
@@ -52,6 +53,7 @@ TEST_SUITE("mixer_voice") {
         Voice v(0, NearestInterpolatorType);
         v.set_sample(s);
         v.set_start(0);
+        v.set_end(8);
         v.set_loop_start(2);
         v.set_loop_end(6);
         v.enable_loop(true);

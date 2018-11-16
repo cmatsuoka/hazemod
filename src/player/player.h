@@ -38,15 +38,17 @@ protected:
     Mixer *mixer_;
 
     template<typename T> void fill_buffer_(T *buf, int32_t size) {
+        size = size / (sizeof(T) * 2);  // stereo
         while (size > 0) {
             if (frame_remain_ == 0) {
                 play();
-                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0) * sizeof (T) * 2;  // *2 because we're stereo
+                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
             }
             int32_t to_fill = std::min(size, frame_remain_);
-            mixer_->mix(buf, to_fill);
+            mixer_->mix(buf, to_fill * 2);
             size -= to_fill;
             frame_remain_ -= to_fill;
+            buf += to_fill * 2;
         }
     }
 
