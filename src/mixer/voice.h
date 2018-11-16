@@ -24,7 +24,7 @@ class Voice {
     uint32_t loop_start_;
     uint32_t loop_end_;
     uint32_t prev_;
-    Sample& smp_;
+    Sample& sample_;
     Interpolator *itp_;
 
 protected:
@@ -51,20 +51,19 @@ public:
 
     int num() { return num_; }
 
-    int32_t do_sample() {
+    int32_t get() {
         if (prev_ != pos_) {
-            auto x = smp_.get(pos_);
-            itp_->add(x);
+            auto x = sample_.get(pos_);
+            itp_->put(x);
             prev_ = pos_;
         }
-        int32_t y = itp_->sample(frac_);
+        int32_t y = itp_->get(frac_);
         add_step();
-        return y * volume_;
+        return y;
     }
 
     uint32_t pos() { return pos_; }
-
-    int frac() { return int(double(1 << 16) * (pos_ - int(pos_))); }
+    uint32_t frac() { return frac_; }
 
     void set_start(uint32_t val) { start_ = pos_ = val; }
     void set_end(uint32_t val) { end_ = val; }
@@ -73,7 +72,9 @@ public:
     void enable_loop(bool val) { loop_ = val; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 1024); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
-    void set_smp(Sample& smp) { smp_ = smp; }
+    void set_sample(Sample& sample) { sample_ = sample; }
+    void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
+
 
     void set_step(double val) {
         step_ = val;
@@ -84,7 +85,7 @@ public:
     double step() { return step_; }
     bool loop() { return loop_; }
     void set_interpolator(InterpolatorType);
-    Sample& smp() { return smp_; }
+    Sample& sample() { return sample_; }
 };
 
 #endif  // HAZE_MIXER_VOICE_H_

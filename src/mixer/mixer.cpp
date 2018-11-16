@@ -5,13 +5,12 @@
 #include <mixer/voice.h>
 
 
-Mixer::Mixer(int num, int sr) :
+Mixer::Mixer(int num, int sr, InterpolatorType itpt) :
     srate(sr),
     num_voices(num)//,
-    //voice(num, Voice(NearestNeighborInterpolatorType))
 {
     for (int i = 0; i < num; i++) {
-        Voice *c = new Voice(i, NearestNeighborInterpolatorType);
+        Voice *c = new Voice(i, itpt);
         voice.push_back(c);
     }
 }
@@ -34,7 +33,7 @@ void Mixer::set_sample(int chn, int val)
     if (chn >= num_voices || val >= sample.size()) {
         return;
     }
-    voice[chn]->set_smp(sample[val]);
+    voice[chn]->set_sample(sample[val]);
 }
 
 void Mixer::set_start(int chn, uint32_t val)
@@ -105,8 +104,8 @@ void Mixer::set_period(int chn, double val)
     if (chn >= num_voices) {
         return;
     }
-    Voice *ch = voice[chn];
-    ch->set_step(C4Period * C4PalRate * ch->smp().rate() / srate / val);
+    Voice *v = voice[chn];
+    v->set_step(C4Period * C4PalRate * v->sample().rate() / srate / val);
 }
 
 void Mixer::enable_filter(bool val)
@@ -119,7 +118,7 @@ void Mixer::mix(int16_t *buf, int size)
     while (b < buf + size) {
         int32_t l = 0, r = 0;
         for (auto v : voice) {
-            int32_t val = v->do_sample();
+            int32_t val = v->get() * v->volume();
             r += val * (0x80 - v->pan());
             l += val * (0x80 + v->pan());
         }
@@ -134,7 +133,7 @@ void Mixer::mix(float *buf, int size)
     while (b < buf + size) {
         int32_t l = 0, r = 0;
         for (auto v : voice) {
-            int32_t val = v->do_sample();
+            int32_t val = v->get() * v->volume();
             r += val * (0x80 - v->pan());
             l += val * (0x80 + v->pan());
         }

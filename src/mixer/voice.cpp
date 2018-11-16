@@ -19,7 +19,7 @@ Voice::Voice(int num, InterpolatorType typ) :
     loop_start_(0),
     loop_end_(0),
     prev_(-1),
-    smp_(empty_sample),
+    sample_(empty_sample),
     itp_(nullptr)
 {
     set_interpolator(typ);
@@ -32,18 +32,17 @@ Voice::~Voice()
 
 void Voice::set_interpolator(InterpolatorType typ)
 {
-    if (itp_ != nullptr) {
-        delete itp_;
-    }
+    delete itp_;
 
     switch (typ) {
-    case NearestNeighborInterpolatorType:
-        itp_ = new NearestNeighbor();
+    case NearestInterpolatorType:
+        itp_ = new NearestInterpolator();
         break;
     case LinearInterpolatorType:
         itp_ = new LinearInterpolator();
         break;
     default:
+        itp_ = nullptr;
         throw std::runtime_error("invalid interpolator type");
     }
 }

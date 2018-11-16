@@ -6,6 +6,7 @@
 #include <memory>
 #include "mixer/sample.h"
 #include "mixer/voice.h"
+#include "mixer/interpolator.h"
 
 // Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
 // Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
@@ -22,7 +23,7 @@ class Mixer {
     std::vector<Sample> sample;
     std::vector<Voice *> voice;
 public:
-    Mixer(int, int);
+    Mixer(int, int, InterpolatorType = NearestInterpolatorType);
     ~Mixer();
     void mix(int16_t *, int);                // mix sample data
     void mix(float *, int);

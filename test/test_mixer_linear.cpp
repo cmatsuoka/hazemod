@@ -9,23 +9,23 @@ TEST_SUITE("interpolator_linear") {
 
     TEST_CASE("linear") {
         LinearInterpolator itp;
-        CHECK(itp.sample(0) == 0);
-        CHECK(itp.sample(0x4000) == 0);
-        CHECK(itp.sample(0x8000) == 0);
-        CHECK(itp.sample(0xc000) == 0);
+        CHECK(itp.get(0) == 0);
+        CHECK(itp.get(0x4000) == 0);
+        CHECK(itp.get(0x8000) == 0);
+        CHECK(itp.get(0xc000) == 0);
 
         int16_t x = 100;
-        itp.add(x);
-        CHECK(itp.sample(0) == 0);
-        CHECK(itp.sample(0x4000) == 25);
-        CHECK(itp.sample(0x8000) == 50);
-        CHECK(itp.sample(0xc000) == 75);
+        itp.put(x);
+        CHECK(itp.get(0) == 0);
+        CHECK(itp.get(0x4000) == 25);
+        CHECK(itp.get(0x8000) == 50);
+        CHECK(itp.get(0xc000) == 75);
 
 	x = 0;
-        itp.add(x);
-        CHECK(itp.sample(0) == 100);
-        CHECK(itp.sample(0x4000) == 75);
-        CHECK(itp.sample(0x8000) == 50);
-        CHECK(itp.sample(0xc000) == 25);
+        itp.put(x);
+        CHECK(itp.get(0) == 100);
+        CHECK(itp.get(0x4000) == 75);
+        CHECK(itp.get(0x8000) == 50);
+        CHECK(itp.get(0xc000) == 25);
     }
 }
