@@ -123,8 +123,8 @@ void Mixer::mix(int16_t *buf, int size)
             r += val * (0x80 - v->pan());
             l += val * (0x80 + v->pan());
         }
-        *b++ = std::clamp(l >> 17, Lim16_lo, Lim16_hi);
-        *b++ = std::clamp(r >> 17, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(l >> 18, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(r >> 18, Lim16_lo, Lim16_hi);
     }
 }
 

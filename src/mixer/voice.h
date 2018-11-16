@@ -49,7 +49,9 @@ public:
     Voice(int, InterpolatorType);
     ~Voice();
 
-    int16_t do_sample() {
+    int num() { return num_; }
+
+    int32_t do_sample() {
         if (prev_ != pos_) {
             auto x = smp_.get(pos_);
             itp_->add(x);

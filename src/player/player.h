@@ -26,8 +26,8 @@ protected:
     int initial_speed_;
     float initial_tempo_;
     float tempo_factor_;
-    uint32_t frame_size_;
-    uint32_t frame_remain_;
+    int32_t frame_size_;
+    int32_t frame_remain_;
 
     int loop_count;
     int end_point;
@@ -37,13 +37,13 @@ protected:
 
     Mixer *mixer_;
 
-    template<typename T> void fill_buffer_(T *buf, uint32_t size) {
+    template<typename T> void fill_buffer_(T *buf, int32_t size) {
         while (size > 0) {
             if (frame_remain_ == 0) {
                 play();
-                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
+                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0) * sizeof (T) * 2;  // *2 because we're stereo
             }
-            uint32_t to_fill = std::min(size, frame_remain_);
+            int32_t to_fill = std::min(size, frame_remain_);
             mixer_->mix(buf, to_fill);
             size -= to_fill;
             frame_remain_ -= to_fill;

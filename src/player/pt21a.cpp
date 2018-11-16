@@ -56,6 +56,7 @@ void PT21A_Player::start()
         int pat = mdata.read8(952 + i);
         num_pat = std::max(num_pat, pat);
     }
+    num_pat++;
 
     int offset = 1084 + 1024 * num_pat;
     for (int i = 0; i < 31; i++) {

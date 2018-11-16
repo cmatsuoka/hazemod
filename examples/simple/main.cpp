@@ -9,7 +9,7 @@
 #include <fstream>
 #include <haze.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 
 size_t getFilesize(const char* filename) {
@@ -66,8 +66,10 @@ int main(int argc, char** argv)
 
     std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);
 
-    hz.fill(buffer, BUFFER_SIZE);
-    outfile.write(reinterpret_cast<char *>(buffer), BUFFER_SIZE * sizeof(int16_t));
+    for (int i = 0; i < 100; i++) {
+        hz.fill(buffer, BUFFER_SIZE);
+        outfile.write(reinterpret_cast<char *>(buffer), BUFFER_SIZE);
+    }
 
     outfile.close();
 
