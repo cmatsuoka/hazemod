@@ -16,7 +16,7 @@ class Voice {
     int pan_;
     bool mute_;            // channel is muted
     bool loop_;            // sample has loop
-    bool finish_;          // single-shot sample finished
+    //bool finish_;        // single-shot sample finished
     bool bidir_;           // loop is bidirectional
     bool forward_;         // current loop direction
     uint32_t start_;
@@ -35,15 +35,10 @@ protected:
         frac_ &= (1 << 16) - 1;
 
         if (loop_) {
-            if (loop_end_ <= loop_start_) {
-                loop_end_ = loop_start_ + 1;
-            }
-            while (pos_ >= loop_end_) {
-                pos_ -= (loop_end_ - loop_start_);
-            }
-        } else {
-            if (pos_ >= end_) {
-                finish_ = true;
+            if (loop_end_ > loop_start_) {
+                while (pos_ >= loop_end_) {
+                    pos_ -= (loop_end_ - loop_start_);
+                }
             }
         }
     }
@@ -55,7 +50,7 @@ public:
     int num() { return num_; }
 
     int32_t get() {
-        if (finish_) {
+        if (pos_ >= end_) {
             return 0;
         }
         if (prev_ != pos_) {

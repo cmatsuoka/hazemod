@@ -245,7 +245,7 @@ void PT21A_Player::mt_GetNewNote()
         auto& ch = mt_chantemp[chn];
         mixer_->set_loop_start(chn, ch.n_loopstart);
         mixer_->set_loop_end(chn, ch.n_loopstart + ch.n_replen * 2);
-        mixer_->enable_loop(chn, ch.n_replen > 1);
+        mixer_->set_end(chn, ch.n_start + ch.n_length * 2);
     }
 }
 
@@ -267,7 +267,6 @@ void PT21A_Player::mt_PlayVoice(int pat, int chn)
     int ins = ((ch.n_note & 0xf000) >> 8) | ((ch.n_cmd & 0xf0) >> 4);
 
     if (ins > 0 && ins <= 31) {       // sanity check: was: ins != 0
-        //let instrument = &module.instruments[ins - 1];
         int ofs = 20 + 30 * (ins - 1) + 22;
         ch.n_start = mt_SampleStarts[ins - 1];
         ch.n_length = mdata.read16b(ofs);
@@ -281,18 +280,18 @@ void PT21A_Player::mt_PlayVoice(int pat, int chn)
         if (repeat) {                             // TST.W   D3 / BEQ.S   mt_NoLoop
             ch.n_loopstart = ch.n_start + repeat * 2;
             ch.n_wavestart = ch.n_loopstart;
-            ch.n_length = repeat + ch.n_replen;
-            ch.n_replen = mdata.read16b(ofs + 6);      // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
-            int vol = mdata.read8(ofs + 3);
-            mixer_->set_volume(chn, vol << 2);         // MOVE.W  D0,8(A5)        ; Set volume
+            ch.n_length = repeat + mdata.read16b(ofs + 6);
+            ch.n_replen = mdata.read16b(ofs + 6);       // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
+            mixer_->set_volume(chn, ch.n_volume << 2);  // MOVE.W  D0,8(A5)        ; Set volume
         } else {
             // mt_NoLoop
             ch.n_loopstart = ch.n_start;
             ch.n_wavestart = ch.n_start;
-            ch.n_replen = mdata.read16b(ofs + 6);      // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
-            int vol = mdata.read8(ofs + 3);
-            mixer_->set_volume(chn, vol << 2);         // MOVE.W  D0,8(A5)        ; Set volume
+            ch.n_replen = mdata.read16b(ofs + 6);       // MOVE.W  6(A3,D4.L),n_replen(A6) ; Save replen
+            mixer_->set_volume(chn, ch.n_volume << 2);  // MOVE.W  D0,8(A5)        ; Set volume
         }
+        mixer_->enable_loop(chn, repeat != 0);
+
     }
 
     // mt_SetRegs

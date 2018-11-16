@@ -13,7 +13,7 @@ Voice::Voice(int num, InterpolatorType typ) :
     pan_(0),
     mute_(false),
     loop_(false),
-    finish_(false),
+    //finish_(false),
     start_(0),
     end_(0),
     loop_start_(0),
