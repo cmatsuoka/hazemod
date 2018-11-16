@@ -13,7 +13,7 @@ TEST_SUITE("format_mod_fingerprint") {
         ModFormat m;
         haze::ModuleInfo mi;
         REQUIRE(m.probe(buf, len, mi));
-        delete buf;
+        delete [] buf;
 
         CHECK(mi.creator == "Protracker");
 
@@ -28,7 +28,7 @@ TEST_SUITE("format_mod_fingerprint") {
         ModFormat m;
         haze::ModuleInfo mi;
         REQUIRE(m.probe(buf, len, mi));
-        delete buf;
+        delete [] buf;
 
         CHECK(mi.creator == "Noisetracker");
 
