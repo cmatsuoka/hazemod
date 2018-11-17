@@ -24,9 +24,15 @@ HazePlayer::~HazePlayer()
     delete player_;
 }
 
-HazePlayer& HazePlayer::frame_info(FrameInfo &pi)
+HazePlayer& HazePlayer::player_info(PlayerInfo &pi)
 {
-    player_->frame_info(pi);
+    player_->player_info(pi);
+    return *this;
+}
+
+HazePlayer& HazePlayer::frame_info(FrameInfo &fi)
+{
+    player_->frame_info(fi);
     return *this;
 }
 

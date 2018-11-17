@@ -62,6 +62,11 @@ int main(int argc, char** argv)
     // play module
     auto hz = haze::HazePlayer(data, size);
 
+    // get player info
+    haze::PlayerInfo pi;
+    hz.player_info(pi);
+    std::cout << "Player  : " << pi.name << std::endl;
+
     int16_t *buffer = new int16_t[BUFFER_SIZE];
 
     std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);

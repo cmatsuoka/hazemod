@@ -93,6 +93,14 @@ public:
 
     uint32_t frame_size() { return frame_size_; }
 
+    void player_info(PlayerInfo& pi) {
+        pi.id = id_;
+        pi.name = name_;
+        pi.description = description_;
+        pi.author = author_;
+        pi.accepts = accepts_;;
+    }
+
     void fill(int16_t *buf, int size) {
         fill_buffer_<int16_t>(buf, size);
     }

@@ -2,7 +2,9 @@
 #define HAZE_H_
 
 #include <string>
+#include <vector>
 #include <memory>
+
 
 namespace haze {
 
@@ -13,6 +15,14 @@ struct ModuleInfo {
     std::string creator;      // The program used to create this module (usually a tracker)
     std::string player;       // The primary player for this format
     int channels;             // The number of channels used in the module
+};
+
+struct PlayerInfo {
+    std::string id;
+    std::string name;
+    std::string description;
+    std::string author;
+    std::vector<std::string> accepts;
 };
 
 struct FrameInfo {
@@ -32,6 +42,7 @@ class HazePlayer {
 public:
     HazePlayer(void *, int);
     ~HazePlayer();
+    HazePlayer& player_info(PlayerInfo &);
     HazePlayer& frame_info(FrameInfo &);
     HazePlayer& fill(int16_t *, int);
     HazePlayer& fill(float *, int);
