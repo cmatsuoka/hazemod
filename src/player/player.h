@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <haze.h>
+#include "mixer/mixer.h"
 #include "util/databuffer.h"
 #include "util/options.h"
 

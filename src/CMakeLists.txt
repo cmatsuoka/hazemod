@@ -12,6 +12,7 @@ add_library(hazemod SHARED
     mixer/sample.cpp
     mixer/mixer.cpp
     player/pt21a.cpp
+    player/nt11.cpp
     haze.cpp
 )
 

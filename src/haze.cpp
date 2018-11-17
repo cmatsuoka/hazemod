@@ -2,6 +2,7 @@
 #include "mixer/mixer.h"
 #include "player/player.h"
 #include "player/pt21a.h"
+#include "player/nt11.h"
 #include "format/mod.h"
 
 
@@ -15,7 +16,7 @@ bool probe(void *buf, int size, ModuleInfo& mi)
 
 HazePlayer::HazePlayer(void *buf, int size)
 {
-    player_ = new PT21A_Player(buf, size, 44100);
+    player_ = new NT11_Player(buf, size, 44100);
     player_->start();
 }
 

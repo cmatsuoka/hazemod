@@ -2,7 +2,6 @@
 #define HAZE_PLAYER_PT21A_H_
 
 #include <cstdint>
-#include "mixer/mixer.h"
 #include "player/player.h"
 
 
