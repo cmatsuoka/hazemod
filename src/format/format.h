@@ -16,6 +16,7 @@ class Format {
     std::string id_;
 public:
     Format(std::string const& id): id_(id) {}
+    virtual ~Format() {}
     std::string& id() { return id_; }
     virtual bool probe(void *buf, uint32_t size, haze::ModuleInfo&) = 0;
 };
@@ -24,6 +25,7 @@ public:
 class FormatRegistry : public Registry<Format> {
 public:
     FormatRegistry();
+    ~FormatRegistry();
 };
 
 

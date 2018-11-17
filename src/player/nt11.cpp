@@ -23,6 +23,7 @@ NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
     mt_samplestarts{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 {
+    memset(mt_voice, 0, sizeof(mt_voice));
 }
 
 NT11_Player::~NT11_Player()

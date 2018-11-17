@@ -19,6 +19,8 @@ public:
                  std::string author, std::vector<std::string> formats) :
         info_{id, name, description, author, formats} {}
 
+    virtual ~FormatPlayer() {}
+
     haze::PlayerInfo const& info() { return info_; }
 
     bool accepts(std::string const& fmt) {
@@ -31,6 +33,7 @@ public:
 class PlayerRegistry : public Registry<FormatPlayer> {
 public:
     PlayerRegistry();
+    ~PlayerRegistry();
 };
 
 

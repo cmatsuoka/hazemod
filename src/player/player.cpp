@@ -9,4 +9,9 @@ PlayerRegistry::PlayerRegistry()
     put("nt",  new Noisetracker);
 }
 
-
+PlayerRegistry::~PlayerRegistry()
+{
+    for (auto item : list()) {
+        delete item;
+    }
+}

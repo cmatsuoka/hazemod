@@ -3,15 +3,20 @@
 #include "player/player.h"
 #include "player/pt21a.h"
 #include "player/nt11.h"
-#include "format/mod.h"
+#include "format/format.h"
 
 
 namespace haze {
 
 bool probe(void *buf, int size, ModuleInfo& mi)
 {
-    ModFormat fmt;
-    return fmt.probe(buf, size, mi);
+    auto reg = FormatRegistry();
+    for (auto fmt : reg.list()) {
+        if (fmt->probe(buf, size, mi)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::string const& format_id)

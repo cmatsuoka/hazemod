@@ -39,6 +39,7 @@ PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     mt_PatternPos(0),
     cia_tempo(InitialTempo)
 {
+    memset(mt_chantemp, 0, sizeof(mt_chantemp));
 }
 
 PT21A_Player::~PT21A_Player()
