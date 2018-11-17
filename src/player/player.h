@@ -7,6 +7,7 @@
 #include <haze.h>
 #include "mixer/mixer.h"
 #include "util/databuffer.h"
+#include "util/registry.h"
 #include "util/options.h"
 
 
@@ -27,13 +28,9 @@ public:
     virtual haze::Player *new_player(void *, uint32_t, int) = 0;
 };
 
-class PlayerRegistry {
-    std::unordered_map<std::string, FormatPlayer *> map_;
+class PlayerRegistry : public Registry<FormatPlayer> {
 public:
     PlayerRegistry();
-    void put(FormatPlayer *fp) { map_[fp->info().id] = fp; }
-    FormatPlayer *get(std::string const& id) { return map_[id]; }
-    std::vector<FormatPlayer> list();
 };
 
 

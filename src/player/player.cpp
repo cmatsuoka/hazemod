@@ -5,8 +5,8 @@
 
 PlayerRegistry::PlayerRegistry()
 {
-    put(new Protracker2);
-    put(new Noisetracker);
+    put("pt2", new Protracker2);
+    put("nt",  new Noisetracker);
 }
 
 
