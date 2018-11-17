@@ -6,10 +6,12 @@
 /// and Anders Berkeman (Mahoney & Kaktus - HALLONSOFT 1989).
 
 
-haze::Player *NT11::new_player(void *buf, uint32_t size, int sr)
+haze::Player *Noisetracker::new_player(void *buf, uint32_t size, int sr)
 {
     return new NT11_Player(buf, size, sr);
 }
+
+//----------------------------------------------------------------------
 
 NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
     Player(buf, size, 4, sr),

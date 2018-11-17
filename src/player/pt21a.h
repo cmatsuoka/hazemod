@@ -5,9 +5,8 @@
 #include "player/player.h"
 
 
-class PT21A : public FormatPlayer {
-public:
-    PT21A() : FormatPlayer(
+struct Protracker2 : public FormatPlayer {
+    Protracker2() : FormatPlayer(
         "pt2",
         "Protracker V2.1A playroutine + fixes",
         "A player based on the Protracker V2.1A replayer + V2.3D fixes",

@@ -5,9 +5,8 @@
 #include "player/player.h"
 
 
-class NT11 : public FormatPlayer {
-public:
-    NT11() : FormatPlayer(
+struct Noisetracker : public FormatPlayer {
+    Noisetracker() : FormatPlayer(
         "nt",
         "NoiseReplayV1.1 + fixes",
         "A player based on the on Noisetracker V1.1 replayer",
