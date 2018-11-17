@@ -37,7 +37,7 @@ struct PT21A_ChannelData {
 };
 
 
-class PT21A_Player : public Player {
+class PT21A_Player : public haze::Player {
 
     PT21A_ChannelData mt_chantemp[4];
     uint32_t mt_SampleStarts[31];
@@ -109,7 +109,7 @@ public:
     void start() override;
     void play() override;
     void reset() override;
-    void info(haze::PlayerInfo&) override;
+    void frame_info(haze::FrameInfo&) override;
 
 };
 

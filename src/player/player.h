@@ -8,8 +8,9 @@
 #include "util/databuffer.h"
 #include "util/options.h"
 
+namespace haze {
 
-class Player : public haze::Player_ {
+class Player {
     std::string id_;
     std::string name_;
     std::string description_;
@@ -21,11 +22,12 @@ protected:
     Options options;
 
     int speed_;
-    float tempo_;
-    float time_;
+    double tempo_;
+    double time_;
     int initial_speed_;
-    float initial_tempo_;
-    float tempo_factor_;
+    double initial_tempo_;
+    double tempo_factor_;
+
     int32_t frame_size_;
     int32_t frame_remain_;
 
@@ -42,7 +44,7 @@ protected:
         while (size > 0) {
             if (frame_remain_ == 0) {
                 play();
-                frame_remain_ = float(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
+                frame_remain_ = double(mixer_->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
             }
             int32_t to_fill = std::min(size, frame_remain_);
             mixer_->mix(buf, to_fill * 2);
@@ -82,18 +84,25 @@ public:
         delete mixer_;
     }
 
+    virtual void start() = 0;
+    virtual void play() = 0;
+    virtual void reset() = 0;
+    virtual void frame_info(FrameInfo&) = 0;
+
     Mixer *mixer() { return mixer_; }
 
     uint32_t frame_size() { return frame_size_; }
 
-    void fill(int16_t *buf, int size) override {
+    void fill(int16_t *buf, int size) {
         fill_buffer_<int16_t>(buf, size);
     }
 
-    void fill(float *buf, int size) override {
+    void fill(float *buf, int size) {
         fill_buffer_<float>(buf, size);
     }
+
 };
 
+}  // namespace haze
 
 #endif  // HAZE_PLAYER_PLAYER_H_

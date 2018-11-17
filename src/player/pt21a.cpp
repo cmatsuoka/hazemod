@@ -11,6 +11,9 @@
 // * Mask note value in note delay command processing
 // * Fix period table lookup by adding trailing zero values
 
+constexpr int InitialSpeed = 6;
+constexpr double InitialTempo = 125.0;
+
 
 PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     Player(
@@ -25,8 +28,8 @@ PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     mt_SampleStarts{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     //mt_SongDataPtr(0),
-    mt_speed(6),
-    mt_counter(6),
+    mt_speed(InitialSpeed),
+    mt_counter(mt_speed),
     mt_SongPos(0),
     mt_PBreakPos(0),
     mt_PosJumpFlag(false),
@@ -34,7 +37,8 @@ PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     mt_LowMask(0),
     mt_PattDelTime(0),
     mt_PattDelTime2(0),
-    mt_PatternPos(0)
+    mt_PatternPos(0),
+    cia_tempo(InitialTempo)
 {
 }
 
@@ -44,8 +48,8 @@ PT21A_Player::~PT21A_Player()
 
 void PT21A_Player::start()
 {
-    speed_ = 6;
-    tempo_ = 125.0f;
+    speed_ = InitialSpeed;
+    tempo_ = InitialTempo;
     time_ = 0.0f;
 
     initial_speed_ = speed_;
@@ -90,14 +94,20 @@ void PT21A_Player::reset()
 {
 }
 
-void PT21A_Player::info(haze::PlayerInfo& pi)
+void PT21A_Player::frame_info(haze::FrameInfo& pi)
 {
+    pi.pos = mt_SongPos;
+    pi.row = mt_PatternPos;
+    pi.frame = mt_speed - mt_counter;
+    pi.song = 0;
+    pi.speed = mt_speed;
+    pi.tempo = cia_tempo;
+    pi.time = 0;
 }
 
 //----------------------------------------------------------------------
 
 namespace {
-
 
 uint8_t mt_VibratoTable[32] = {
       0,  24,  49,  74,  97, 120, 141, 161,

@@ -15,7 +15,7 @@ struct ModuleInfo {
     int channels;             // The number of channels used in the module
 };
 
-struct PlayerInfo {
+struct FrameInfo {
     int pos;
     int row;
     int frame;
@@ -25,23 +25,14 @@ struct PlayerInfo {
     float time;
 };
 
-class Player_ {
-public:
-    virtual ~Player_() {};
-    virtual void start() = 0;
-    virtual void play() = 0;
-    virtual void reset() = 0;
-    virtual void info(PlayerInfo&) = 0;
-    virtual void fill(int16_t *, int) = 0;
-    virtual void fill(float *, int) = 0;
-};
+class Player;
 
 class HazePlayer {
-    std::string player_id;
-    Player_ *player_;
+    Player *player_;
 public:
-    HazePlayer(void *, int, std::string const& = "");
+    HazePlayer(void *, int);
     ~HazePlayer();
+    HazePlayer& frame_info(FrameInfo &);
     HazePlayer& fill(int16_t *, int);
     HazePlayer& fill(float *, int);
 };
