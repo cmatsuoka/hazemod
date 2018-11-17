@@ -23,7 +23,7 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::s
         throw std::runtime_error(R"(format ")" + format_id +
             R"(" not accepted by player ")" + player_id + R"(")");
     }
-    //player_info_ = fp->info();
+    player_info_ = fp->info();
     player_ = fp->new_player(buf, size, 44100);
     player_->start();
 }
@@ -35,7 +35,11 @@ HazePlayer::~HazePlayer()
 
 HazePlayer& HazePlayer::player_info(PlayerInfo &pi)
 {
-    //player_->player_info(pi);
+    pi.id = player_info_.id;
+    pi.name = player_info_.name;
+    pi.description = player_info_.description;
+    pi.author = player_info_.author;
+    pi.formats = player_info_.formats;
     return *this;
 }
 

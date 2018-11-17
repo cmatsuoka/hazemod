@@ -22,7 +22,7 @@ struct PlayerInfo {
     std::string name;
     std::string description;
     std::string author;
-    std::vector<std::string> accepts;
+    std::vector<std::string> formats;
 };
 
 struct FrameInfo {
