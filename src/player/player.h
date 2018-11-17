@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 #include <haze.h>
 #include "mixer/mixer.h"
 #include "util/databuffer.h"
-#include "util/registry.h"
 #include "util/options.h"
 
 
@@ -30,7 +30,7 @@ public:
     virtual haze::Player *new_player(void *, uint32_t, int) = 0;
 };
 
-class PlayerRegistry : public Registry<FormatPlayer> {
+class PlayerRegistry : public std::unordered_map<std::string, FormatPlayer *> {
 public:
     PlayerRegistry();
     ~PlayerRegistry();

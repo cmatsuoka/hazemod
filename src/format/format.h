@@ -3,8 +3,8 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <haze.h>
-#include "util/registry.h"
 
 
 constexpr uint32_t MAGIC4(char a, char b, char c, char d) {
@@ -22,7 +22,7 @@ public:
 };
 
 
-class FormatRegistry : public Registry<Format> {
+class FormatRegistry : public std::vector<Format *> {
 public:
     FormatRegistry();
     ~FormatRegistry();

@@ -10,8 +10,8 @@ namespace haze {
 
 bool probe(void *buf, int size, ModuleInfo& mi)
 {
-    auto reg = FormatRegistry();
-    for (auto fmt : reg.list()) {
+    FormatRegistry reg;
+    for (auto fmt : reg) {
         if (fmt->probe(buf, size, mi)) {
             return true;
         }
@@ -23,7 +23,11 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::s
 {
     PlayerRegistry reg;
 
-    FormatPlayer *fp = reg.get(player_id);
+    if (reg.count(player_id) == 0) {
+        throw std::runtime_error(R"(player ")" + player_id + R"(" not registered)");
+    }
+
+    FormatPlayer *fp = reg[player_id];
     if (!format_id.empty() && !fp->accepts(format_id)) {
         throw std::runtime_error(R"(format ")" + format_id +
             R"(" not accepted by player ")" + player_id + R"(")");

@@ -5,13 +5,15 @@
 
 PlayerRegistry::PlayerRegistry()
 {
-    put("pt2", new Protracker2);
-    put("nt",  new Noisetracker);
+    this->insert({
+        { "pt2", new Protracker2  },
+        { "nt",  new Noisetracker },
+    });
 }
 
 PlayerRegistry::~PlayerRegistry()
 {
-    for (auto item : list()) {
-        delete item;
+    for (auto item : *this) {
+        delete item.second;
     }
 }
