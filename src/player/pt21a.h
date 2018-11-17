@@ -5,7 +5,8 @@
 #include "player/player.h"
 
 
-struct PT21A : public FormatPlayer {
+class PT21A : public FormatPlayer {
+public:
     PT21A() : FormatPlayer(
         "pt2",
         "Protracker V2.1A playroutine + fixes",
@@ -116,7 +117,7 @@ class PT21A_Player : public haze::Player {
     void mt_UpdateFunk(int);
 public:
     PT21A_Player(void *, uint32_t, int);
-    virtual ~PT21A_Player();
+    ~PT21A_Player();
     void start() override;
     void play() override;
     void reset() override;

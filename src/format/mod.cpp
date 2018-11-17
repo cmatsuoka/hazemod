@@ -126,7 +126,7 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
     auto fmt = ::id(d);
     auto trk = tracker_map[fmt];
 
-    std::string player = trk.player_id;;
+    std::string player_id = trk.player_id;;
     std::string format_id = "m.k.";
 
     if (num_ch != 4) {
@@ -139,7 +139,7 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
     mi.description = "Amiga Protracker/Compatible";
     mi.creator = trk.name;
     mi.channels = num_ch;
-    mi.player = player;
+    mi.player_id = player_id;
 
     return true;
 }

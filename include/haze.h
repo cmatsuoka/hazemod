@@ -13,7 +13,7 @@ struct ModuleInfo {
     std::string format_id;    // The module format identifier
     std::string description;  // The module format description
     std::string creator;      // The program used to create this module (usually a tracker)
-    std::string player;       // The primary player for this format
+    std::string player_id;    // The primary player for this format
     int channels;             // The number of channels used in the module
 };
 
@@ -39,8 +39,9 @@ class Player;
 
 class HazePlayer {
     Player *player_;
+    PlayerInfo player_info_;
 public:
-    HazePlayer(void *, int);
+    HazePlayer(void *, int, std::string const&, std::string const& = "");
     ~HazePlayer();
     HazePlayer& player_info(PlayerInfo &);
     HazePlayer& frame_info(FrameInfo &);

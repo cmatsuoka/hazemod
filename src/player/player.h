@@ -15,43 +15,38 @@ class FormatPlayer {
     std::string name_;
     std::string description_;
     std::string author_;
-    std::vector<std::string> accepts_;
+    std::vector<std::string> formats_;
 
 public:
     FormatPlayer(std::string id, std::string name, std::string description,
-                 std::string author, std::vector<std::string> accepts) :
+                 std::string author, std::vector<std::string> formats) :
         id_(id),
         name_(name),
         description_(description),
         author_(author),
-        accepts_(accepts) {}
-
-    virtual ~FormatPlayer();
+        formats_(formats) {}
 
     std::string const& id() const { return id_; }
     std::string const& name() const { return name_; }
     std::string const& description() const { return description_; }
     std::string const& author() const { return author_; }
-    std::vector<std::string> const& accepts() const { return accepts_; }
+    std::vector<std::string> const& formats() const { return formats_; }
+    bool accepts(std::string const& fmt) {
+        return std::find(formats_.begin(), formats_.end(), fmt) != formats_.end();
+    }
 
     virtual haze::Player *new_player(void *, uint32_t, int) = 0;
 };
 
-/*
 class PlayerRegistry {
-    std::unordered_map<std::string, FormatPlayer&> map_;
+    std::unordered_map<std::string, FormatPlayer *> map_;
 public:
     PlayerRegistry();
-    haze::Player build(void *, const uint32_t, int, int);
-    //void put(FormatPlayer const& x) { map_[x.id()] = x; }
-    //FormatPlayer const& get(std::string const& id) { return map_[id]; }
-    std::vector<FormatPlayer> list() {
-        std::vector<FormatPlayer> v;
-        for (auto kv : map_) { v.push_back(kv.second); }
-        return v;
-    }
+    void put(FormatPlayer *fp) { map_[fp->id()] = fp; }
+    FormatPlayer *get(std::string const& id) { return map_[id]; }
+    std::vector<FormatPlayer> list();
 };
-*/
+
 
 namespace haze {
 

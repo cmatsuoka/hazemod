@@ -14,9 +14,17 @@ bool probe(void *buf, int size, ModuleInfo& mi)
     return fmt.probe(buf, size, mi);
 }
 
-HazePlayer::HazePlayer(void *buf, int size)
+HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::string const& format_id)
 {
-    player_ = new NT11_Player(buf, size, 44100);
+    PlayerRegistry reg;
+
+    FormatPlayer *fp = reg.get(player_id);
+    if (!format_id.empty() && !fp->accepts(format_id)) {
+        throw std::runtime_error(R"(format ")" + format_id +
+            R"(" not accepted by player ")" + player_id + R"(")");
+    }
+    //player_info_ = fp->info();
+    player_ = fp->new_player(buf, size, 44100);
     player_->start();
 }
 

@@ -5,7 +5,8 @@
 #include "player/player.h"
 
 
-struct NT11 : public FormatPlayer {
+class NT11 : public FormatPlayer {
+public:
     NT11() : FormatPlayer(
         "nt",
         "NoiseReplayV1.1 + fixes",
@@ -70,7 +71,7 @@ class NT11_Player : public haze::Player {
 
 public:
     NT11_Player(void *, uint32_t, int);
-    virtual ~NT11_Player();
+    ~NT11_Player();
     void start() override;
     void play() override;
     void reset() override;
