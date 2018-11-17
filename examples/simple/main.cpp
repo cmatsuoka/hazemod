@@ -12,12 +12,6 @@
 #define BUFFER_SIZE 4096
 
 
-size_t getFilesize(const char* filename) {
-    struct stat st;
-    stat(filename, &st);
-    return st.st_size;
-}
-
 int main(int argc, char** argv)
 {
     if (argc < 2) {
@@ -59,7 +53,6 @@ int main(int argc, char** argv)
     std::cout << "Channels: " << mi.channels << std::endl;
     std::cout << "Title   : " << mi.title << std::endl;
 
-    // play module
     auto hz = haze::HazePlayer(data, size);
 
     // get player info
@@ -67,15 +60,15 @@ int main(int argc, char** argv)
     hz.player_info(pi);
     std::cout << "Player  : " << pi.name << std::endl;
 
+
+    // play module
     int16_t *buffer = new int16_t[BUFFER_SIZE];
 
-    std::ofstream outfile ("out.raw", std::ios::out | std::ios::binary);
-
+    std::ofstream outfile("out.raw", std::ios::out | std::ios::binary);
     for (int i = 0; i < 400; i++) {
         hz.fill(buffer, BUFFER_SIZE);
         outfile.write(reinterpret_cast<char *>(buffer), BUFFER_SIZE);
     }
-
     outfile.close();
 
     delete [] buffer;
