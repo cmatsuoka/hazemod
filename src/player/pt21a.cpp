@@ -14,17 +14,13 @@
 constexpr int InitialSpeed = 6;
 constexpr double InitialTempo = 125.0;
 
+haze::Player *PT21A::new_player(void *buf, uint32_t size, int sr)
+{
+    return new PT21A_Player(buf, size, sr);
+}
 
 PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
-    Player(
-        "pt2",
-        "Protracker V2.1A playroutine + fixes",
-        "A player based on the Protracker V2.1A replayer + V2.3D fixes",
-        "Claudio Matsuoka",
-        { "m.k." },
-        buf, size,
-        4, sr
-    ),
+    Player(buf, size, 4, sr),
     mt_SampleStarts{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     //mt_SongDataPtr(0),

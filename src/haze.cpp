@@ -27,7 +27,7 @@ HazePlayer::~HazePlayer()
 
 HazePlayer& HazePlayer::player_info(PlayerInfo &pi)
 {
-    player_->player_info(pi);
+    //player_->player_info(pi);
     return *this;
 }
 

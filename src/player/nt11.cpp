@@ -7,15 +7,7 @@
 
 
 NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
-    Player(
-        "nt",
-        "NoiseReplayV1.1 + fixes",
-        "A player based on the on Noisetracker V1.1 replayer",
-        "Claudio Matsuoka",
-        { "m.k." },
-        buf, size,
-        4, sr
-    ),
+    Player(buf, size, 4, sr),
     mt_speed(6),
     mt_songpos(0),
     mt_pattpos(0),

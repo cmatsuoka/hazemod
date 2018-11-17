@@ -9,14 +9,53 @@
 #include "util/databuffer.h"
 #include "util/options.h"
 
-namespace haze {
 
-class Player {
+class FormatPlayer {
     std::string id_;
     std::string name_;
     std::string description_;
     std::string author_;
     std::vector<std::string> accepts_;
+
+public:
+    FormatPlayer(std::string id, std::string name, std::string description,
+                 std::string author, std::vector<std::string> accepts) :
+        id_(id),
+        name_(name),
+        description_(description),
+        author_(author),
+        accepts_(accepts) {}
+
+    virtual ~FormatPlayer();
+
+    std::string const& id() const { return id_; }
+    std::string const& name() const { return name_; }
+    std::string const& description() const { return description_; }
+    std::string const& author() const { return author_; }
+    std::vector<std::string> const& accepts() const { return accepts_; }
+
+    virtual haze::Player *new_player(void *, uint32_t, int) = 0;
+};
+
+/*
+class PlayerRegistry {
+    std::unordered_map<std::string, FormatPlayer&> map_;
+public:
+    PlayerRegistry();
+    haze::Player build(void *, const uint32_t, int, int);
+    //void put(FormatPlayer const& x) { map_[x.id()] = x; }
+    //FormatPlayer const& get(std::string const& id) { return map_[id]; }
+    std::vector<FormatPlayer> list() {
+        std::vector<FormatPlayer> v;
+        for (auto kv : map_) { v.push_back(kv.second); }
+        return v;
+    }
+};
+*/
+
+namespace haze {
+
+class Player {
 
 protected:
     DataBuffer mdata;
@@ -56,18 +95,7 @@ protected:
     }
 
 public:
-    Player(std::string const& id,
-           std::string const& name,
-           std::string const& description,
-           std::string const& author,
-           std::vector<std::string> accepts,
-           void *buf, const uint32_t size,
-           int ch, int sr) :
-        id_(id),
-        name_(name),
-        description_(description),
-        author_(author),
-        accepts_(accepts),
+    Player(void *buf, const uint32_t size, int ch, int sr) :
         mdata(buf, size),
         speed_(6),
         tempo_(125.0f),
@@ -93,14 +121,6 @@ public:
     Mixer *mixer() { return mixer_; }
 
     uint32_t frame_size() { return frame_size_; }
-
-    void player_info(PlayerInfo& pi) {
-        pi.id = id_;
-        pi.name = name_;
-        pi.description = description_;
-        pi.author = author_;
-        pi.accepts = accepts_;;
-    }
 
     void fill(int16_t *buf, int size) {
         fill_buffer_<int16_t>(buf, size);

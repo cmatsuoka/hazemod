@@ -5,6 +5,18 @@
 #include "player/player.h"
 
 
+struct NT11 : public FormatPlayer {
+    NT11() : FormatPlayer(
+        "nt",
+        "NoiseReplayV1.1 + fixes",
+        "A player based on the on Noisetracker V1.1 replayer",
+        "Claudio Matsuoka",
+        { "m.k." }
+    ) {}
+
+    haze::Player *new_player(void *, uint32_t, int) override;
+};
+
 struct NT11_ChannelData {
     uint16_t n_0_note;
     uint8_t  n_2_cmd;

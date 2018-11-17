@@ -5,6 +5,18 @@
 #include "player/player.h"
 
 
+struct PT21A : public FormatPlayer {
+    PT21A() : FormatPlayer(
+        "pt2",
+        "Protracker V2.1A playroutine + fixes",
+        "A player based on the Protracker V2.1A replayer + V2.3D fixes",
+        "Claudio Matsuoka",
+        { "m.k." }
+    ) {}
+
+    haze::Player *new_player(void *, uint32_t, int) override;
+};
+
 struct PT21A_ChannelData {
     uint16_t n_note;
     uint8_t n_cmd;
