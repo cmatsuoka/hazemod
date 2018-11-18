@@ -26,7 +26,6 @@ TEST_SUITE("mixer") {
             0x28, 0x28, 0x30, 0x30, 0x38, 0x38, 0x40, 0x40
         };
 
-for (int i = 0; i < 32; i++) printf("%d %d\n", res[i], ref[i]);
         CHECK(std::equal(std::begin(res), std::end(res), std::begin(ref)));
     }
 
