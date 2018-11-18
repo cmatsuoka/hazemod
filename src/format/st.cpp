@@ -94,7 +94,7 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         }
 
         if (size == 0 && repeat > 0) {
-            Debug("sample {} invalid repeat", i);
+            Debug("sample %d invalid repeat", i);
             return false;
         }
 

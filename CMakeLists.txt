@@ -15,6 +15,9 @@ if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 endif(CMAKE_COMPILER_IS_GNUCC)
 
+# Also define DEBUG in Debug mode
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
