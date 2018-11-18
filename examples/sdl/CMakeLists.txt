@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.3)
+project(sdl)
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(../../include)
+link_directories(../../lib)
+add_executable(play-sdl main.cpp)
+target_link_libraries(play-sdl ${SDL2_LIBRARIES} hazemod)
