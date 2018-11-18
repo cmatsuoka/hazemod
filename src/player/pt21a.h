@@ -92,7 +92,7 @@ class PT21A_Player : public haze::Player {
     void mt_Tremolo(const int);
     void mt_SampleOffset(const int);
     void mt_VolumeSlide(const int);
-    void mt_VolSlideUp(const int, const int);
+    void mt_VolSlideUp(const int);
     void mt_VolSlideDown(const int);
     void mt_PositionJump(const int);
     void mt_VolumeChange(const int);

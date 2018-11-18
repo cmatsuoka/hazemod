@@ -174,7 +174,6 @@ void NT11_Player::mt_getnew()
         auto& ch = mt_voice[chn];
         mixer_->set_loop_start(chn, ch.n_a_loopstart);
         mixer_->set_loop_end(chn, ch.n_a_loopstart + ch.n_e_replen * 2);
-        mixer_->set_end(chn, ch.n_4_samplestart + ch.n_8_length * 2);
     }
 
     mt_pattpos++;
@@ -236,6 +235,7 @@ void NT11_Player::mt_setperiod(const int chn)
     ch.n_10_period = ch.n_0_note & 0xfff;
     ch.n_1b_vibpos = 0;                 // clr.b   $1b(a6)
     mixer_->set_start(chn, ch.n_4_samplestart);
+    mixer_->set_end(chn, ch.n_4_samplestart + ch.n_8_length * 2);
     mixer_->set_period(chn, ch.n_10_period);
     mt_checkcom2(chn);
 }

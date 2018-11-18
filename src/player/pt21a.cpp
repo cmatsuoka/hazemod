@@ -258,7 +258,6 @@ void PT21A_Player::mt_GetNewNote()
         auto& ch = mt_chantemp[chn];
         mixer_->set_loop_start(chn, ch.n_loopstart);
         mixer_->set_loop_end(chn, ch.n_loopstart + ch.n_replen * 2);
-        mixer_->set_end(chn, ch.n_start + ch.n_length * 2);
     }
 }
 
@@ -360,8 +359,8 @@ void PT21A_Player::mt_SetPeriod(const int chn)
         }
         // mt_trenoc
         mixer_->set_start(chn, ch.n_start);
+        mixer_->set_end(chn, ch.n_start + ch.n_length * 2);
         mixer_->set_period(chn, ch.n_period);
-        mixer_->set_voicepos(chn, 0.0);
     }
 
     mt_CheckMoreEfx(chn);
@@ -389,11 +388,12 @@ void PT21A_Player::mt_NoNewPosYet()
 
 void PT21A_Player::mt_CheckEfx(const int chn)
 {
-    const int cmd = mt_chantemp[chn].n_cmd & 0x0f;
+    auto& ch = mt_chantemp[chn];
+    const int cmd = ch.n_cmd & 0x0f;
 
     mt_UpdateFunk(chn);
 
-    if (cmd == 0 && mt_chantemp[chn].n_cmdlo == 0) {
+    if (cmd == 0 && ch.n_cmdlo == 0) {
         mt_PerNop(chn);
         return;
     }
@@ -425,7 +425,7 @@ void PT21A_Player::mt_CheckEfx(const int chn)
         break;
     default:
         // SetBack
-        mixer_->set_period(chn, mt_chantemp[chn].n_period);  // MOVE.W  n_period(A6),6(A5)
+        mixer_->set_period(chn, ch.n_period);  // MOVE.W  n_period(A6),6(A5)
         switch (cmd) {
         case 0x7:
             mt_Tremolo(chn);
@@ -437,8 +437,7 @@ void PT21A_Player::mt_CheckEfx(const int chn)
     }
 
     if (cmd != 0x7) {
-        const int vol = mt_chantemp[chn].n_volume;
-        mixer_->set_volume(chn, vol << 2);
+        mixer_->set_volume(chn, ch.n_volume << 2);
     }
 }
 
@@ -721,27 +720,34 @@ void PT21A_Player::mt_SampleOffset(const int chn)
     if (ch.n_cmdlo) {
         ch.n_sampleoffset = ch.n_cmdlo;
     }
-    mixer_->set_voicepos(chn, static_cast<uint32_t>(ch.n_sampleoffset) << 8);
+    // mt_sononew
+    const uint16_t offset = ch.n_sampleoffset << 7;
+    if (offset < ch.n_length) {
+        ch.n_length -= offset;
+        ch.n_start += offset << 1;
+        return;
+    }
+    // mt_sofskip
+    ch.n_length = 1;
 }
 
 void PT21A_Player::mt_VolumeSlide(const int chn)
 {
-    int val = mt_chantemp[chn].n_cmdlo >> 4;
-    if (val == 0) {
+    if ((mt_chantemp[chn].n_cmdlo & 0xf0) == 0) {
         mt_VolSlideDown(chn);
     } else {
-        mt_VolSlideUp(chn, val);
+        mt_VolSlideUp(chn);
     }
 }
 
-void PT21A_Player::mt_VolSlideUp(const int chn, const int val)
+void PT21A_Player::mt_VolSlideUp(const int chn)
 {
     auto& ch = mt_chantemp[chn];
-    ch.n_volume += val;
+    ch.n_volume += ch.n_cmdlo >> 4;
     if (ch.n_volume > 0x40) {
         ch.n_volume = 0x40;
     }
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);
+    mixer_->set_volume(chn, ch.n_volume << 2);
 }
 
 void PT21A_Player::mt_VolSlideDown(const int chn)
@@ -753,7 +759,7 @@ void PT21A_Player::mt_VolSlideDown(const int chn)
     } else {
         ch.n_volume = 0;
     }
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);
+    mixer_->set_volume(chn, ch.n_volume << 2);
 }
 
 void PT21A_Player::mt_PositionJump(const int chn)
@@ -772,7 +778,7 @@ void PT21A_Player::mt_VolumeChange(const int chn)
         ch.n_cmdlo = 0x40;
     }
     ch.n_volume = ch.n_cmdlo;
-    mixer_->set_volume(chn, static_cast<int>(ch.n_volume) << 2);  // MOVE.W  D0,8(A5)
+    mixer_->set_volume(chn, ch.n_volume << 2);  // MOVE.W  D0,8(A5)
 }
 
 void PT21A_Player::mt_PatternBreak(const int chn)
@@ -960,7 +966,8 @@ void PT21A_Player::mt_RetrigNote(const int chn)
     }
 
     // mt_DoRetrig
-    mixer_->set_voicepos(chn, 0.0f);
+    mixer_->set_start(chn, ch.n_start);
+    mixer_->set_end(chn, ch.n_start + ch.n_length * 2);
 }
 
 void PT21A_Player::mt_VolumeFineUp(const int chn)
@@ -968,8 +975,7 @@ void PT21A_Player::mt_VolumeFineUp(const int chn)
     if (mt_counter) {
         return;
     }
-    const int val = mt_chantemp[chn].n_cmdlo & 0x0f;
-    mt_VolSlideUp(chn, val);
+    mt_VolSlideUp(chn);
 }
 
 void PT21A_Player::mt_VolumeFineDown(const int chn)
@@ -1001,7 +1007,8 @@ void PT21A_Player::mt_NoteDelay(const int chn)
         return;
     }
     // BRA mt_DoRetrig
-    mixer_->set_voicepos(chn, 0.0f);
+    mixer_->set_start(chn, ch.n_start);
+    mixer_->set_end(chn, ch.n_start + ch.n_length * 2);
 }
 
 void PT21A_Player::mt_PatternDelay(const int chn)

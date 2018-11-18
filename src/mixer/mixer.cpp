@@ -97,6 +97,7 @@ void Mixer::set_voicepos(int chn, double val)
     if (chn >= num_voices) {
         return;
     }
+    voice[chn]->set_voicepos(val);
 }
 
 void Mixer::set_period(int chn, double val)
