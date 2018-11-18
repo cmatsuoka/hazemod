@@ -21,7 +21,7 @@ UST_Player::UST_Player(void *buf, uint32_t size, int sr) :
     pointers{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     trkpos(0),
     patpos(0),
-    numpat(6),
+    numpat(0),
     timpos(0)
 {
     memset(datachn, 0, sizeof(datachn));
@@ -40,14 +40,15 @@ void UST_Player::start()
     initial_speed_ = speed_;
     initial_tempo_ = tempo_;
 
-    int num_pat = 0;
+    numpat = mdata.read8(470);
+
+    int max_pat = 0;
     for (int i = 0; i < 128; i++) {
         int pat = mdata.read8(472 + i);
-        num_pat = std::max(num_pat, pat);
+        max_pat = std::max(max_pat, pat);
     }
-    num_pat++;
 
-    int offset = 600 + 1024 * num_pat;
+    int offset = 600 + 1024 * (max_pat + 1);
     for (int i = 0; i < 15; i++) {
         pointers[i] = offset;
         offset += mdata.read16b(20 + 22 + 30 * i) * 2;
