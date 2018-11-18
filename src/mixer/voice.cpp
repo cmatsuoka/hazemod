@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include "mixer/nearest.h"
 #include "mixer/linear.h"
+#include "mixer/spline.h"
 
 
 Voice::Voice(int num, InterpolatorType typ) :
@@ -40,6 +41,9 @@ void Voice::set_interpolator(InterpolatorType typ)
         break;
     case LinearInterpolatorType:
         itp_ = new LinearInterpolator();
+        break;
+    case SplineInterpolatorType:
+        itp_ = new SplineInterpolator();
         break;
     default:
         itp_ = nullptr;

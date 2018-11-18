@@ -6,7 +6,7 @@ TEST_SUITE("mixer_voice") {
     TEST_CASE("voice::set_interpolator") {
         Voice v(0, NearestInterpolatorType);
         v.set_interpolator(LinearInterpolatorType);
-        CHECK_THROWS_AS(v.set_interpolator(SplineInterpolatorType), std::runtime_error);
+        v.set_interpolator(SplineInterpolatorType);
     }
 
     TEST_CASE("voice::default_sample") {

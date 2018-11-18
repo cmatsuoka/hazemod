@@ -5,6 +5,7 @@ add_executable(test_hazemod
     test_util_databuffer.cpp
     test_mixer_nearest.cpp
     test_mixer_linear.cpp
+    test_mixer_spline.cpp
     test_mixer_sample.cpp
     test_mixer_voice.cpp
     test_mixer_mixer.cpp
