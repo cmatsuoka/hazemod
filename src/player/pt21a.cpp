@@ -88,6 +88,9 @@ void PT21A_Player::start()
 void PT21A_Player::play()
 {
     mt_music();
+
+    tempo_ = cia_tempo;
+    time_ += 20.0 * 125.0 / tempo_;
 }
 
 void PT21A_Player::reset()

@@ -72,6 +72,8 @@ void UST_Player::start()
 void UST_Player::play()
 {
     replay_muzak();
+
+    time_ += 20.0;
 }
 
 void UST_Player::reset()

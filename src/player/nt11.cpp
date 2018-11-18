@@ -71,6 +71,9 @@ void NT11_Player::start()
 void NT11_Player::play()
 {
     mt_music();
+
+    time_ += 20.0;
+
 }
 
 void NT11_Player::reset()
