@@ -1,9 +1,9 @@
 #include "player/nt11.h"
 
-/// NT1.1 Replayer
-///
-/// A player based on the Noisetracker V1.1 play routine by Pex Tufvesson
-/// and Anders Berkeman (Mahoney & Kaktus - HALLONSOFT 1989).
+// NT1.1 Replayer
+//
+// A player based on the Noisetracker V1.1 play routine by Pex Tufvesson
+// and Anders Berkeman (Mahoney & Kaktus - HALLONSOFT 1989).
 
 
 haze::Player *Noisetracker::new_player(void *buf, uint32_t size, int sr)
@@ -193,12 +193,12 @@ void NT11_Player::mt_playvoice(const int pat, const int chn)
     const int ins = ((ch.n_0_note & 0xf000) >> 8) | ((ch.n_2_cmd & 0xf0) >> 4);
 
     if (ins > 0 && ins <= 31) {  // sanity check added: was: ins != 0
-        int ofs = 20 + 30 * (ins - 1) + 22;
+        const int ofs = 20 + 30 * (ins - 1) + 22;
         ch.n_4_samplestart = mt_samplestarts[ins - 1];
         ch.n_8_length = mdata.read16b(ofs);                   // move.w  (a3,d4.l),$8(a6)
         ch.n_12_volume = mdata.read8(ofs + 3);                // move.w  $2(a3,d4.l),$12(a6)
 
-        uint32_t repeat = mdata.read16b(ofs + 4);
+        const uint32_t repeat = mdata.read16b(ofs + 4);
 
         if (repeat) {
             ch.n_a_loopstart = ch.n_4_samplestart + repeat * 2;
