@@ -92,12 +92,12 @@ void NT11_Player::frame_info(haze::FrameInfo& pi)
 
 namespace {
 
-uint8_t mt_sin[32] = {
+const uint8_t mt_sin[32] = {
     0x00, 0x18, 0x31, 0x4a, 0x61, 0x78, 0x8d, 0xa1, 0xb4, 0xc5, 0xd4, 0xe0, 0xeb, 0xf4, 0xfa, 0xfd,
     0xff, 0xfd, 0xfa, 0xf4, 0xeb, 0xe0, 0xd4, 0xc5, 0xb4, 0xa1, 0x8d, 0x78, 0x61, 0x4a, 0x31, 0x18
 };
 
-int16_t mt_periods[38] = {
+const int16_t mt_periods[38] = {
     0x0358, 0x0328, 0x02fa, 0x02d0, 0x02a6, 0x0280, 0x025c, 0x023a, 0x021a, 0x01fc, 0x01e0,
     0x01c5, 0x01ac, 0x0194, 0x017d, 0x0168, 0x0153, 0x0140, 0x012e, 0x011d, 0x010d, 0x00fe,
     0x00f0, 0x00e2, 0x00d6, 0x00ca, 0x00be, 0x00b4, 0x00aa, 0x00a0, 0x0097, 0x008f, 0x0087,
@@ -129,7 +129,7 @@ void NT11_Player::mt_music()
     mt_getnew();
 }
 
-void NT11_Player::mt_arpeggio(int chn)
+void NT11_Player::mt_arpeggio(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -159,7 +159,7 @@ void NT11_Player::mt_arpeggio(int chn)
 
 void NT11_Player::mt_getnew()
 {
-    int pat = mdata.read8(952 + mt_songpos);
+    const int pat = mdata.read8(952 + mt_songpos);
 
     mt_playvoice(pat, 0);
     mt_playvoice(pat, 1);
@@ -180,9 +180,9 @@ void NT11_Player::mt_getnew()
     }
 }
 
-void NT11_Player::mt_playvoice(int pat, int chn)
+void NT11_Player::mt_playvoice(const int pat, const int chn)
 {
-    uint32_t event = mdata.read32b(1084 + pat * 1024 + mt_pattpos * 16 + chn * 4);
+    const uint32_t event = mdata.read32b(1084 + pat * 1024 + mt_pattpos * 16 + chn * 4);
 
     auto& ch = mt_voice[chn];
 
@@ -190,7 +190,7 @@ void NT11_Player::mt_playvoice(int pat, int chn)
     ch.n_2_cmd = (event & 0xff00) >> 8;
     ch.n_3_cmdlo = event & 0xff;
 
-    int ins = ((ch.n_0_note & 0xf000) >> 8) | ((ch.n_2_cmd & 0xf0) >> 4);
+    const int ins = ((ch.n_0_note & 0xf000) >> 8) | ((ch.n_2_cmd & 0xf0) >> 4);
 
     if (ins > 0 && ins <= 31) {  // sanity check added: was: ins != 0
         int ofs = 20 + 30 * (ins - 1) + 22;
@@ -227,7 +227,7 @@ void NT11_Player::mt_playvoice(int pat, int chn)
     }
 }
 
-void NT11_Player::mt_setperiod(int chn)
+void NT11_Player::mt_setperiod(const int chn)
 {
     auto& ch = mt_voice[chn];
     ch.n_10_period = ch.n_0_note & 0xfff;
@@ -255,7 +255,7 @@ void NT11_Player::mt_nex()
     }
 }
 
-void NT11_Player::mt_setmyport(int chn)
+void NT11_Player::mt_setmyport(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -270,7 +270,7 @@ void NT11_Player::mt_setmyport(int chn)
     }
 }
 
-void NT11_Player::mt_myport(int chn)
+void NT11_Player::mt_myport(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -300,7 +300,7 @@ void NT11_Player::mt_myport(int chn)
     mixer_->set_period(chn, ch.n_10_period);  // move.w  $10(a6),$6(a5)
 }
 
-void NT11_Player::mt_vib(int chn)
+void NT11_Player::mt_vib(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -309,8 +309,8 @@ void NT11_Player::mt_vib(int chn)
     }
 
     // mt_vi
-    int pos = (ch.n_1b_vibpos >> 2) & 0x1f;
-    int amt = (mt_sin[pos] * (ch.n_1a_vibrato & 0xf)) >> 6;
+    const int pos = (ch.n_1b_vibpos >> 2) & 0x1f;
+    const int amt = (mt_sin[pos] * (ch.n_1a_vibrato & 0xf)) >> 6;
 
     int period = ch.n_10_period;
     if ((ch.n_1b_vibpos & 0x80) == 0) {
@@ -324,11 +324,11 @@ void NT11_Player::mt_vib(int chn)
     ch.n_1b_vibpos += (ch.n_1a_vibrato >> 2) & 0x3c;
 }
 
-void NT11_Player::mt_checkcom(int chn)
+void NT11_Player::mt_checkcom(const int chn)
 {
     auto& ch = mt_voice[chn];
 
-    int cmd = ch.n_2_cmd & 0xf;
+    const int cmd = ch.n_2_cmd & 0xf;
 
     switch (cmd) {
     case 0x0:
@@ -354,7 +354,7 @@ void NT11_Player::mt_checkcom(int chn)
     }
 }
 
-void NT11_Player::mt_volslide(int chn)
+void NT11_Player::mt_volslide(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -376,7 +376,7 @@ void NT11_Player::mt_volslide(int chn)
     mixer_->set_volume(chn, ch.n_12_volume << 2);  // move.w  $12(a6),$8(a5)
 }
 
-void NT11_Player::mt_portup(int chn)
+void NT11_Player::mt_portup(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -390,7 +390,7 @@ void NT11_Player::mt_portup(int chn)
     mixer_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
 }
 
-void NT11_Player::mt_portdown(int chn)
+void NT11_Player::mt_portdown(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -403,7 +403,7 @@ void NT11_Player::mt_portdown(int chn)
     mixer_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
 }
 
-void NT11_Player::mt_checkcom2(int chn)
+void NT11_Player::mt_checkcom2(const int chn)
 {
     switch (mt_voice[chn].n_2_cmd & 0xf) {
     case 0xe:
@@ -424,7 +424,7 @@ void NT11_Player::mt_checkcom2(int chn)
     }
 }
 
-void NT11_Player::mt_setfilt(int chn)
+void NT11_Player::mt_setfilt(const int chn)
 {
     auto& ch = mt_voice[chn];
     mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
@@ -436,14 +436,14 @@ void NT11_Player::mt_pattbreak()
     mt_break = !mt_break;
 }
 
-void NT11_Player::mt_posjmp(int chn)
+void NT11_Player::mt_posjmp(const int chn)
 {
     auto& ch = mt_voice[chn];
     mt_songpos -= ch.n_3_cmdlo;
     mt_break = !mt_break;
 }
 
-void NT11_Player::mt_setvol(int chn)
+void NT11_Player::mt_setvol(const int chn)
 {
     auto& ch = mt_voice[chn];
 
@@ -456,7 +456,7 @@ void NT11_Player::mt_setvol(int chn)
     ch.n_12_volume = ch.n_3_cmdlo;
 }
 
-void NT11_Player::mt_setspeed(int chn)
+void NT11_Player::mt_setspeed(const int chn)
 {
     auto& ch = mt_voice[chn];
     if (ch.n_3_cmdlo > 0x1f) {     // cmp.b   #$1f,$3(a6)

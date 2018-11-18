@@ -49,24 +49,24 @@ class NT11_Player : public haze::Player {
 
     // Noisetracker methods
     void mt_music();
-    void mt_arpeggio(int);
+    void mt_arpeggio(const int);
     void mt_getnew();
-    void mt_playvoice(int, int);
-    void mt_setperiod(int);
+    void mt_playvoice(const int, const int);
+    void mt_setperiod(const int);
     void mt_nex();
-    void mt_setmyport(int);
-    void mt_myport(int);
-    void mt_vib(int);
-    void mt_checkcom(int);
-    void mt_volslide(int);
-    void mt_portup(int);
-    void mt_portdown(int);
-    void mt_checkcom2(int);
-    void mt_setfilt(int);
+    void mt_setmyport(const int);
+    void mt_myport(const int);
+    void mt_vib(const int);
+    void mt_checkcom(const int);
+    void mt_volslide(const int);
+    void mt_portup(const int);
+    void mt_portdown(const int);
+    void mt_checkcom2(const int);
+    void mt_setfilt(const int);
     void mt_pattbreak();
-    void mt_posjmp(int);
-    void mt_setvol(int);
-    void mt_setspeed(int);
+    void mt_posjmp(const int);
+    void mt_setvol(const int);
+    void mt_setspeed(const int);
 
 public:
     NT11_Player(void *, uint32_t, int);
