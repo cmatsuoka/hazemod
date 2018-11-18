@@ -12,6 +12,11 @@ constexpr uint32_t MAGIC4(char a, char b, char c, char d) {
 }
 
 
+// Format specifies a certain layout of binary data in a file. Closely related
+// variants can share the same probe code, which can identify the format and suggest
+// a player. For example, there are a single probe for different "mod" variants,
+// including different four channel and multichannel trackers.
+
 class Format {
     std::string id_;
 public:
