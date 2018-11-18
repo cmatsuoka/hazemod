@@ -9,6 +9,7 @@ add_library(hazemod SHARED
     util/util.cpp
     format/format.cpp
     format/mod.cpp
+    format/st.cpp
     mixer/spline.cpp
     mixer/voice.cpp
     mixer/sample.cpp

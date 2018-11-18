@@ -1,4 +1,4 @@
-#include "mod.h"
+#include "format/mod.h"
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -133,7 +133,6 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         format_id = (num_ch <= 8) ? "xchn" : "xxch";
     }
 
-    // TODO: check player acceptance
     mi.format_id = format_id;
     mi.title = d.read_string(0, 20);
     mi.description = "Amiga Protracker/Compatible";

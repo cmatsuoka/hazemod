@@ -19,7 +19,7 @@ public:
         data_size = size;
     }
 
-    uint8_t *ptr(uint32_t ofs) { return &data[ofs]; }
+    uint8_t *ptr(uint32_t ofs) const { return &data[ofs]; }
 
     uint32_t size() { return data_size; }
 
