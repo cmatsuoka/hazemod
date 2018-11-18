@@ -20,7 +20,7 @@ uint16_t note_table[37] = {
 bool test_name(uint8_t *b, uint32_t size)
 {
     for (int i = 0; i < size; i++) {
-        if (*b < 32 || *b > 0x7f) {
+        if (b[i] != 0 && (b[i] < 32 || b[i] > 0x7f)) {
             return false;
         }
     }
@@ -150,16 +150,19 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
     uint32_t cmd_used = 0;
     for (int i = 0; i < pat * 64 * 4 * 4; i += 4) {
         const int ofs = 600 + i;
+
         const int note = d.read16b(ofs);
         if (note & 0xf000) {
             Debug("invalid event sample");
             return false;
         }
+
         // check if note in table
-        if (note != 0 && std::find(std::begin(note_table), std::end(note_table), note)) {
+        if (note != 0 && !std::find(std::begin(note_table), std::end(note_table), note)) {
             Debug("invalid note %d", note);
             return false;
         }
+
         // check invalid commands
         const uint8_t cmd = d.read8(ofs + 2) & 0x0f;
         const uint8_t cmdlo = d.read8(ofs + 3);
@@ -182,7 +185,7 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         ust = false;
     }
 
-    mi.format_id = ust ? "ust" : "st";
+    mi.format_id = "st";
     mi.title = d.read_string(0, 20);
     mi.description = "15 instrument module";
     mi.creator = ust ? "Ultimate Soundtracker" : "Soundtracker";
