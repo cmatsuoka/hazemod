@@ -17,6 +17,7 @@ add_library(hazemod SHARED
     player/player.cpp
     player/pt21a.cpp
     player/nt11.cpp
+    player/ust.cpp
     haze.cpp
 )
 
