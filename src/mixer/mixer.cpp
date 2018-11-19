@@ -30,7 +30,7 @@ void Mixer::add_sample(void *buf, uint32_t size, double rate, uint32_t flags)
 
 void Mixer::set_sample(int chn, int val)
 {
-    if (chn >= num_voices || val >= sample.size()) {
+    if (chn >= num_voices || size_t(val) >= sample.size()) {
         return;
     }
     voice[chn]->set_sample(sample[val]);

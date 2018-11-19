@@ -17,7 +17,7 @@ uint16_t note_table[37] = {
     135, 127, 120, 113, 0
 };
 
-bool test_name(uint8_t *b, uint32_t size)
+bool test_name(const uint8_t *b, const int size)
 {
     for (int i = 0; i < size; i++) {
         if (b[i] != 0 && (b[i] < 32 || b[i] > 0x7f)) {
