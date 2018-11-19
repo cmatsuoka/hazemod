@@ -372,7 +372,7 @@ void PT21A_Player::mt_NextPosition()
     mt_PatternPos = mt_PBreakPos;
     mt_PBreakPos = 0;
     mt_PosJumpFlag = false;
-    mt_SongPos = ++mt_SongPos;
+    mt_SongPos++;
     mt_SongPos &= 0x7f;
     if (mt_SongPos >= mdata.read8(950)) {
         mt_SongPos = 0;
