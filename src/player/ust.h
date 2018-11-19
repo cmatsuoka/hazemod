@@ -8,7 +8,7 @@
 struct UltimateSoundtracker : public FormatPlayer {
     UltimateSoundtracker() : FormatPlayer(
         "ust",
-        "Ultimate Soundtracker V27 replayer",
+        "Ultimate Soundtracker V27",
         "Port of the Ultimate Soundtracker replayer version 27 (29.03.1988)",
         "Claudio Matsuoka",
         { "st" }

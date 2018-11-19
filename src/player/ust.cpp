@@ -60,9 +60,9 @@ void UST_Player::start()
     mixer_->set_sample(2, 0);
     mixer_->set_sample(3, 0);
 
-    int pan = options.get("pan", 70);
-    int panl = -128 * pan / 100;
-    int panr = 127 * pan / 100;
+    const int pan = options.get("pan", 70);
+    const int panl = -128 * pan / 100;
+    const int panr = 127 * pan / 100;
 
     mixer_->set_pan(0, panl);
     mixer_->set_pan(1, panr);
