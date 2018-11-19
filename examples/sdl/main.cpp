@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <cstdint>
 #include <cstring>
 #include <cstdint>
