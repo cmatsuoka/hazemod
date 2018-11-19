@@ -15,6 +15,7 @@ struct ModuleInfo {
     std::string creator;      // The program used to create this module (usually a tracker)
     std::string player_id;    // The primary player for this format
     int channels;             // The number of channels used in the module
+    int length;
 };
 
 struct PlayerInfo {
@@ -28,6 +29,7 @@ struct PlayerInfo {
 struct FrameInfo {
     int pos;
     int row;
+    int num_rows;
     int frame;
     int song;
     int speed;

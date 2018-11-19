@@ -138,6 +138,7 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
     mi.description = "Amiga Protracker/Compatible";
     mi.creator = trk.name;
     mi.channels = num_ch;
+    mi.length = d.read8(950);
     mi.player_id = player_id;
 
     return true;

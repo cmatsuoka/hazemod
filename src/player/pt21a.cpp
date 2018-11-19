@@ -101,11 +101,12 @@ void PT21A_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = mt_SongPos;
     pi.row = mt_PatternPos;
+    pi.num_rows = 64;
     pi.frame = mt_speed - mt_counter;
     pi.song = 0;
     pi.speed = mt_speed;
     pi.tempo = cia_tempo;
-    pi.time = 0;
+    pi.time = time_;
 }
 
 //----------------------------------------------------------------------

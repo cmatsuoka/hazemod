@@ -84,11 +84,12 @@ void NT11_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = mt_songpos;
     pi.row = mt_pattpos;
+    pi.num_rows = 64;
     pi.frame = mt_speed - mt_counter;
     pi.song = 0;
     pi.speed = mt_speed;
     pi.tempo = 125;
-    pi.time = 0;
+    pi.time = time_;
 }
 
 //----------------------------------------------------------------------

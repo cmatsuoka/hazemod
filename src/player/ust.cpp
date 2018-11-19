@@ -85,11 +85,12 @@ void UST_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = trkpos;
     pi.row = patpos;
+    pi.num_rows = 64;
     pi.frame = timpos;
     pi.song = 0;
     pi.speed = 6;
     pi.tempo = 125.0;
-    pi.time = 0;
+    pi.time = time_;
 }
 
 //----------------------------------------------------------------------

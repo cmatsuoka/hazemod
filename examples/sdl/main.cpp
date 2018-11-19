@@ -100,7 +100,13 @@ int main(int argc, char** argv)
 
     // play module
     SDL_PauseAudio(0);
+    haze::FrameInfo fi;
+    char buf[50];
+
     while (playing) {
+        hz.frame_info(fi);
+        snprintf(buf, 50, "pos:%3d/%3d  row:%3d/%3d\r", fi.pos, mi.length, fi.row, fi.num_rows);
+        std::cout << buf << std::flush;
         SDL_Delay(10);
     }
 

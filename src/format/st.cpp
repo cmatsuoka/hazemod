@@ -190,6 +190,7 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
     mi.description = "15 instrument module";
     mi.creator = ust ? "Ultimate Soundtracker" : "Soundtracker";
     mi.channels = 4;
+    mi.length = len;
     mi.player_id = ust ? "ust" : "dst2";
 
     return true;
