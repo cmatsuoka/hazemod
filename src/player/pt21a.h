@@ -67,7 +67,7 @@ class PT21A_Player : public haze::Player {
 
     uint8_t cia_tempo;
 
-    // Protracker implementation
+    // Protracker methods
     void mt_music();
     void mt_NoNewAllChannels();
     void mt_GetNewNote();
@@ -114,6 +114,7 @@ class PT21A_Player : public haze::Player {
     void mt_PatternDelay(const int);
     void mt_FunkIt(const int);
     void mt_UpdateFunk(const int);
+
 public:
     PT21A_Player(void *, uint32_t, int);
     ~PT21A_Player();
@@ -121,7 +122,6 @@ public:
     void play() override;
     void reset() override;
     void frame_info(haze::FrameInfo&) override;
-
 };
 
 
