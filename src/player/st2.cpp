@@ -15,7 +15,7 @@ haze::Player *DOC_Soundtracker_2::new_player(void *buf, uint32_t size, int sr)
 
 ST_Player::ST_Player(void *buf, uint32_t size, int sr) :
     Player(buf, size, 4, sr),
-    mt_speed(0),
+    mt_speed(6),
     mt_partnote(0),
     mt_partnrplay(0),
     mt_counter(0),
