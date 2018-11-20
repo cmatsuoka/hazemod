@@ -14,14 +14,14 @@ haze::Player *DOC_Soundtracker_2::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 ST_Player::ST_Player(void *buf, uint32_t size, int sr) :
-    Player(buf, size, 4, sr),
+    PCPlayer(buf, size, 4, sr),
     mt_speed(6),
     mt_partnote(0),
     mt_partnrplay(0),
     mt_counter(0),
     mt_maxpart(0),
     mt_status(false),
-    mt_sample1{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    mt_sample1{0}
 {
     memset(mt_audtemp, 0, sizeof(mt_audtemp));
 }
@@ -318,7 +318,7 @@ void ST_Player::mt_break()
 void ST_Player::mt_setfil(const int chn)
 {
     auto& ch = mt_audtemp[chn];
-    mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
+    //mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
 }
 
 void ST_Player::mt_setspeed(const int chn)

@@ -35,7 +35,7 @@ void Paula::mix(int16_t *buf, int size)
     }
 }
 
-int8_t Paula::sample_from_voice(int chn)
+int16_t Paula::sample_from_voice(int chn)
 {
     const int idx = AUD0LCH + 0x10 * chn;
     const uint32_t loc = read_l(idx);
@@ -48,7 +48,7 @@ int8_t Paula::sample_from_voice(int chn)
         return 0;
     }
 
-    auto x = sample_.get(pos);
+    auto x = data_.read8i(pos);
 
     // add step
     int step = 428.0 * 8287 / (rate_ * read_w(idx + 6));  // AUDxPER

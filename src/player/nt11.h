@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_NT11_H_
 
 #include <cstdint>
-#include "player/player.h"
+#include "player/pc_player.h"
 
 
 struct Noisetracker : public FormatPlayer {
@@ -36,7 +36,7 @@ struct NT11_ChannelData {
 };
 
 
-class NT11_Player : public haze::Player {
+class NT11_Player : public PCPlayer {
 
     uint8_t mt_speed;
     uint8_t mt_songpos;

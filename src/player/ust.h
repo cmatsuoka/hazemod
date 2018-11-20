@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_UST_H_
 
 #include <cstdint>
-#include "player/player.h"
+#include "player/pc_player.h"
 
 
 struct UltimateSoundtracker : public FormatPlayer {
@@ -49,7 +49,7 @@ struct UST_datachnx {
     //uint16_t n_22_dma_bit;
 };
 
-class UST_Player : public haze::Player {
+class UST_Player : public PCPlayer {
 
     UST_datachnx datachn[4];
     uint32_t     pointers[15];

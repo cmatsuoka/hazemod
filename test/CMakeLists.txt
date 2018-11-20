@@ -8,7 +8,7 @@ add_executable(test_hazemod
     test_mixer_spline.cpp
     test_mixer_sample.cpp
     test_mixer_voice.cpp
-    test_mixer_mixer.cpp
+    test_mixer_softmixer.cpp
     test_format_mod_fingerprint.cpp
     test_format_st_fingerprint.cpp
     test.cpp)

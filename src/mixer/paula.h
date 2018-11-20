@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <mixer/sample.h>
+#include "util/databuffer.h"
 
 // A very simple Paula simulator
 
@@ -47,7 +48,7 @@ class Paula {
     uint32_t pos_[4];
     uint32_t frac_[4];
 
-    Sample& sample_;
+    DataBuffer data_;
 
     // the instantenous value of Paula output
     int16_t global_output_level;
@@ -64,7 +65,7 @@ class Paula {
     double remainder;
     double fdiv;
     
-    int8_t sample_from_voice(int);
+    int16_t sample_from_voice(int);
 
     uint16_t read_w(const uint32_t addr) {
         return reg_[(addr - AUD0LCH) >> 1];
@@ -74,11 +75,11 @@ class Paula {
                 reg_[((addr - AUD0LCH) >> 1) + 1];
     }
 public:
-    Paula(int sr) :
+    Paula(void *ptr, uint32_t size, int sr) :
         rate_(sr),
         reg_{0},
         cia_led_(false),
-        sample_(empty_sample),
+        data_(ptr, size),
         global_output_level(0),
         active_bleps(0),
         remainder(PAULA_HZ / rate_),

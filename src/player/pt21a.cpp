@@ -23,9 +23,8 @@ haze::Player *Protracker2::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
-    Player(buf, size, 4, sr),
-    mt_SampleStarts{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    PCPlayer(buf, size, 4, sr),
+    mt_SampleStarts{0},
     //mt_SongDataPtr(0),
     mt_speed(InitialSpeed),
     mt_counter(mt_speed),
@@ -889,7 +888,7 @@ void PT21A_Player::mt_E_Commands(const int chn)
 void PT21A_Player::mt_FilterOnOff(const int chn)
 {
     auto& ch = mt_chantemp[chn];
-    mixer_->enable_filter(ch.n_cmdlo & 0x0f);
+    //mixer_->enable_filter(ch.n_cmdlo & 0x0f);
 }
 
 void PT21A_Player::mt_SetGlissControl(const int chn)

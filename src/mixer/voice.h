@@ -75,11 +75,7 @@ public:
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
     void set_sample(Sample& sample) { sample_ = sample; }
     void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
-
-    void set_step(double val) {
-        step_ = val;
-    }
-
+    void set_step(double val) { step_ = val; }
     int volume() { return volume_; }
     int pan() { return pan_; }
     double step() { return step_; }

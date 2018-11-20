@@ -90,7 +90,7 @@ public:
         frame_size_(0),
         frame_remain_(0)
     {
-        mixer_ = new Mixer(ch, sr);
+        //mixer_ = new Mixer(ch, sr);
     }
 
     virtual ~Player() {

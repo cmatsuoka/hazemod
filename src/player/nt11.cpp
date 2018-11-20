@@ -14,14 +14,13 @@ haze::Player *Noisetracker::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
-    Player(buf, size, 4, sr),
+    PCPlayer(buf, size, 4, sr),
     mt_speed(6),
     mt_songpos(0),
     mt_pattpos(0),
     mt_counter(mt_speed),
     mt_break(false),
-    mt_samplestarts{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    mt_samplestarts{0}
 {
     memset(mt_voice, 0, sizeof(mt_voice));
 }
@@ -431,7 +430,7 @@ void NT11_Player::mt_checkcom2(const int chn)
 void NT11_Player::mt_setfilt(const int chn)
 {
     auto& ch = mt_voice[chn];
-    mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
+    //mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
 }
 
 

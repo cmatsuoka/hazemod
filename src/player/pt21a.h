@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_PT21A_H_
 
 #include <cstdint>
-#include "player/player.h"
+#include "player/pc_player.h"
 
 
 struct Protracker2 : public FormatPlayer {
@@ -48,7 +48,7 @@ struct PT21A_ChannelData {
 };
 
 
-class PT21A_Player : public haze::Player {
+class PT21A_Player : public PCPlayer {
 
     PT21A_ChannelData mt_chantemp[4];
     uint32_t mt_SampleStarts[31];

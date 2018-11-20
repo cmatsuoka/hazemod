@@ -13,7 +13,7 @@ add_library(hazemod SHARED
     mixer/spline.cpp
     mixer/voice.cpp
     mixer/sample.cpp
-    mixer/mixer.cpp
+    mixer/softmixer.cpp
     mixer/paula.cpp
     player/player.cpp
     player/pt21a.cpp

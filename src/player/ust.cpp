@@ -17,8 +17,8 @@ haze::Player *UltimateSoundtracker::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 UST_Player::UST_Player(void *buf, uint32_t size, int sr) :
-    Player(buf, size, 4, sr),
-    pointers{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    PCPlayer(buf, size, 4, sr),
+    pointers{0},
     trkpos(0),
     patpos(0),
     numpat(0),

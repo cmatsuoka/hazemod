@@ -1,12 +1,12 @@
 #include "doctest.h"
-#include "mixer/mixer.cpp"
+#include "mixer/softmixer.cpp"
 #include <algorithm>
 #include <iterator>
 
 
-TEST_SUITE("mixer") {
+TEST_SUITE("softmixer") {
     TEST_CASE("mix::1_channel") {
-        Mixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0);
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_sample(0, 0);
@@ -31,7 +31,7 @@ TEST_SUITE("mixer") {
     }
 
     TEST_CASE("mix::small_buffer") {
-        Mixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0);
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_sample(0, 0);
@@ -54,7 +54,7 @@ TEST_SUITE("mixer") {
     }
 
     TEST_CASE("mix::volume") {
-        Mixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0);
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_period(0, 428.0);
@@ -85,7 +85,7 @@ TEST_SUITE("mixer") {
     }
 
     TEST_CASE("mix::pan") {
-        Mixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0);
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_volume(0, 256);

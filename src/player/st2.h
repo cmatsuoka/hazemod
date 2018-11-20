@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_ST_H_
 
 #include <cstdint>
-#include "player/player.h"
+#include "player/pc_player.h"
 
 
 struct DOC_Soundtracker_2 : public FormatPlayer {
@@ -30,7 +30,7 @@ struct ST_AudTemp {
     int16_t  n_22_last_note;
 };
 
-class ST_Player : public haze::Player {
+class ST_Player : public PCPlayer {
 
     uint8_t    mt_speed;
     uint8_t    mt_partnote;
