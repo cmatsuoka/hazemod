@@ -10,6 +10,7 @@ add_executable(test_hazemod
     test_mixer_voice.cpp
     test_mixer_mixer.cpp
     test_format_mod_fingerprint.cpp
+    test_format_st_fingerprint.cpp
     test.cpp)
 
 target_compile_definitions(test_hazemod PRIVATE TEST_DIR="${PROJECT_SOURCE_DIR}/test")
