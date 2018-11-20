@@ -187,7 +187,7 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
 
     mi.format_id = "st";
     mi.title = d.read_string(0, 20);
-    mi.description = "15 instrument module";
+    mi.description = "Amiga 15 instrument module";
     mi.creator = ust ? "Ultimate Soundtracker" : "Soundtracker";
     mi.channels = 4;
     mi.length = len;

@@ -135,7 +135,7 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
 
     mi.format_id = format_id;
     mi.title = d.read_string(0, 20);
-    mi.description = "Amiga Protracker/Compatible";
+    mi.description = num_ch == 4 ? "Amiga Protracker/Compatible" : "Multichannel MOD";
     mi.creator = trk.name;
     mi.channels = num_ch;
     mi.length = d.read8(950);
