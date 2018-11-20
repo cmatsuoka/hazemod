@@ -8,24 +8,6 @@
 
 // A very simple Paula simulator
 
-// Audio registers
-constexpr uint32_t AUD0LCH = 0xdff0a0;  // Audio channel 0 location
-constexpr uint32_t AUD0LEN = 0xdff0a4;  // Audio channel 0 length
-constexpr uint32_t AUD0PER = 0xdff0a6;  // Audio channel 0 period
-constexpr uint32_t AUD0VOL = 0xdff0a8;  // Audio channel 0 volume
-constexpr uint32_t AUD1LCH = 0xdff0b0;  // Audio channel 1 location
-constexpr uint32_t AUD1LEN = 0xdff0b4;  // Audio channel 1 length
-constexpr uint32_t AUD1PER = 0xdff0b6;  // Audio channel 1 period
-constexpr uint32_t AUD1VOL = 0xdff0b8;  // Audio channel 1 volume
-constexpr uint32_t AUD2LCH = 0xdff0c0;  // Audio channel 2 location
-constexpr uint32_t AUD2LEN = 0xdff0c4;  // Audio channel 2 length
-constexpr uint32_t AUD2PER = 0xdff0c6;  // Audio channel 2 period
-constexpr uint32_t AUD2VOL = 0xdff0c8;  // Audio channel 2 volume
-constexpr uint32_t AUD3LCH = 0xdff0d0;  // Audio channel 3 location
-constexpr uint32_t AUD3LEN = 0xdff0d4;  // Audio channel 3 length
-constexpr uint32_t AUD3PER = 0xdff0d6;  // Audio channel 3 period
-constexpr uint32_t AUD3VOL = 0xdff0d8;  // Audio channel 3 volume
-
 // 131072 to 0, 2048 entries
 constexpr double PAULA_HZ  = 3546895.0;
 constexpr int MINIMUM_INTERVAL = 16;
@@ -40,13 +22,19 @@ struct Blep {
     int16_t age;
 };
 
+struct PaulaChannel {
+    uint32_t pos;
+    uint32_t frac;
+    uint32_t audloc;
+    uint16_t audlen;
+    uint16_t audper;
+    uint16_t audvol;
+};
 
 class Paula {
     int rate_;
-    uint16_t reg_[32];  // audio registers starting at 0xdff0a0
+    PaulaChannel channel_[4];
     bool cia_led_;      // CIAA led setting (0BFE001 bit 1)
-    uint32_t pos_[4];
-    uint32_t frac_[4];
 
     DataBuffer data_;
 
@@ -67,17 +55,9 @@ class Paula {
     
     int16_t sample_from_voice(int);
 
-    uint16_t read_w(const uint32_t addr) {
-        return reg_[(addr - AUD0LCH) >> 1];
-    }
-    uint32_t read_l(const uint32_t addr) {
-        return (reg_[((addr - AUD0LCH) >> 1)    ] << 16) +
-                reg_[((addr - AUD0LCH) >> 1) + 1];
-    }
 public:
     Paula(void *ptr, uint32_t size, int sr) :
         rate_(sr),
-        reg_{0},
         cia_led_(false),
         data_(ptr, size),
         global_output_level(0),
@@ -85,18 +65,12 @@ public:
         remainder(PAULA_HZ / rate_),
         fdiv(PAULA_HZ / rate_)
     {
+        memset(channel_, 0, sizeof(channel_));
         memset(bleps, 0, sizeof(bleps));
     }
     ~Paula() {}
     void mix(int16_t *, int);                // mix sample data
     void mix(float *, int);
-    void write_w(const uint32_t addr, const uint16_t val) {
-        reg_[(addr - AUD0LCH) >> 1] = val;
-    }
-    void write_l(const uint32_t addr, const uint32_t val) {
-        reg_[((addr - AUD0LCH) >> 1)    ] = val >> 16;
-        reg_[((addr - AUD0LCH) >> 1) + 1] = val & 0xffff;
-    }
     void set_cia_led(const bool val) { cia_led_ = val; }
     bool cia_led() { return cia_led_; }
     int16_t output_sample();

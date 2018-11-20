@@ -37,28 +37,24 @@ void Paula::mix(int16_t *buf, int size)
 
 int16_t Paula::sample_from_voice(int chn)
 {
-    const int idx = AUD0LCH + 0x10 * chn;
-    const uint32_t loc = read_l(idx);
-    const uint32_t len = read_w(idx + 4) * 2;
+    auto& ch = channel_[chn];
+    const int32_t len = ch.audlen * 2;
 
-    uint32_t& pos = pos_[chn];
-    uint32_t& frac = frac_[chn];
-
-    if (pos_[chn] >= loc + len) {
+    if (ch.pos >= ch.audloc + len) {
         return 0;
     }
 
-    auto x = data_.read8i(pos);
+    auto x = data_.read8i(ch.pos);
 
     // add step
-    int step = 428.0 * 8287 / (rate_ * read_w(idx + 6));  // AUDxPER
-    frac += static_cast<uint32_t>((1 << 16) * step);
-    pos += frac >> 16;
-    frac &= (1 << 16) - 1;
+    int step = 428.0 * 8287 / (rate_ * ch.audper);  // AUDxPER
+    ch.frac += uint32_t((1 << 16) * step);
+    ch.pos += ch.frac >> 16;
+    ch.frac &= (1 << 16) - 1;
 
     if (len > 1) {
-        while (pos > loc + len) {
-            pos -= len;
+        while (ch.pos >= ch.audloc + len) {
+            ch.pos -= len;
         }
     }
 
