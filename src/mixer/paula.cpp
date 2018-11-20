@@ -9,9 +9,64 @@
 
 namespace {
 
-extern int32_t winsinc_integral[2][2048];
+extern const int32_t winsinc_integral[2][2048];
 
 }  // namespace
+
+
+constexpr int32_t Lim16_lo = -32768;
+constexpr int32_t Lim16_hi = 32767;
+
+
+void Paula::mix(int16_t *buf, int size)
+{
+    int16_t *b = buf;
+    while (b < buf + size) {
+        int32_t l = 0, r = 0;
+
+        for (int i = 0; i < 4; i++) {
+            int32_t val = sample_from_voice(i);
+            r += val;
+            l += val;
+        }
+
+        *b++ = std::clamp(r >> 12, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(l >> 12, Lim16_lo, Lim16_hi);
+    }
+}
+
+int8_t Paula::sample_from_voice(int chn)
+{
+    const int idx = AUD0LCH + 0x10 * chn;
+    const uint32_t loc = read_l(idx);
+    const uint32_t len = read_w(idx + 4) * 2;
+
+    uint32_t& pos = pos_[chn];
+    uint32_t& frac = frac_[chn];
+
+    if (pos_[chn] >= loc + len) {
+        return 0;
+    }
+
+    auto x = sample_.get(pos);
+
+    // add step
+    int step = 428.0 * 8287 / (rate_ * read_w(idx + 6));  // AUDxPER
+    frac += static_cast<uint32_t>((1 << 16) * step);
+    pos += frac >> 16;
+    frac &= (1 << 16) - 1;
+
+    if (len > 1) {
+        while (pos > loc + len) {
+            pos -= len;
+        }
+    }
+
+    return x;
+}
+
+
+//----------------------------------------------------------------------
 
 
 // return output simulated as series of bleps
@@ -73,7 +128,7 @@ void Paula::do_clock(int16_t cycles)
 
 namespace {
 
-int32_t winsinc_integral[2][2048] = {
+const int32_t winsinc_integral[2][2048] = {
     {
         131072,131072,131072,131072,131072,131072,131072,131072,131072,131072,131072,
         131072,131072,131072,131072,131072,131072,131072,131072,131072,131072,131071,131071,

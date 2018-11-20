@@ -13,8 +13,6 @@
 constexpr double C4PalRate = 8287.0;   // 7093789.2 / period (C4) * 2
 constexpr double C4Period = 428.0;
 constexpr double PalRate = 250.0;
-constexpr int32_t Lim16_lo = -32768;
-constexpr int32_t Lim16_hi = 32767;
 
 
 class Mixer {

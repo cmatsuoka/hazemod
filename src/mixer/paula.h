@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <mixer/sample.h>
 
 // A very simple Paula simulator
 
@@ -41,8 +42,12 @@ struct Blep {
 
 class Paula {
     int rate_;
-    uint16_t reg_[64];  // audio registers starting at 0xdff0a0
+    uint16_t reg_[32];  // audio registers starting at 0xdff0a0
     bool cia_led_;      // CIAA led setting (0BFE001 bit 1)
+    uint32_t pos_[4];
+    uint32_t frac_[4];
+
+    Sample& sample_;
 
     // the instantenous value of Paula output
     int16_t global_output_level;
@@ -59,11 +64,21 @@ class Paula {
     double remainder;
     double fdiv;
     
+    int8_t sample_from_voice(int);
+
+    uint16_t read_w(const uint32_t addr) {
+        return reg_[(addr - AUD0LCH) >> 1];
+    }
+    uint32_t read_l(const uint32_t addr) {
+        return (reg_[((addr - AUD0LCH) >> 1)    ] << 16) +
+                reg_[((addr - AUD0LCH) >> 1) + 1];
+    }
 public:
     Paula(int sr) :
         rate_(sr),
         reg_{0},
         cia_led_(false),
+        sample_(empty_sample),
         global_output_level(0),
         active_bleps(0),
         remainder(PAULA_HZ / rate_),
@@ -75,11 +90,11 @@ public:
     void mix(int16_t *, int);                // mix sample data
     void mix(float *, int);
     void write_w(const uint32_t addr, const uint16_t val) {
-        reg_[addr - AUD0LCH] = val;
+        reg_[(addr - AUD0LCH) >> 1] = val;
     }
     void write_l(const uint32_t addr, const uint32_t val) {
-        reg_[addr - AUD0LCH    ] = val >> 16;
-        reg_[addr - AUD0LCH + 1] = val & 0xffff;
+        reg_[((addr - AUD0LCH) >> 1)    ] = val >> 16;
+        reg_[((addr - AUD0LCH) >> 1) + 1] = val & 0xffff;
     }
     void set_cia_led(const bool val) { cia_led_ = val; }
     bool cia_led() { return cia_led_; }
