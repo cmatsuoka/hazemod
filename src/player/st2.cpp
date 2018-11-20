@@ -196,12 +196,13 @@ void ST_Player::mt_rout2()
     mt_playit(pat, 2);
     mt_playit(pat, 3);
 
-    for (int chn = 3; chn >= 0; chn--) {
-        auto& ch = mt_audtemp[chn];
-        if (ch.n_14_replen == 1) {
-            mixer_->set_start(3, ch.n_10_loopstart);
-            mixer_->set_end(3, ch.n_10_loopstart + 2);
+    for (int i = 3; i >= 0; i--) {
+        auto& ch = mt_audtemp[i];
+        if (ch.n_14_replen != 1) {
+            mixer_->set_loop_start(i, ch.n_10_loopstart);
+            mixer_->set_loop_end(i, ch.n_10_loopstart + ch.n_14_replen * 2);
         }
+        mixer_->enable_loop(i, ch.n_14_replen != 1);
     }
 
     // mt_voice0
@@ -259,7 +260,6 @@ void ST_Player::mt_playit(const int pat, const int chn)
             ch.n_14_replen = replen;                          // move.w  6(a3,d4),14(a6)
             mixer_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
         }
-        mixer_->enable_loop(chn, repeat != 0);
     }
 
     // mt_nosamplechange
