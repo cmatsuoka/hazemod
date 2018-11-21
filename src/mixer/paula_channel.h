@@ -16,6 +16,7 @@ class PaulaChannel {
     uint16_t audper;   // AUDxPER
     uint16_t audvol;   // AUDxVOL
     bool stopped;
+    int8_t pan_;
 
 public:
     PaulaChannel(DataBuffer const& d, const int sr) :
@@ -34,7 +35,9 @@ public:
     void set_length(const int16_t val) { audlen = val; }
     void set_period(const int16_t val) { audper = val; }
     void set_volume(const int16_t val) { audvol = val; }
+    void set_pan(const int8_t val) { pan_ = val; }
     int16_t volume() { return audvol; }
+    int8_t pan() { return pan_; }
 
     void add_step() {
         const double step = 428.0 * 8287 / (rate * audper);

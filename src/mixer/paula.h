@@ -84,6 +84,7 @@ public:
     void set_length(const int chn, const uint16_t val) { channel_[chn]->set_length(val); }
     void set_period(const int chn, const uint16_t val) { channel_[chn]->set_period(val); }
     void set_volume(const int chn, const uint16_t val) { channel_[chn]->set_volume(val); }
+    void set_pan(const int chn, const int8_t val) { channel_[chn]->set_pan(val); }
     void stop_dma(const int chn) { channel_[chn]->stop_dma(); }
     void start_dma(const int chn) { channel_[chn]->start_dma(); }
     void enable_filter(bool val) { cia_led_ = val; }
