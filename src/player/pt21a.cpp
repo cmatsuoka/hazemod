@@ -249,10 +249,10 @@ void PT21A_Player::mt_GetNewNote()
 
     // mt_SetDMA
     for (int chn = 0; chn < 4; chn++) {
+        paula_->start_dma(chn);
         auto& ch = mt_chantemp[chn];
         paula_->set_start(chn, ch.n_loopstart);
         paula_->set_length(chn, ch.n_replen);
-        paula_->start_dma(chn);
     }
 }
 
@@ -351,6 +351,7 @@ void PT21A_Player::mt_SetPeriod(const int chn)
             ch.n_tremolopos = 0;
         }
         // mt_trenoc
+        paula_->stop_dma(chn);
         paula_->set_start(chn, ch.n_start);
         paula_->set_length(chn, ch.n_length);
         paula_->set_period(chn, ch.n_period);
@@ -964,6 +965,7 @@ void PT21A_Player::mt_RetrigNote(const int chn)
 void PT21A_Player::mt_DoRetrig(const int chn)
 {
     auto& ch = mt_chantemp[chn];
+    paula_->stop_dma(chn);
     paula_->set_start(chn, ch.n_start);
     paula_->set_length(chn, ch.n_length);
     paula_->start_dma(chn);

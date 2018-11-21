@@ -3,7 +3,8 @@
 
 #include <cstdint>
 #include <cstring>
-#include <mixer/mixer.h>
+#include "mixer/mixer.h"
+#include "mixer/paula_channel.h"
 #include "util/databuffer.h"
 
 // A very simple Paula simulator
@@ -22,27 +23,9 @@ struct Blep {
     int16_t age;
 };
 
-struct PaulaChannel {
-    uint32_t pos;
-    uint32_t frac;
-    uint32_t end;
-    uint32_t audloc;
-    uint16_t audlen;
-    uint16_t audper;
-    uint16_t audvol;
-
-    void add_step(const int rate) {
-        // add step
-        const double step = 428.0 * 8287 / (rate * audper);
-        frac += uint32_t((1 << 16) * step);
-        pos += frac >> 16;
-        frac &= (1 << 16) - 1;
-    }
-};
-
 class Paula : public Mixer {
     int rate_;
-    PaulaChannel channel_[4];
+    PaulaChannel *channel_[4];
     bool cia_led_;      // CIAA led setting (0BFE001 bit 1)
 
     DataBuffer data_;
@@ -77,8 +60,19 @@ public:
     {
         memset(channel_, 0, sizeof(channel_));
         memset(bleps, 0, sizeof(bleps));
+        channel_[0] = new PaulaChannel(data_, sr);
+        channel_[1] = new PaulaChannel(data_, sr);
+        channel_[2] = new PaulaChannel(data_, sr);
+        channel_[3] = new PaulaChannel(data_, sr);
     }
-    ~Paula() {}
+
+    ~Paula() {
+        delete channel_[3];
+        delete channel_[2];
+        delete channel_[1];
+        delete channel_[0];
+    }
+
     void mix(int16_t *, int);                // mix sample data
     void mix(float *, int);
     void set_cia_led(const bool val) { cia_led_ = val; }
@@ -86,15 +80,12 @@ public:
     int16_t output_sample();
     void input_sample(const int16_t);
     void do_clock(int16_t);
-    void set_start(const int chn, const uint32_t val) { channel_[chn].audloc = val; }
-    void set_length(const int chn, const uint16_t val) { channel_[chn].audlen = val; }
-    void set_period(const int chn, const uint16_t val) { channel_[chn].audper = val; }
-    void set_volume(const int chn, const uint16_t val) { channel_[chn].audvol = val; }
-    void start_dma(const int chn) {
-        channel_[chn].pos = channel_[chn].audloc;
-        channel_[chn].frac = 0;
-        channel_[chn].end = channel_[chn].audloc + channel_[chn].audlen * 2;
-    }
+    void set_start(const int chn, const uint32_t val) { channel_[chn]->set_start(val); }
+    void set_length(const int chn, const uint16_t val) { channel_[chn]->set_length(val); }
+    void set_period(const int chn, const uint16_t val) { channel_[chn]->set_period(val); }
+    void set_volume(const int chn, const uint16_t val) { channel_[chn]->set_volume(val); }
+    void stop_dma(const int chn) { channel_[chn]->stop_dma(); }
+    void start_dma(const int chn) { channel_[chn]->start_dma(); }
     void enable_filter(bool val) { cia_led_ = val; }
 };
 

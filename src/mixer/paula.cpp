@@ -53,33 +53,6 @@ void Paula::mix(float *buf, int size)
 }
 
 
-int16_t Paula::sample_from_voice(int chn)
-{
-    auto& ch = channel_[chn];
-    const int32_t len = ch.audlen * 2;
-
-    if (ch.pos >= ch.end) {
-        return 0;
-    }
-
-    auto x = data_.read8i(ch.pos);
-
-    // add step
-    ch.add_step(rate_);
-
-    if (len > 2) {
-        if (ch.pos >= ch.end) {
-            while (ch.pos >= ch.end) {
-                ch.pos -= len;
-            }
-            ch.end = ch.audloc + ch.audlen;
-        }
-    }
-
-    return x;
-}
-
-
 //----------------------------------------------------------------------
 
 
