@@ -5,3 +5,7 @@ cmake_install.cmake
 CTestTestfile.cmake
 libhazemod.*
 test_hazemod
+*.mod
+MOD.*
+mod.*
+*.wav
