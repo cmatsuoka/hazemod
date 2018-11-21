@@ -34,6 +34,7 @@ public:
     void set_length(const int16_t val) { audlen = val; }
     void set_period(const int16_t val) { audper = val; }
     void set_volume(const int16_t val) { audvol = val; }
+    int16_t volume() { return audvol; }
 
     void add_step() {
         const double step = 428.0 * 8287 / (rate * audper);
@@ -59,7 +60,7 @@ public:
         }
         auto x = data.read8i(pos);
         add_step();
-        return x;
+        return x * audvol;
     }
 
     void stop_dma() {
