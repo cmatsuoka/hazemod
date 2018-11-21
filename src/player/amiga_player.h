@@ -15,7 +15,6 @@ public:
         haze::Player(buf, size, 4, sr)
     {
         paula_ = new Paula(buf, size, sr);
-        haze::Player::mixer_ = static_cast<Mixer *>(paula_);
     }
 
     virtual ~AmigaPlayer() {
@@ -27,7 +26,7 @@ public:
     virtual void reset() = 0;
     virtual void frame_info(haze::FrameInfo&) = 0;
 
-    void amigaDMA(uint32_t, uint32_t);
+    Mixer *mixer() override { return paula_; }
 };
 
 

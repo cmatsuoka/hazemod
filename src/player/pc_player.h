@@ -14,7 +14,6 @@ public:
         haze::Player(buf, size, ch, sr)
     {
         mixer_ = new SoftMixer(ch, sr);
-        haze::Player::mixer_ = static_cast<Mixer *>(mixer_);
     }
 
     virtual ~PCPlayer() {
@@ -25,6 +24,8 @@ public:
     virtual void play() = 0;
     virtual void reset() = 0;
     virtual void frame_info(haze::FrameInfo&) = 0;
+
+    Mixer *mixer() override { return mixer_; }
 };
 
 
