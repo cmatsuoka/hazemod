@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_ST_H_
 
 #include <cstdint>
-#include "player/pc_player.h"
+#include "player/amiga_player.h"
 
 
 struct DOC_Soundtracker_2 : public FormatPlayer {
@@ -30,13 +30,14 @@ struct ST_AudTemp {
     int16_t  n_22_last_note;
 };
 
-class ST_Player : public PCPlayer {
+class ST_Player : public AmigaPlayer {
 
     uint8_t    mt_speed;
     uint8_t    mt_partnote;
     uint8_t    mt_partnrplay;
     uint8_t    mt_counter;
     uint16_t   mt_maxpart;
+    uint16_t   mt_dmacon;
     bool       mt_status;
     uint32_t   mt_sample1[31];
     ST_AudTemp mt_audtemp[4];

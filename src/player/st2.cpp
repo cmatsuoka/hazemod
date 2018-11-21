@@ -14,12 +14,13 @@ haze::Player *DOC_Soundtracker_2::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 ST_Player::ST_Player(void *buf, uint32_t size, int sr) :
-    PCPlayer(buf, size, 4, sr),
+    AmigaPlayer(buf, size, sr),
     mt_speed(6),
     mt_partnote(0),
     mt_partnrplay(0),
     mt_counter(0),
     mt_maxpart(0),
+    mt_dmacon(0),
     mt_status(false),
     mt_sample1{0}
 {
@@ -54,20 +55,14 @@ void ST_Player::start()
         offset += mdata.read16b(20 + 22 + 30 * i) * 2;
     }
 
-    mixer_->add_sample(mdata.ptr(0), mdata.size());
-    mixer_->set_sample(0, 0);
-    mixer_->set_sample(1, 0);
-    mixer_->set_sample(2, 0);
-    mixer_->set_sample(3, 0);
-
     const int pan = options.get("pan", 70);
     const int panl = -128 * pan / 100;
     const int panr = 127 * pan / 100;
 
-    mixer_->set_pan(0, panl);
-    mixer_->set_pan(1, panr);
-    mixer_->set_pan(2, panr);
-    mixer_->set_pan(3, panl);
+    paula_->set_pan(0, panl);
+    paula_->set_pan(1, panr);
+    paula_->set_pan(2, panr);
+    paula_->set_pan(3, panl);
 }
 
 void ST_Player::play()
@@ -142,7 +137,7 @@ void ST_Player::mt_portup(const int chn)
         ch.n_22_last_note = 0x71;                // move.w  #$71,22(a6)
     }
     // mt_ok1
-    mixer_->set_period(chn, ch.n_22_last_note);  // move.w  22(a6),6(a5)
+    paula_->set_period(chn, ch.n_22_last_note);  // move.w  22(a6),6(a5)
 }
 
 void ST_Player::mt_portdown(const int chn)
@@ -153,7 +148,7 @@ void ST_Player::mt_portdown(const int chn)
         ch.n_22_last_note = 0x358;               // move.w  #$358,22(a6)
     }
     // mt_ok2
-    mixer_->set_period(chn, ch.n_22_last_note);  // move.w  22(a6),6(a5)
+    paula_->set_period(chn, ch.n_22_last_note);  // move.w  22(a6),6(a5)
 }
 
 void ST_Player::mt_arpegrt(const int chn)
@@ -180,7 +175,7 @@ void ST_Player::mt_arpegrt(const int chn)
         if (ch.n_16_period == mt_arpeggio[i]) {
             if (i + val < 39) {  // add sanity check
                 // mt_endpart
-                mixer_->set_period(chn, mt_arpeggio[i + val]);  // move.w  d2,6(a5)
+                paula_->set_period(chn, mt_arpeggio[i + val]);  // move.w  d2,6(a5)
                 return;
             }
         }
@@ -190,19 +185,22 @@ void ST_Player::mt_arpegrt(const int chn)
 void ST_Player::mt_rout2()
 {
     const uint8_t pat = mdata.read8(472 + mt_partnrplay);
+    mt_dmacon = 0;
 
     mt_playit(pat, 0);
     mt_playit(pat, 1);
     mt_playit(pat, 2);
     mt_playit(pat, 3);
 
-    for (int i = 3; i >= 0; i--) {
-        auto& ch = mt_audtemp[i];
-        if (ch.n_14_replen != 1) {
-            mixer_->set_loop_start(i, ch.n_10_loopstart);
-            mixer_->set_loop_end(i, ch.n_10_loopstart + ch.n_14_replen * 2);
+    for (int chn = 3; chn >= 0; chn--) {
+        auto& ch = mt_audtemp[chn];
+        if (mt_dmacon & (1 << chn)) {
+            paula_->start_dma(chn);
         }
-        mixer_->enable_loop(i, ch.n_14_replen != 1);
+        if (ch.n_14_replen == 1) {
+            paula_->set_start(chn, ch.n_10_loopstart);   // move.l  10(a6),$dff0d0
+            paula_->set_length(chn, 1);                  // move.w  #1,$dff0d4
+        }
     }
 
     // mt_voice0
@@ -253,23 +251,23 @@ void ST_Player::mt_playit(const int pat, const int chn)
             ch.n_10_loopstart = ch.n_4_samplestart;           // move.l  d2,10(a6)
             ch.n_8_length = replen;                           // move.w  6(a3,d4),8(a6)
             ch.n_14_replen = replen;                          // move.w  6(a3,d4),14(a6)
-            mixer_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
+            paula_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
         } else {
             // mt_displace
             ch.n_10_loopstart = ch.n_4_samplestart + repeat;  // move.l  4(a6),d2 / add.l   d3,d2 / move.l  d2,10(a6)
             ch.n_14_replen = replen;                          // move.w  6(a3,d4),14(a6)
-            mixer_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
+            paula_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
         }
     }
 
     // mt_nosamplechange
     if (ch.n_0_note) {
         ch.n_16_period = ch.n_0_note;                         // move.w  (a6),16(a6)
-        mixer_->set_start(chn, ch.n_4_samplestart);           // move.l  4(a6),(a5)
-        mixer_->set_end(chn, ch.n_4_samplestart + ch.n_8_length * 2);
-        mixer_->set_loop_start(chn, ch.n_10_loopstart);       // our mixer wants loop settings 
-        mixer_->set_loop_end(chn, ch.n_10_loopstart + ch.n_14_replen * 2);
-        mixer_->set_period(chn, ch.n_0_note);                 // move.w  (a6),6(a5)
+        paula_->stop_dma(chn);                                // move.w  20(a6),$dff096
+        paula_->set_start(chn, ch.n_4_samplestart);           // move.l  4(a6),(a5)
+        paula_->set_length(chn, ch.n_8_length);               // move.w  8(a6),4(a5)
+        paula_->set_period(chn, ch.n_0_note);                 // move.w  (a6),6(a5)
+        mt_dmacon |= 1 << chn;
     }
     // mt_retrout
     if (ch.n_0_note) {
@@ -307,7 +305,7 @@ void ST_Player::mt_posjmp(const int chn)
 void ST_Player::mt_setvol(const int chn)
 {
     auto& ch = mt_audtemp[chn];
-    mixer_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  3(a6),8(a5)
+    paula_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  3(a6),8(a5)
 }
 
 void ST_Player::mt_break()
@@ -318,7 +316,7 @@ void ST_Player::mt_break()
 void ST_Player::mt_setfil(const int chn)
 {
     auto& ch = mt_audtemp[chn];
-    //mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
+    paula_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
 }
 
 void ST_Player::mt_setspeed(const int chn)
