@@ -14,6 +14,25 @@ extern const int32_t winsinc_integral[2][2048];
 }  // namespace
 
 
+void Paula::start_dma(const uint16_t mask)
+{
+    for (int chn = 0; chn < 4; chn++) {
+        if (mask & (1 << chn)) {
+            channel_[chn]->start_dma();
+        }
+    }
+}
+
+void Paula::stop_dma(const uint16_t mask)
+{
+    for (int chn = 0; chn < 4; chn++) {
+        if (mask & (1 << chn)) {
+            channel_[chn]->stop_dma();
+        }
+    }
+}
+
+
 constexpr int32_t Lim16_lo = -32768;
 constexpr int32_t Lim16_hi = 32767;
 

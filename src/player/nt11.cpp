@@ -166,11 +166,9 @@ void NT11_Player::mt_getnew()
     mt_playvoice(pat, 3);
 
     // mt_setdma
+    paula_->start_dma(mt_dmacon);
     for (int chn = 3; chn >= 0; chn--) {
         auto& ch = mt_voice[chn];
-        if (mt_dmacon & (1 << chn)) {
-            paula_->start_dma(chn);
-        }
         paula_->set_start(chn, ch.n_a_loopstart);
         paula_->set_length(chn, ch.n_e_replen);
     }
@@ -454,8 +452,6 @@ void NT11_Player::mt_setvol(const int chn)
     }
     // mt_vol4
     paula_->set_volume(chn, ch.n_3_cmdlo);  // move.b  $3(a6),$8(a5)
-    // fix: otherwise we're overriden by set_volume in mt_playvoice()
-    ch.n_12_volume = ch.n_3_cmdlo;
 }
 
 void NT11_Player::mt_setspeed(const int chn)

@@ -214,14 +214,12 @@ void UST_Player::replaystep()               // ** work next pattern-step
     chanelhandler(pat, 2);
     chanelhandler(pat, 3);
 
+    paula_->start_dma(enbits);
     for (int chn = 0; chn < 4; chn++) {
         auto& ch = datachn[chn];
-        if (enbits & (1 << chn)) {
-            paula_->start_dma(chn);
-            if (ch.n_14_repeatlength == 1) {
-                ch.n_14_repeatlength = 0;
-                paula_->set_length(chn, 1);
-            }
+        if (ch.n_14_repeatlength == 1) {
+            ch.n_14_repeatlength = 0;
+            paula_->set_length(chn, 1);
         }
     }
 
@@ -269,7 +267,7 @@ void UST_Player::chanelhandler(const int pat, const int chn)
 
     // chan2
     if (ch.n_0_note) {
-        paula_->stop_dma(chn);                             // clear dma
+        paula_->stop_dma(1 << chn);                        // clear dma
         if (ch.n_14_repeatlength == 0) {
             ch.n_14_repeatlength = 1;                      // allow resume (later)
         }

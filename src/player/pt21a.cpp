@@ -249,11 +249,9 @@ void PT21A_Player::mt_GetNewNote()
     mt_PlayVoice(pat, 3);
 
     // mt_SetDMA
+    paula_->start_dma(mt_DMACONtemp);            // commit sample start and length
     for (int chn = 3; chn >= 0; chn--) {
         auto& ch = mt_chantemp[chn];
-        if (mt_DMACONtemp & (1 << chn)) {
-            paula_->start_dma(chn);              // commit sample start and length
-        }
         paula_->set_start(chn, ch.n_loopstart);  // set loop start and end
         paula_->set_length(chn, ch.n_replen);
     }
@@ -346,7 +344,7 @@ void PT21A_Player::mt_SetPeriod(const int chn)
     ch.n_period = mt_PeriodTable[37 * ch.n_finetune + i];
 
     if ((ch.n_cmd & 0x0f) != 0x0e || (ch.n_cmdlo & 0xf0) != 0xd0) {  // !Notedelay
-        paula_->stop_dma(chn);
+        paula_->stop_dma(1 << chn);
 
         if ((ch.n_wavecontrol & 0x04) != 0x00) {
             ch.n_vibratopos = 0;
@@ -970,10 +968,10 @@ void PT21A_Player::mt_RetrigNote(const int chn)
 void PT21A_Player::mt_DoRetrig(const int chn)
 {
     auto& ch = mt_chantemp[chn];
-    paula_->stop_dma(chn);
+    paula_->stop_dma(1 << chn);
     paula_->set_start(chn, ch.n_start);
     paula_->set_length(chn, ch.n_length);
-    paula_->start_dma(chn);
+    paula_->start_dma(1 << chn);
     paula_->set_start(chn, ch.n_loopstart);
     paula_->set_length(chn, ch.n_replen);
 }

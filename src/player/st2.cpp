@@ -192,11 +192,9 @@ void ST_Player::mt_rout2()
     mt_playit(pat, 2);
     mt_playit(pat, 3);
 
+    paula_->start_dma(mt_dmacon);
     for (int chn = 3; chn >= 0; chn--) {
         auto& ch = mt_audtemp[chn];
-        if (mt_dmacon & (1 << chn)) {
-            paula_->start_dma(chn);
-        }
         if (ch.n_14_replen == 1) {
             paula_->set_start(chn, ch.n_10_loopstart);   // move.l  10(a6),$dff0d0
             paula_->set_length(chn, 1);                  // move.w  #1,$dff0d4
@@ -263,7 +261,7 @@ void ST_Player::mt_playit(const int pat, const int chn)
     // mt_nosamplechange
     if (ch.n_0_note) {
         ch.n_16_period = ch.n_0_note;                         // move.w  (a6),16(a6)
-        paula_->stop_dma(chn);                                // move.w  20(a6),$dff096
+        paula_->stop_dma(1 << chn);                           // move.w  20(a6),$dff096
         paula_->set_start(chn, ch.n_4_samplestart);           // move.l  4(a6),(a5)
         paula_->set_length(chn, ch.n_8_length);               // move.w  8(a6),4(a5)
         paula_->set_period(chn, ch.n_0_note);                 // move.w  (a6),6(a5)
