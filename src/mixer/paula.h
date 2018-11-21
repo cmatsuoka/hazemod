@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <cstring>
-#include <mixer/sample.h>
+#include <mixer/mixer.h>
 #include "util/databuffer.h"
 
 // A very simple Paula simulator
@@ -25,13 +25,22 @@ struct Blep {
 struct PaulaChannel {
     uint32_t pos;
     uint32_t frac;
+    uint32_t end;
     uint32_t audloc;
     uint16_t audlen;
     uint16_t audper;
     uint16_t audvol;
+
+    void add_step(const int rate) {
+        // add step
+        const double step = 428.0 * 8287 / (rate * audper);
+        frac += uint32_t((1 << 16) * step);
+        pos += frac >> 16;
+        frac &= (1 << 16) - 1;
+    }
 };
 
-class Paula {
+class Paula : public Mixer {
     int rate_;
     PaulaChannel channel_[4];
     bool cia_led_;      // CIAA led setting (0BFE001 bit 1)
@@ -57,6 +66,7 @@ class Paula {
 
 public:
     Paula(void *ptr, uint32_t size, int sr) :
+        Mixer(4, sr),
         rate_(sr),
         cia_led_(false),
         data_(ptr, size),
@@ -76,6 +86,16 @@ public:
     int16_t output_sample();
     void input_sample(const int16_t);
     void do_clock(int16_t);
+    void set_start(const int chn, const uint32_t val) { channel_[chn].audloc = val; }
+    void set_length(const int chn, const uint16_t val) { channel_[chn].audlen = val; }
+    void set_period(const int chn, const uint16_t val) { channel_[chn].audper = val; }
+    void set_volume(const int chn, const uint16_t val) { channel_[chn].audvol = val; }
+    void start_dma(const int chn) {
+        channel_[chn].pos = channel_[chn].audloc;
+        channel_[chn].frac = 0;
+        channel_[chn].end = channel_[chn].audloc + channel_[chn].audlen * 2;
+    }
+    void enable_filter(bool val) { cia_led_ = val; }
 };
 
 

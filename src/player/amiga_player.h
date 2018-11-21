@@ -11,24 +11,24 @@ protected:
     Paula *paula_;
 
 public:
-    AmigaPlayer(void *buf, const uint32_t size, int ch, int sr) :
-        haze::Player(buf, size, ch, sr)
+    AmigaPlayer(void *buf, const uint32_t size, int sr) :
+        haze::Player(buf, size, 4, sr)
     {
-        paula = new Paula(sr);
+        paula_ = new Paula(buf, size, sr);
+        haze::Player::mixer_ = static_cast<Mixer *>(paula_);
     }
 
-    virtual ~Player() {
+    virtual ~AmigaPlayer() {
         delete paula_;
     }
 
     virtual void start() = 0;
     virtual void play() = 0;
     virtual void reset() = 0;
-    virtual void frame_info(FrameInfo&) = 0;
+    virtual void frame_info(haze::FrameInfo&) = 0;
 
     void amigaDMA(uint32_t, uint32_t);
 };
 
-}  // namespace haze
 
 #endif  // HAZE_PLAYER_PLAYER_H_

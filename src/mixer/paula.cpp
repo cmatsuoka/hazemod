@@ -35,26 +35,44 @@ void Paula::mix(int16_t *buf, int size)
     }
 }
 
+void Paula::mix(float *buf, int size)
+{
+    float *b = buf;
+    while (b < buf + size) {
+        int32_t l = 0, r = 0;
+
+        for (int i = 0; i < 4; i++) {
+            int32_t val = sample_from_voice(i);
+            r += val;
+            l += val;
+        }
+
+        //*b++ = std::clamp(r >> 12, Lim16_lo, Lim16_hi);
+        //*b++ = std::clamp(l >> 12, Lim16_lo, Lim16_hi);
+    }
+}
+
+
 int16_t Paula::sample_from_voice(int chn)
 {
     auto& ch = channel_[chn];
     const int32_t len = ch.audlen * 2;
 
-    if (ch.pos >= ch.audloc + len) {
+    if (ch.pos >= ch.end) {
         return 0;
     }
 
     auto x = data_.read8i(ch.pos);
 
     // add step
-    int step = 428.0 * 8287 / (rate_ * ch.audper);  // AUDxPER
-    ch.frac += uint32_t((1 << 16) * step);
-    ch.pos += ch.frac >> 16;
-    ch.frac &= (1 << 16) - 1;
+    ch.add_step(rate_);
 
-    if (len > 1) {
-        while (ch.pos >= ch.audloc + len) {
-            ch.pos -= len;
+    if (len > 2) {
+        if (ch.pos >= ch.end) {
+            while (ch.pos >= ch.end) {
+                ch.pos -= len;
+            }
+            ch.end = ch.audloc + ch.audlen;
         }
     }
 

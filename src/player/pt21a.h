@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_PT21A_H_
 
 #include <cstdint>
-#include "player/pc_player.h"
+#include "player/amiga_player.h"
 
 
 struct Protracker2 : public FormatPlayer {
@@ -48,7 +48,7 @@ struct PT21A_ChannelData {
 };
 
 
-class PT21A_Player : public PCPlayer {
+class PT21A_Player : public AmigaPlayer {
 
     PT21A_ChannelData mt_chantemp[4];
     uint32_t mt_SampleStarts[31];
@@ -107,6 +107,7 @@ class PT21A_Player : public PCPlayer {
     void mt_JumpLoop(const int);
     void mt_SetTremoloControl(const int);
     void mt_RetrigNote(const int);
+    void mt_DoRetrig(const int);
     void mt_VolumeFineUp(const int);
     void mt_VolumeFineDown(const int);
     void mt_NoteCut(const int);
