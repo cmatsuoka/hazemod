@@ -37,31 +37,28 @@ public:
 
     void add_step() {
         const double step = 428.0 * 8287 / (rate * audper);
+        const int32_t len = audlen * 2;
+    
         frac += uint32_t((1 << 16) * step);
         pos += frac >> 16;
         frac &= (1 << 16) - 1;
-    }
 
-    int16_t get(const int rate) {
-        const int32_t len = audlen * 2;
-    
-        if (stopped || pos >= end) {
-            return 0;
-        }
-    
-        auto x = data.read8i(pos);
-    
-        add_step();
-    
         if (len > 2) {
             if (pos >= end) {
                 while (pos >= end) {
-                    pos -= len;
+                    pos -= (end - audloc);
                 }
-                end = audloc + audlen;
+                end = audloc + audlen * 2;
             }
         }
-    
+    }
+
+    int16_t get() {
+        if (stopped || pos >= end) {
+            return 0;
+        }
+        auto x = data.read8i(pos);
+        add_step();
         return x;
     }
 
