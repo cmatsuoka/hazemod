@@ -186,14 +186,14 @@ void UST_Player::pitchbend(const int chn)
     auto& ch = datachn[chn];
     int16_t val = ch.n_3_effect_number >> 4;
     if (val) {
-        ch.n_0_note += val;                  // add.w   d0,(a6)
+        ch.n_0_note += val;                    // add.w   d0,(a6)
         paula_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
         return;
     }
     // pit2
     val = ch.n_3_effect_number & 0x0f;
     if (val) {
-        ch.n_0_note -= val;                  // sub.w   d0,(a6)
+        ch.n_0_note -= val;                    // sub.w   d0,(a6)
         paula_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
     }
     // pit3
@@ -241,15 +241,11 @@ void UST_Player::chanelhandler(const int pat, const int chn)
     auto& ch = datachn[chn];
     const uint32_t event = mdata.read32b(600 + 1024 * pat + 16 * patpos + 4 * chn);
 
-    const int16_t note = event >> 16;
-    const uint8_t cmd = (event & 0xff00) >> 8;
-    const uint8_t cmdlo = event & 0xff;
+    ch.n_0_note = event >> 16;                    // get period & action-word
+    ch.n_2_sound_number = (event & 0xff00) >> 8;
+    ch.n_3_effect_number = event & 0xff;
 
-    ch.n_0_note = note;           // get period & action-word
-    ch.n_2_sound_number = cmd;
-    ch.n_3_effect_number = cmdlo;
-
-    const int ins = cmd >> 4;     // get nibble for soundnumber
+    const int ins = ch.n_2_sound_number >> 4;     // get nibble for soundnumber
     if (ins) {
         const int ofs = 20 + 30 * (ins - 1) + 22;
         ch.n_4_soundstart = pointers[ins - 1];             // store sample-address

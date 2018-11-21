@@ -227,15 +227,11 @@ void ST_Player::mt_playit(const int pat, const int chn)
     auto& ch = mt_audtemp[chn];
     const uint32_t event = mdata.read32b(600 + 1024 * pat + 16 * mt_partnote + 4 * chn);
 
-    const int16_t note = event >> 16;
-    const uint8_t cmd = (event & 0xff00) >> 8;
-    const uint8_t cmdlo = event & 0xff;
+    ch.n_0_note = event >> 16;            // move.l  (a0,d1.l),(a6)
+    ch.n_2_cmd = (event & 0xff00) >> 8;
+    ch.n_3_cmdlo = event & 0xff;
 
-    ch.n_0_note = note;      // move.l  (a0,d1.l),(a6)
-    ch.n_2_cmd = cmd;
-    ch.n_3_cmdlo = cmdlo;
-
-    const int ins = (cmd & 0xf0) >> 4;
+    const int ins = (ch.n_2_cmd & 0xf0) >> 4;
 
     if (ins != 0) {
         const int ofs = 20 + 30 * (ins - 1) + 22;
