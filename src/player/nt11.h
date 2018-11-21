@@ -2,7 +2,7 @@
 #define HAZE_PLAYER_NT11_H_
 
 #include <cstdint>
-#include "player/pc_player.h"
+#include "player/amiga_player.h"
 
 
 struct Noisetracker : public FormatPlayer {
@@ -36,7 +36,7 @@ struct NT11_ChannelData {
 };
 
 
-class NT11_Player : public PCPlayer {
+class NT11_Player : public AmigaPlayer {
 
     uint8_t mt_speed;
     uint8_t mt_songpos;
@@ -44,6 +44,7 @@ class NT11_Player : public PCPlayer {
     uint8_t mt_counter;
     bool    mt_break;
 
+    uint16_t mt_dmacon;
     uint32_t mt_samplestarts[31];
     NT11_ChannelData mt_voice[4];
 

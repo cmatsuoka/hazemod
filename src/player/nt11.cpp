@@ -14,12 +14,13 @@ haze::Player *Noisetracker::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
-    PCPlayer(buf, size, 4, sr),
+    AmigaPlayer(buf, size, sr),
     mt_speed(6),
     mt_songpos(0),
     mt_pattpos(0),
     mt_counter(mt_speed),
     mt_break(false),
+    mt_dmacon(0),
     mt_samplestarts{0}
 {
     memset(mt_voice, 0, sizeof(mt_voice));
@@ -51,20 +52,14 @@ void NT11_Player::start()
         offset += mdata.read16b(20 + 22 + 30 * i) * 2;
     }
 
-    mixer_->add_sample(mdata.ptr(0), mdata.size());
-    mixer_->set_sample(0, 0);
-    mixer_->set_sample(1, 0);
-    mixer_->set_sample(2, 0);
-    mixer_->set_sample(3, 0);
-
     const int pan = options.get("pan", 70);
     const int panl = -128 * pan / 100;
     const int panr = 127 * pan / 100;
 
-    mixer_->set_pan(0, panl);
-    mixer_->set_pan(1, panr);
-    mixer_->set_pan(2, panr);
-    mixer_->set_pan(3, panl);
+    paula_->set_pan(0, panl);
+    paula_->set_pan(1, panr);
+    paula_->set_pan(2, panr);
+    paula_->set_pan(3, panl);
 }
 
 void NT11_Player::play()
@@ -153,7 +148,7 @@ void NT11_Player::mt_arpeggio(const int chn)
         if (ch.n_10_period >= mt_periods[i]) {
             if (i + val < 38) {  // sanity check
                 // mt_arp4
-                mixer_->set_period(chn, mt_periods[i + val]);  // move.w  d2,$6(a5)
+                paula_->set_period(chn, mt_periods[i + val]);  // move.w  d2,$6(a5)
                 return;
             }
         }
@@ -163,6 +158,7 @@ void NT11_Player::mt_arpeggio(const int chn)
 void NT11_Player::mt_getnew()
 {
     const int pat = mdata.read8(952 + mt_songpos);
+    mt_dmacon = 0;
 
     mt_playvoice(pat, 0);
     mt_playvoice(pat, 1);
@@ -170,10 +166,13 @@ void NT11_Player::mt_getnew()
     mt_playvoice(pat, 3);
 
     // mt_setdma
-    for (int chn = 0; chn < 4; chn++) {
+    for (int chn = 3; chn >= 0; chn--) {
         auto& ch = mt_voice[chn];
-        mixer_->set_loop_start(chn, ch.n_a_loopstart);
-        mixer_->set_loop_end(chn, ch.n_a_loopstart + ch.n_e_replen * 2);
+        if (mt_dmacon & (1 << chn)) {
+            paula_->start_dma(chn);
+        }
+        paula_->set_start(chn, ch.n_a_loopstart);
+        paula_->set_length(chn, ch.n_e_replen);
     }
 
     mt_pattpos++;
@@ -206,14 +205,13 @@ void NT11_Player::mt_playvoice(const int pat, const int chn)
             ch.n_a_loopstart = ch.n_4_samplestart + repeat * 2;
             ch.n_8_length = repeat + mdata.read16b(ofs + 6);
             ch.n_e_replen = mdata.read16b(ofs + 6);           // move.w  $6(a3,d4.l),$e(a6)
-            mixer_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
+            paula_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
         } else {
             // mt_noloop
             ch.n_a_loopstart = repeat;
             ch.n_e_replen = mdata.read16b(ofs + 6);
-            mixer_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
+            paula_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
         }
-        mixer_->enable_loop(chn, repeat != 0);
     }
 
     // mt_setregs
@@ -234,9 +232,10 @@ void NT11_Player::mt_setperiod(const int chn)
     auto& ch = mt_voice[chn];
     ch.n_10_period = ch.n_0_note & 0xfff;
     ch.n_1b_vibpos = 0;                 // clr.b   $1b(a6)
-    mixer_->set_start(chn, ch.n_4_samplestart);
-    mixer_->set_end(chn, ch.n_4_samplestart + ch.n_8_length * 2);
-    mixer_->set_period(chn, ch.n_10_period);
+    paula_->set_start(chn, ch.n_4_samplestart);
+    paula_->set_length(chn, ch.n_8_length);
+    paula_->set_period(chn, ch.n_10_period);
+    mt_dmacon |= 1 << chn;
     mt_checkcom2(chn);
 }
 
@@ -300,7 +299,7 @@ void NT11_Player::mt_myport(const int chn)
         }
     }
 
-    mixer_->set_period(chn, ch.n_10_period);  // move.w  $10(a6),$6(a5)
+    paula_->set_period(chn, ch.n_10_period);  // move.w  $10(a6),$6(a5)
 }
 
 void NT11_Player::mt_vib(const int chn)
@@ -323,7 +322,7 @@ void NT11_Player::mt_vib(const int chn)
         period -= amt;
     }
 
-    mixer_->set_period(chn, period);
+    paula_->set_period(chn, period);
     ch.n_1b_vibpos += (ch.n_1a_vibrato >> 2) & 0x3c;
 }
 
@@ -350,7 +349,7 @@ void NT11_Player::mt_checkcom(const int chn)
         mt_vib(chn);
         break;
     default:
-        mixer_->set_period(chn, ch.n_10_period);  // move.w  $10(a6),$6(a5)
+        paula_->set_period(chn, ch.n_10_period);  // move.w  $10(a6),$6(a5)
         if (cmd == 0x0a) {
             mt_volslide(chn);
         }
@@ -376,7 +375,7 @@ void NT11_Player::mt_volslide(const int chn)
         }
     }
     // mt_vol2
-    mixer_->set_volume(chn, ch.n_12_volume << 2);  // move.w  $12(a6),$8(a5)
+    paula_->set_volume(chn, ch.n_12_volume << 2);  // move.w  $12(a6),$8(a5)
 }
 
 void NT11_Player::mt_portup(const int chn)
@@ -390,7 +389,7 @@ void NT11_Player::mt_portup(const int chn)
         ch.n_10_period |= 0x71;
     }
     // mt_por2
-    mixer_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
+    paula_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
 }
 
 void NT11_Player::mt_portdown(const int chn)
@@ -403,7 +402,7 @@ void NT11_Player::mt_portdown(const int chn)
         ch.n_10_period = ch.n_10_period & 0xf000;
         ch.n_10_period |= 0x358;
     }
-    mixer_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
+    paula_->set_period(chn, ch.n_10_period & 0xfff);  // move.w $10(a6),d0; and.w #$fff,d0; move.w d0,$6(a5)
 }
 
 void NT11_Player::mt_checkcom2(const int chn)
@@ -430,7 +429,7 @@ void NT11_Player::mt_checkcom2(const int chn)
 void NT11_Player::mt_setfilt(const int chn)
 {
     auto& ch = mt_voice[chn];
-    //mixer_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
+    paula_->enable_filter((ch.n_3_cmdlo & 0x0f) != 0);
 }
 
 
@@ -454,8 +453,8 @@ void NT11_Player::mt_setvol(const int chn)
         ch.n_3_cmdlo = 40;         // move.b  #$40,$3(a6)
     }
     // mt_vol4
-    mixer_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  $3(a6),$8(a5)
-    // oxdz fix: otherwise we're overriden by set_volume in mt_playvoice()
+    paula_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  $3(a6),$8(a5)
+    // fix: otherwise we're overriden by set_volume in mt_playvoice()
     ch.n_12_volume = ch.n_3_cmdlo;
 }
 
