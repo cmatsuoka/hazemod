@@ -17,11 +17,12 @@ haze::Player *UltimateSoundtracker::new_player(void *buf, uint32_t size, int sr)
 //----------------------------------------------------------------------
 
 UST_Player::UST_Player(void *buf, uint32_t size, int sr) :
-    PCPlayer(buf, size, 4, sr),
+    AmigaPlayer(buf, size, sr),
     pointers{0},
     trkpos(0),
     patpos(0),
     numpat(0),
+    enbits(0),
     timpos(0)
 {
     memset(datachn, 0, sizeof(datachn));
@@ -54,20 +55,14 @@ void UST_Player::start()
         offset += mdata.read16b(20 + 22 + 30 * i) * 2;
     }
 
-    mixer_->add_sample(mdata.ptr(0), mdata.size());
-    mixer_->set_sample(0, 0);
-    mixer_->set_sample(1, 0);
-    mixer_->set_sample(2, 0);
-    mixer_->set_sample(3, 0);
-
     const int pan = options.get("pan", 70);
     const int panl = -128 * pan / 100;
     const int panr = 127 * pan / 100;
 
-    mixer_->set_pan(0, panl);
-    mixer_->set_pan(1, panr);
-    mixer_->set_pan(2, panr);
-    mixer_->set_pan(3, panl);
+    paula_->set_pan(0, panl);
+    paula_->set_pan(1, panr);
+    paula_->set_pan(2, panr);
+    paula_->set_pan(3, panl);
 }
 
 void UST_Player::play()
@@ -175,7 +170,7 @@ void UST_Player::arpreggiato(const int chn)  // ** spread by time
         if (ch.n_16_last_saved_note == notetable[i]) {
             if (i + val < 37) {  // add sanity check
                 // mt_endpart
-                mixer_->set_period(chn, notetable[i + val]);  // move.w  d2,6(a5)
+                paula_->set_period(chn, notetable[i + val]);  // move.w  d2,6(a5)
                 return;
             }
         }
@@ -192,14 +187,14 @@ void UST_Player::pitchbend(const int chn)
     int16_t val = ch.n_3_effect_number >> 4;
     if (val) {
         ch.n_0_note += val;                  // add.w   d0,(a6)
-        mixer_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
+        paula_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
         return;
     }
     // pit2
     val = ch.n_3_effect_number & 0x0f;
     if (val) {
         ch.n_0_note -= val;                  // sub.w   d0,(a6)
-        mixer_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
+        paula_->set_period(chn, ch.n_0_note);  // move.w  (a6),6(a5)
     }
     // pit3
 }
@@ -212,11 +207,23 @@ void UST_Player::replaystep()               // ** work next pattern-step
 {
     timpos = 0;
     const uint8_t pat = mdata.read8(472 + trkpos);
+    enbits = 0;
 
     chanelhandler(pat, 0);
     chanelhandler(pat, 1);
     chanelhandler(pat, 2);
     chanelhandler(pat, 3);
+
+    for (int chn = 0; chn < 4; chn++) {
+        auto& ch = datachn[chn];
+        if (enbits & (1 << chn)) {
+            paula_->start_dma(chn);
+            if (ch.n_14_repeatlength == 1) {
+                ch.n_14_repeatlength = 0;
+                paula_->set_length(chn, 1);
+            }
+        }
+    }
 
     // rep5
     if (++patpos == 64) {           // pattern finished ?
@@ -250,7 +257,7 @@ void UST_Player::chanelhandler(const int pat, const int chn)
         ch.n_4_soundstart = pointers[ins - 1];             // store sample-address
         ch.n_8_soundlength = mdata.read16b(ofs);           // store sample-len in words
         ch.n_18_volume = mdata.read16b(ofs + 2);           // store sample-volume
-        mixer_->set_volume(chn, ch.n_18_volume << 2);      // change chanel-volume
+        paula_->set_volume(chn, ch.n_18_volume);           // change chanel-volume
 
         ch.n_10_repeatstart = ch.n_4_soundstart + mdata.read16b(ofs + 4);  // store repeatstart
         ch.n_14_repeatlength = mdata.read16b(ofs + 6);     // store repeatlength
@@ -258,18 +265,21 @@ void UST_Player::chanelhandler(const int pat, const int chn)
             ch.n_4_soundstart = ch.n_10_repeatstart;       // repstart  = sndstart
             ch.n_8_soundlength = mdata.read16b(ofs + 6);   // replength = sndlength
         }
-        mixer_->enable_loop(chn, ch.n_14_repeatlength != 1);
     }
 
     // chan2
     if (ch.n_0_note) {
+        paula_->stop_dma(chn);                             // clear dma
+        if (ch.n_14_repeatlength == 0) {
+            ch.n_14_repeatlength = 1;                      // allow resume (later)
+        }
+        // chan3                                           // no oneshot-sample
         ch.n_16_last_saved_note = ch.n_0_note;             // save note for effect
-        mixer_->set_start(chn, ch.n_4_soundstart);
-        mixer_->set_end(chn, ch.n_4_soundstart + ch.n_8_soundlength * 2);
-        mixer_->set_loop_start(chn, ch.n_10_repeatstart);
-        mixer_->set_loop_end(chn, ch.n_10_repeatstart + ch.n_14_repeatlength * 2);
-        mixer_->set_period(chn, ch.n_0_note);
-        ch.n_20_volume_trigger = ch.n_18_volume;
+        paula_->set_start(chn, ch.n_4_soundstart);         // set samplestart
+        paula_->set_length(chn, ch.n_14_repeatlength);     // set samplelength
+        paula_->set_period(chn, ch.n_0_note);              // set period
+        enbits |= 1 << chn;                                // store dma-bit
+        ch.n_20_volume_trigger = ch.n_18_volume;           // volume trigger
     }
-    // chan4 
+    // chan4                                               // no new note set !
 }
