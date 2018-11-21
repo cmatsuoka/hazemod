@@ -63,7 +63,8 @@ class PT21A_Player : public AmigaPlayer {
     uint8_t mt_LowMask;
     uint8_t mt_PattDelTime;
     uint8_t mt_PattDelTime2;
-    uint8_t mt_PatternPos;
+    uint16_t mt_PatternPos;
+    uint16_t mt_DMACONtemp;
 
     uint8_t cia_tempo;
 
