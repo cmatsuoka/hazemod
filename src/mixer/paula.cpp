@@ -27,12 +27,12 @@ void Paula::mix(int16_t *buf, int size)
         for (int i = 0; i < 4; i++) {
             auto& v = channel_[i];
             int32_t val = v->get();
-            r += (val * (0x80 - v->pan())) >> 8;
-            l += (val * (0x80 + v->pan())) >> 8;
+            r += (val * (0x80 - v->pan())) >> 6;
+            l += (val * (0x80 + v->pan())) >> 6;
         }
 
-        *b++ = std::clamp(r, Lim16_lo, Lim16_hi);
-        *b++ = std::clamp(l, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(r >> 2, Lim16_lo, Lim16_hi);
+        *b++ = std::clamp(l >> 2, Lim16_lo, Lim16_hi);
     }
 }
 

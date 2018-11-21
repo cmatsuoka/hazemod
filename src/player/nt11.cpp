@@ -205,12 +205,12 @@ void NT11_Player::mt_playvoice(const int pat, const int chn)
             ch.n_a_loopstart = ch.n_4_samplestart + repeat * 2;
             ch.n_8_length = repeat + mdata.read16b(ofs + 6);
             ch.n_e_replen = mdata.read16b(ofs + 6);           // move.w  $6(a3,d4.l),$e(a6)
-            paula_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
+            paula_->set_volume(chn, ch.n_12_volume);     // move.w  $12(a6),$8(a5)
         } else {
             // mt_noloop
             ch.n_a_loopstart = repeat;
             ch.n_e_replen = mdata.read16b(ofs + 6);
-            paula_->set_volume(chn, ch.n_12_volume << 2);     // move.w  $12(a6),$8(a5)
+            paula_->set_volume(chn, ch.n_12_volume);     // move.w  $12(a6),$8(a5)
         }
     }
 
@@ -375,7 +375,7 @@ void NT11_Player::mt_volslide(const int chn)
         }
     }
     // mt_vol2
-    paula_->set_volume(chn, ch.n_12_volume << 2);  // move.w  $12(a6),$8(a5)
+    paula_->set_volume(chn, ch.n_12_volume);  // move.w  $12(a6),$8(a5)
 }
 
 void NT11_Player::mt_portup(const int chn)
@@ -453,7 +453,7 @@ void NT11_Player::mt_setvol(const int chn)
         ch.n_3_cmdlo = 40;         // move.b  #$40,$3(a6)
     }
     // mt_vol4
-    paula_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  $3(a6),$8(a5)
+    paula_->set_volume(chn, ch.n_3_cmdlo);  // move.b  $3(a6),$8(a5)
     // fix: otherwise we're overriden by set_volume in mt_playvoice()
     ch.n_12_volume = ch.n_3_cmdlo;
 }

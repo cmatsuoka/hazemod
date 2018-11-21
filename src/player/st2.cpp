@@ -251,12 +251,12 @@ void ST_Player::mt_playit(const int pat, const int chn)
             ch.n_10_loopstart = ch.n_4_samplestart;           // move.l  d2,10(a6)
             ch.n_8_length = replen;                           // move.w  6(a3,d4),8(a6)
             ch.n_14_replen = replen;                          // move.w  6(a3,d4),14(a6)
-            paula_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
+            paula_->set_volume(chn, ch.n_18_volume);          // move.w  18(a6),8(a5)
         } else {
             // mt_displace
             ch.n_10_loopstart = ch.n_4_samplestart + repeat;  // move.l  4(a6),d2 / add.l   d3,d2 / move.l  d2,10(a6)
             ch.n_14_replen = replen;                          // move.w  6(a3,d4),14(a6)
-            paula_->set_volume(chn, ch.n_18_volume << 2);     // move.w  18(a6),8(a5)
+            paula_->set_volume(chn, ch.n_18_volume);          // move.w  18(a6),8(a5)
         }
     }
 
@@ -305,7 +305,7 @@ void ST_Player::mt_posjmp(const int chn)
 void ST_Player::mt_setvol(const int chn)
 {
     auto& ch = mt_audtemp[chn];
-    paula_->set_volume(chn, ch.n_3_cmdlo << 2);  // move.b  3(a6),8(a5)
+    paula_->set_volume(chn, ch.n_3_cmdlo);  // move.b  3(a6),8(a5)
 }
 
 void ST_Player::mt_break()

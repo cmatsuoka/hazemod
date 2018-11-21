@@ -2,6 +2,7 @@
 #define HAZE_MIXER_PAULA_CHANNEL_H_
 
 #include <cstdint>
+#include <algorithm>
 #include "util/databuffer.h"
 
 
@@ -32,9 +33,9 @@ public:
         stopped(true) {}
     ~PaulaChannel() {}
     void set_start(const int32_t val)  { audloc = val; }
-    void set_length(const int16_t val) { audlen = val; }
-    void set_period(const int16_t val) { audper = val; }
-    void set_volume(const int16_t val) { audvol = val; }
+    void set_length(const uint16_t val) { audlen = val; }
+    void set_period(const uint16_t val) { audper = val; }
+    void set_volume(const uint16_t val) { audvol = std::max(val, uint16_t(64)); }
     void set_pan(const int8_t val) { pan_ = val; }
     int16_t volume() { return audvol; }
     int8_t pan() { return pan_; }
