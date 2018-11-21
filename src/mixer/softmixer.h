@@ -6,7 +6,7 @@
 #include <memory>
 #include "mixer/mixer.h"
 #include "mixer/sample.h"
-#include "mixer/voice.h"
+#include "mixer/softmixer_voice.h"
 #include "mixer/interpolator.h"
 
 

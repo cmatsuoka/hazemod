@@ -1,4 +1,4 @@
-#include "mixer/voice.h"
+#include "mixer/softmixer_voice.h"
 #include <stdexcept>
 #include "mixer/nearest.h"
 #include "mixer/linear.h"

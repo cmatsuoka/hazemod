@@ -2,7 +2,6 @@
 #include <cstring>
 #include <memory>
 #include <algorithm>
-#include <mixer/voice.h>
 
 constexpr int32_t Lim16_lo = -32768;
 constexpr int32_t Lim16_hi = 32767;

@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include "doctest.h"
-#include "mixer/voice.cpp"
+#include "mixer/softmixer_voice.cpp"
 
 TEST_SUITE("mixer_voice") {
     TEST_CASE("voice::set_interpolator") {
