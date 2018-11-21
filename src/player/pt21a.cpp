@@ -72,11 +72,10 @@ void PT21A_Player::start()
     const int panl = -128 * pan / 100;
     const int panr = 127 * pan / 100;
 
-    //paula_->set_pan(0, panl);
-    //paula_->set_pan(1, panr);
-    //paula_->set_pan(2, panr);
-    //paula_->set_pan(3, panl);
-
+    paula_->set_pan(0, panl);
+    paula_->set_pan(1, panr);
+    paula_->set_pan(2, panr);
+    paula_->set_pan(3, panl);
 }
 
 void PT21A_Player::play()
