@@ -204,7 +204,7 @@ void PT21A_Player::mt_PlayVoice(const int pat, const int chn)
     const int ins = ((ch.n_note & 0xf000) >> 8) | ((ch.n_cmd & 0xf0) >> 4);
 
     if (ins > 0 && ins <= 31) {       // sanity check: was: ins != 0
-        int ofs = 20 + 30 * (ins - 1) + 22;
+        const int ofs = 20 + 30 * (ins - 1) + 22;
         ch.n_start = mt_SampleStarts[ins - 1];
         ch.n_length = mdata.read16b(ofs);
         ch.n_reallength = ch.n_length;
@@ -514,7 +514,7 @@ void PT21A_Player::mt_TonePortNoChange(const int chn)
     // mt_TonePortaSetPer
     int period = ch.n_period;                        // MOVE.W  n_period(A6),D2
     if (ch.n_glissfunk & 0x0f) {
-	int ofs = 37 * ch.n_finetune;                // MULU    #36*2,D0
+	const int ofs = 37 * ch.n_finetune;          // MULU    #36*2,D0
 	int i = 0;
 	// mt_GlissLoop
 	while (period < mt_PeriodTable[ofs + i]) {   // LEA     mt_PeriodTable(PC),A0 / CMP.W   (A0,D0.W),D2
@@ -528,7 +528,7 @@ void PT21A_Player::mt_TonePortNoChange(const int chn)
 	period = mt_PeriodTable[ofs + i];           // MOVE.W  (A0,D0.W),D2
     }
     // mt_GlissSkip
-    paula_->set_period(chn, period);                  // MOVE.W  D2,6(A5) ; Set period
+    paula_->set_period(chn, period);                // MOVE.W  D2,6(A5) ; Set period
 }
 
 void PT21A_Player::mt_Vibrato(const int chn)
