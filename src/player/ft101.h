@@ -65,6 +65,45 @@ class FT_Player : public PCPlayer {
     FT_ChannelData ft_chantemp[8];
 
     // FastTracker methods
+    void ft_play_voice(int, const int);
+    void ft_e_commands(const int, uint8_t);
+    void ft_position_jump(uint8_t);
+    void ft_volume_change(const int, uint8_t);
+    void ft_pattern_break(uint8_t);
+    void ft_set_speed(uint8_t);
+    void ft_fine_porta_up(const int, uint8_t);
+    void ft_fine_porta_down(const int, uint8_t);
+    void ft_set_gliss_control(const int, uint8_t);
+    void ft_set_vibrato_control(const int, uint8_t);
+    void ft_jump_loop(const int, uint8_t);
+    void ft_set_tremolo_control(const int, uint8_t);
+    void ft_retrig_note(const int);
+    void ft_volume_fine_up(const int, uint8_t);
+    void ft_volume_fine_down(const int, uint8_t);
+    void ft_note_cut(const int, uint8_t);
+    void ft_pattern_delay(const int chn, uint8_t);
+    void ft_check_efx(const int);
+    void ft_volume_slide(const int, uint8_t);
+    void ft_more_e_commands(const int, uint8_t);
+    void ft_arpeggio(const int, uint8_t);
+    void ft_porta_up(const int, uint8_t);
+    void ft_porta_down(const int, uint8_t);
+    void ft_tone_portamento(const int);
+    void ft_vibrato(const int, uint8_t);
+    void ft_vibrato_2(const int);
+    void ft_tone_plus_vol_slide(const int, uint8_t);
+    void ft_vibrato_plus_vol_slide(const int, uint8_t);
+    void ft_tremolo(const int, uint8_t);
+    void ft_retrig_note_2(const int, uint8_t);
+    void ft_note_cut_2(const int, uint8_t);
+    void ft_note_delay_2(const int, uint8_t);
+    void ft_new_row();
+    void ft_next_position();
+    void ft_no_new_pos_yet();
+    void ft_music();
+    void ft_no_new_all_channels();
+    void ft_get_new_note();
+
 
 public:
     FT_Player(void *, uint32_t, int);

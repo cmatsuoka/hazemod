@@ -13,15 +13,16 @@ extern const uint8_t ArpeggioTable[32];
 extern const uint8_t VibratoTable[32];
 extern const uint16_t PeriodTable[16 * 36];
 
-constexpr uint16_t note_to_period(uint8_t note, uint8_t fine) {
-    PeriodTable[fine * 36 + note];
+uint16_t note_to_period(const uint8_t note, const uint8_t fine)
+{
+    return PeriodTable[fine * 36 + note];
 }
 
-uint8_t period_to_note(uint16_t period, uint8_t fine)
+uint8_t period_to_note(const uint16_t period, const uint8_t fine)
 {
     const int ofs = fine * 36;
     for (int i = 0; i < 36; i++) {
-        if (period >= PeriodTable[ofs + i]) {
+        if ((period >= PeriodTable[ofs + i])) {
             return i;
         }
     }
@@ -31,6 +32,735 @@ uint8_t period_to_note(uint16_t period, uint8_t fine)
 }  // namespace
 
 
+void FT_Player::ft_play_voice(int pat, const int chn)
+{
+    const uint32_t event = mdata.read32b(1084 + pat * 1024 + ft_pattern_pos * 16 + chn * 4);
+
+    const uint16_t note = (event & 0xfff0000) >> 16;
+    const uint8_t cmd = (event & 0x0f00) >> 8;
+    const uint8_t cmdlo = event & 0xff;
+
+    const int insnum = ((event & 0xf0000000) >> 24) | ((cmd & 0xf0) >> 4);
+
+    auto& ch = ft_chantemp[chn];
+
+    if (cmd == 0) {
+        ch.output_period = ch.n_period;
+    } else {
+        uint8_t ch_cmd = ch.n_command >> 4;
+        if (ch_cmd == 4 || ch_cmd == 6) {
+            if (cmd != 4 && cmd != 6) {
+                ch.output_period = ch.n_period;
+            }
+        }
+    }
+
+    ch.n_command = cmd << 8 | cmdlo;
+
+    if (insnum) {
+        const int ins = insnum - 1;
+        const int ofs = 20 + 30 * (ins - 1) + 22;
+        ch.n_insnum = insnum;
+        ch.output_volume = ch.n_volume = mdata.read8(ofs + 3);
+        ch.n_finetune = mdata.read8(ofs + 2) & 0x0f;
+        mixer_->set_sample(chn, ch.n_insnum);
+    }
+
+    if (cmd == 3 || cmd == 5) {   // check if tone portamento
+        if (note) {
+            // See period conversion comment below.
+            ch.n_wantedperiod = note_to_period(period_to_note(note, 0), ch.n_finetune);
+            if (note == ch.n_period) {
+                ch.n_toneportdirec = 0;
+            } else if (note < ch.n_period) {
+                ch.n_toneportdirec = 2;
+            } else {
+                ch.n_toneportdirec = 1;
+            }
+        }
+        if (cmd != 5) {
+            if (cmdlo != 0) {
+                ch.n_toneportspeed = cmdlo;
+            }
+        }
+    } else {
+        if (note != 0 && ch.n_insnum > 0) {    // add insnum sanity check
+            if (cmd == 0x0e && (cmdlo & 0xf0) == 0x50) {    // check if set finetune
+                ch.n_finetune = cmdlo & 0x0f;
+            }
+
+            // FT uses pre-converted periods to note numbers. We'll convert to note
+            // numbers here and back to periods to set finetune. Note: "note" is
+            // the event note which is actually a period value, not a note number.
+            ch.n_period = note_to_period(period_to_note(note, 0), ch.n_finetune);
+            if (cmd == 0x0e && (cmdlo & 0xf0) == 0xd0) {    // check if note delay
+                if (cmdlo & 0x0f) {
+                    return;
+                }
+            }
+
+            const int ins = ch.n_insnum - 1;
+            const int ofs = 20 + 30 * (ins - 1) + 22;
+
+            int length = mdata.read16b(ofs);
+            if (cmd == 9) {     // sample offset
+                uint8_t val = cmdlo;
+                if (val == 0) {
+                    val = ch.n_offset;
+                }
+                ch.n_offset = val;
+
+                const uint16_t l = val << 8;
+                if (l > length) {
+                    length = 0;
+                } else {
+                    length -= l;
+                }
+            }
+
+            ch.n_length = length;
+            ch.n_loopstart = mdata.read16b(ofs + 4);
+            ch.n_replen = mdata.read16b(ofs + 6);
+            ch.output_period = ch.n_period;
+
+            if ((ch.n_wavecontrol & 0x04) == 0) {
+                ch.n_vibratopos = 0;
+            }
+            if ((ch.n_wavecontrol & 0x40) == 0) {
+                ch.n_tremolopos = 0;
+            }
+        }
+    }
+
+    if (cmd == 0 && cmdlo == 0) {
+        return;
+    }
+
+    switch (cmd) {
+    case 0x0c:
+        ft_volume_change(chn, cmdlo);
+        break;
+    case 0x0e:
+        ft_e_commands(chn, cmdlo);
+        break;
+    case 0x0b:
+        ft_position_jump(cmdlo);
+        break;
+    case 0x0d:
+        ft_pattern_break(cmdlo);
+        break;
+    case 0x0f:
+        ft_set_speed(cmdlo);
+        break;
+    }
+}
+
+void FT_Player::ft_e_commands(const int chn, uint8_t cmdlo)
+{
+    switch (cmdlo >> 4) {
+    case 0x1:
+        ft_fine_porta_up(chn, cmdlo);
+        break;
+    case 0x2:
+        ft_fine_porta_down(chn, cmdlo);
+        break;
+    case 0x3:
+        ft_set_gliss_control(chn, cmdlo);
+        break;
+    case 0x4:
+        ft_set_vibrato_control(chn, cmdlo);
+        break;
+    case 0x7:
+        ft_set_tremolo_control(chn, cmdlo);
+        break;
+    case 0x9:
+        ft_retrig_note(chn);
+        break;
+    case 0xa:
+        ft_volume_fine_up(chn, cmdlo);
+        break;
+    case 0xb:
+        ft_volume_fine_down(chn, cmdlo);
+        break;
+    case 0xc:
+        ft_note_cut(chn, cmdlo);
+        break;
+    case 0x6:
+        ft_jump_loop(chn, cmdlo);
+        break;
+    case 0xe:
+        ft_pattern_delay(chn, cmdlo);
+        break;
+    }
+}
+
+void FT_Player::ft_position_jump(uint8_t cmdlo)
+{
+    ft_song_pos = --cmdlo;
+    ft_pbreak_pos = 0;
+    ft_pos_jump_flag = true;
+    position_jump_cmd = true;
+}
+
+void FT_Player::ft_volume_change(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    if (cmdlo > 64) {
+        cmdlo = 64;
+    }
+    ch.output_volume = cmdlo;
+    ch.n_volume = cmdlo;
+}
+
+void FT_Player::ft_pattern_break(uint8_t cmdlo)
+{
+    const uint8_t row = (cmdlo >> 4) * 10 + (cmdlo & 0x0f);
+    if (row <= 63) {
+        // mt_pj2
+        ft_pbreak_pos = row;
+    }
+    ft_pos_jump_flag = true;
+}
+
+void FT_Player::ft_set_speed(uint8_t cmdlo)
+{
+    if (cmdlo < 0x20) {
+        ft_speed = cmdlo;
+        ft_counter = cmdlo;
+    } else {
+        cia_tempo = cmdlo;
+    }
+}
+
+void FT_Player::ft_fine_porta_up(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    int val = ch.n_period;
+    val -= cmdlo & 0x0f;
+    if (val < 113) {
+        val = 113;
+    }
+    ch.n_period = val;
+    ch.output_period = val;
+}
+
+void FT_Player::ft_fine_porta_down(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    int val = ch.n_period;
+    val += cmdlo & 0x0f;
+    if (val < 856) {
+        val = 856;
+    }
+    ch.n_period = val;
+    ch.output_period = val;
+}
+
+void FT_Player::ft_set_gliss_control(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    ch.n_gliss = (cmdlo & 0x0f) != 0;
+}
+
+void FT_Player::ft_set_vibrato_control(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    ch.n_wavecontrol &= 0xf0;
+    ch.n_wavecontrol |= cmdlo & 0x0f;
+}
+
+void FT_Player::ft_jump_loop(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    cmdlo &= 0x0f;
+    if (cmdlo == 0) {
+        ch.n_pattpos = ft_pattern_pos;
+    } else {
+        if (ch.n_loopcount == 0) {
+            ch.n_loopcount = cmdlo;
+            ft_pbreak_pos = ch.n_pattpos;
+            ft_pbreak_flag = true;
+            ch.inside_loop = true;
+        } else {
+            ch.n_loopcount -= 1;
+            if (ch.n_loopcount == 0) {
+                ch.inside_loop = false;
+            }
+        }
+    }
+}
+
+void FT_Player::ft_set_tremolo_control(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    ch.n_wavecontrol &= 0x0f;
+    ch.n_wavecontrol |= (cmdlo & 0x0f) << 4;
+}
+
+void FT_Player::ft_retrig_note(const int chn)
+{
+    auto& ch = ft_chantemp[chn];
+    const int ins = ch.n_insnum - 1;
+    const int ofs = 20 + 30 * (ins - 1) + 22;
+    ch.n_length = mdata.read16b(ofs);;
+    ch.n_loopstart = mdata.read16b(ofs + 4);
+    ch.n_replen = mdata.read16b(ofs + 6);
+}
+
+void FT_Player::ft_volume_fine_up(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    cmdlo &= 0x0f;
+    cmdlo += ch.n_volume;
+    if (cmdlo > 64) {
+        cmdlo = 64;
+    }
+    ch.output_volume = cmdlo;
+    ch.n_volume = cmdlo;
+}
+
+void FT_Player::ft_volume_fine_down(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    cmdlo &= 0x0f;
+    if (cmdlo > ch.n_volume) {
+        cmdlo = 0;
+    } else {
+        cmdlo = ch.n_volume - cmdlo;
+    }
+    ch.output_volume = cmdlo;
+    ch.n_volume = cmdlo;
+}
+
+void FT_Player::ft_note_cut(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    if ((cmdlo & 0x0f) == 0) {
+        ch.n_volume = 0;
+        ch.output_volume = 0;
+    }
+}
+
+void FT_Player::ft_pattern_delay(const int chn, uint8_t cmdlo)
+{
+    if (ft_patt_del_time_2 != 0) {
+        return;
+    }
+    ft_patt_del_time = (cmdlo & 0x0f) + 1;
+}
+
+void FT_Player::ft_check_efx(const int chn)
+{
+    const uint8_t cmd = ((ft_chantemp[chn].n_command & 0x0f00) >> 8);
+    uint8_t cmdlo = (ft_chantemp[chn].n_command & 0xff);
+
+    if (cmd == 0 && cmdlo == 0) {
+        return;
+    }
+
+    switch (cmd) {
+    case 0xe:
+        ft_more_e_commands(chn, cmdlo);
+        break;
+    case 0x0:
+        ft_arpeggio(chn, cmdlo);
+        break;
+    case 0x1:
+        ft_porta_up(chn, cmdlo);
+        break;
+    case 0x2:
+        ft_porta_down(chn, cmdlo);
+        break;
+    case 0x3:
+        ft_tone_portamento(chn);
+        break;
+    case 0x4:
+        ft_vibrato(chn, cmdlo);
+        break;
+    case 0x5:
+        ft_tone_plus_vol_slide(chn, cmdlo);
+        break;
+    case 0x6:
+        ft_vibrato_plus_vol_slide(chn, cmdlo);
+        break;
+    case 0x7:
+        ft_tremolo(chn, cmdlo);
+        break;
+    case 0xa:
+        ft_volume_slide(chn, cmdlo);
+        break;
+    }
+}
+
+void FT_Player::ft_volume_slide(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    uint8_t val = cmdlo >> 4;
+    if (val == 0) {
+        val = cmdlo;
+        if (val > ch.n_volume) {
+            val = 0;
+        } else {
+            val = ch.n_volume - val;
+        }
+    } else {
+        val += ch.n_volume;
+        if (val > 64) {
+            val = 64;
+        }
+    }
+    ch.output_volume = val;
+    ch.n_volume = val;
+}
+
+void FT_Player::ft_more_e_commands(const int chn, uint8_t cmdlo)
+{
+    switch (cmdlo >> 4) {
+    case 0x9:
+        ft_retrig_note_2(chn, cmdlo);
+        break;
+    case 0xc:
+        ft_note_cut_2(chn, cmdlo);
+        break;
+    case 0xd:
+        ft_note_delay_2(chn, cmdlo);
+        break;
+    }
+}
+
+void FT_Player::ft_arpeggio(const int chn, uint8_t cmdlo)
+{
+    if (cmdlo == 0) {
+        return;
+    }
+
+    int val;
+    switch (ArpeggioTable[ft_counter]) {
+    case 0:
+        val = 0;
+        break;
+    case 1:
+        val = cmdlo >> 4;
+        break;
+    default:
+        val = cmdlo & 0x0f;
+        break;
+    };
+
+    auto& ch = ft_chantemp[chn];
+    const uint16_t note = period_to_note(ch.n_period, ch.n_finetune) + val;
+    if (note > 35) {
+        ch.output_period = 0;
+        return;
+    }
+    ft_chantemp[chn].output_period = note_to_period(note, ch.n_finetune);
+}
+
+void FT_Player::ft_porta_up(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    uint16_t val = ch.n_period - cmdlo;
+    if (val < 113) {
+        val = 113;
+    }
+    ch.n_period = val;
+    ch.output_period = val;
+}
+
+void FT_Player::ft_porta_down(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    uint16_t val = ch.n_period + cmdlo;
+    if (val > 856) {
+        val = 856;
+    }
+    ch.n_period = val;
+    ch.output_period = val;
+}
+
+void FT_Player::ft_tone_portamento(const int chn)
+{
+    auto& ch = ft_chantemp[chn];
+
+    uint16_t val = ch.n_period;
+
+    if (ch.n_toneportdirec > 1) {
+        // porta up
+        if (ch.n_toneportspeed > val) {
+            val = 0;
+        } else {
+            val -= ch.n_toneportspeed;
+        }
+        if (val < ch.n_wantedperiod) {
+            val = ch.n_wantedperiod;
+            ch.n_toneportdirec = 1;
+        }
+    } else if (ch.n_toneportdirec != 1) {
+        return;
+    } else {
+        // porta down
+        val += ch.n_toneportspeed;
+        if (val > ch.n_wantedperiod) {
+            val = ch.n_wantedperiod;
+            ch.n_toneportdirec = 1;
+        }
+    }
+
+    ch.n_period = val;
+    if (ch.n_gliss) {
+        const uint16_t note = period_to_note(val, ch.n_finetune);
+        val = note_to_period(note, ch.n_finetune);
+    }
+    ch.output_period = val;
+}
+
+void FT_Player::ft_vibrato(const int chn, uint8_t cmdlo)
+{
+    if (cmdlo != 0) {
+        auto& ch = ft_chantemp[chn];
+        const uint8_t depth = cmdlo & 0x0f;
+        if (depth != 0) {
+            ch.n_vibratodepth = depth;
+        }
+        const uint8_t speed = (cmdlo & 0xf0) >> 2;
+        if (speed != 0) {
+            ch.n_vibratospeed = speed;
+        }
+    }
+
+    ft_vibrato_2(chn);
+}
+
+void FT_Player::ft_vibrato_2(const int chn)
+{
+    auto& ch = ft_chantemp[chn];
+    int pos = (ch.n_vibratopos >> 2) & 0x1f;
+
+    int val;
+    switch (ch.n_wavecontrol & 0x03) {
+    case 0:  // sine
+        val = VibratoTable[pos];
+        break;
+    case 1:  // rampdown
+        pos <<= 3;
+        val = (ch.n_vibratopos & 0x80) ?  pos : pos;
+        break;
+    default:  // square
+        val = 255;
+    }
+
+    uint16_t period = ch.n_period;
+    const uint16_t amt = (val * ch.n_vibratodepth) >> 7;
+    if ((ch.n_vibratopos & 0x80) == 0) {
+        period += amt;
+    } else {
+        if (period > amt) {
+            period -= amt;
+        } else {
+            period = 0;
+        }
+    }
+
+    ch.output_period = period;
+    ch.n_vibratopos += ch.n_vibratospeed;
+}
+
+void FT_Player::ft_tone_plus_vol_slide(const int chn, uint8_t cmdlo)
+{
+    ft_tone_portamento(chn);
+    ft_volume_slide(chn, cmdlo);
+}
+
+void FT_Player::ft_vibrato_plus_vol_slide(const int chn, uint8_t cmdlo)
+{
+    ft_vibrato_2(chn);
+    ft_volume_slide(chn, cmdlo);
+}
+
+void FT_Player::ft_tremolo(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+    if (cmdlo != 0) {
+        if ((cmdlo & 0x0f) != 0) {
+             ch.n_tremolodepth = cmdlo & 0x0f;
+        }
+        if ((cmdlo & 0xf0) != 0) {
+             ch.n_tremolospeed = cmdlo >> 4;
+        }
+    }
+
+    const int pos = (ch.n_tremolopos >> 2) & 0x1f;
+
+    /*
+    let val = match (ch.n_wavecontrol >> 4) & 0x03 {
+        0 => {  // sine
+                 FT_VIBRATO_TABLE[pos]
+             },
+        1 => {  // rampdown
+                 pos <<= 3;
+                 if (ch.n_vibratopos & 0x80 != 0 { !pos } else) { pos }  // <-- bug in FT code
+             },
+        _ => {  // square
+                 255
+             },
+    };
+
+    let volume = ch.n_volume as isize;
+    let amt = ((val * ch.n_tremolodepth as usize) >> 6) as isize;
+    if (ch.n_tremolopos & 0x80 == 0) {
+        volume += amt;
+        if (volume > 64) {
+            volume = 64;
+        }
+    } else {
+        volume -= amt;
+        if (volume < 0) {
+            volume = 0;
+        }
+    }
+
+    ch.output_volume = volume;
+    ch.n_tremolopos += ch.n_tremolospeed;
+    */
+}
+
+void FT_Player::ft_retrig_note_2(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+
+    if (ft_speed - ft_counter == (cmdlo & 0x0f)) {
+        const int ins = ch.n_insnum - 1;
+        const int ofs = 20 + 30 * (ins - 1) + 22;
+        ch.n_length = mdata.read16b(ofs);;
+        ch.n_loopstart = mdata.read16b(ofs + 4);
+        ch.n_replen = mdata.read16b(ofs + 6);
+        ch.output_period = ch.n_period;
+    }
+}
+
+void FT_Player::ft_note_cut_2(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+
+    if (ft_speed - ft_counter == (cmdlo & 0x0f)) {
+        ch.output_volume = 0;
+        ch.n_volume = 0;
+    }
+}
+
+void FT_Player::ft_note_delay_2(const int chn, uint8_t cmdlo)
+{
+    auto& ch = ft_chantemp[chn];
+
+    if (ft_speed - ft_counter == (cmdlo & 0x0f)) {
+        const int ins = ch.n_insnum - 1;
+        const int ofs = 20 + 30 * (ins - 1) + 22;
+        ch.n_length = mdata.read16b(ofs);;
+        ch.n_loopstart = mdata.read16b(ofs + 4);
+        ch.n_replen = mdata.read16b(ofs + 6);
+        ch.output_period = ch.n_period;
+    }
+}
+
+void FT_Player::ft_new_row()
+{
+    if (ft_counter != 1) {
+        return;
+    }
+
+    // ft_dskip
+    ft_pattern_pos += 1;
+    if (ft_patt_del_time != 0) {
+        ft_patt_del_time_2 = ft_patt_del_time;
+        ft_patt_del_time = 0;
+    }
+
+    // ft_dskc
+    if (ft_patt_del_time_2 != 0) {
+        ft_patt_del_time_2 -= 1;
+        if (ft_patt_del_time_2 != 0) {
+            ft_pattern_pos -= 1;
+        }
+    }
+
+    // ft_dska
+    if (ft_pbreak_flag) {
+        ft_pbreak_flag = false;
+        ft_pattern_pos = ft_pbreak_pos;
+        //ft_pbreak_pos = 0;
+    }
+
+    // ft_nnpysk
+    if (ft_pattern_pos >= 64) {
+        ft_next_position();
+    } else {
+        ft_no_new_pos_yet();
+    }
+}
+
+void FT_Player::ft_next_position()
+{
+    while (true) {
+        ft_pattern_pos = ft_pbreak_pos;
+        ft_pbreak_pos = 0;
+        ft_pos_jump_flag = false;
+
+        uint8_t pos = ft_song_pos + 1;
+        const uint8_t length = mdata.read8(950);
+        const uint8_t restart = mdata.read8(951);
+        if (pos >= length) {
+            if (restart < length) {
+                pos = restart;
+            } else {
+                pos = 0;
+            }
+        }
+        ft_song_pos = pos;
+        //ft_current_pattern = module.pattern_in_position(pos);
+        if (!ft_pos_jump_flag) {
+            return;
+        }
+    }
+}
+
+void FT_Player::ft_no_new_pos_yet()
+{
+    if (ft_pos_jump_flag) {
+        ft_next_position();
+    }
+}
+
+void FT_Player::ft_music()
+{
+    ft_counter -= 1;
+    if (ft_counter == 0) {
+        ft_counter = ft_speed;
+        if (ft_patt_del_time_2 == 0) {
+            ft_get_new_note();
+        } else {
+            ft_no_new_all_channels();
+        }
+    } else {
+        ft_no_new_all_channels();
+    }
+    ft_new_row();
+}
+
+void FT_Player::ft_no_new_all_channels()
+{
+    for (int chn = 0; chn < channels; chn++) {
+        ft_check_efx(chn);
+    }
+}
+
+void FT_Player::ft_get_new_note()
+{
+    const int pat = mdata.read8(952 + ft_song_pos);
+
+    for (int chn = 0; chn < channels; chn++) {
+        ft_play_voice(pat, chn);
+    }
+}
 
 
 namespace {
