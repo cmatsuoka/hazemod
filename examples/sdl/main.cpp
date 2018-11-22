@@ -67,6 +67,7 @@ int main(int argc, char** argv)
     }
     uint32_t size = st.st_size;
 
+    // Always map as MAP_PRIVATE! Players can modify module data
     void *data = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (data == MAP_FAILED) {
         std::cerr << "Error: " << std::strerror(errno) << std::endl;

@@ -76,6 +76,11 @@ public:
         return ret;
     }
 
+    void write8(uint32_t ofs, uint8_t val) const {
+        check_buffer_size(ofs + 1);
+        data[ofs] = val;
+    }    
+
     void check_buffer_size(uint32_t end) const {
         if (end > data_size || end <= 0) {
             throw std::runtime_error(string_format("short read (want %d bytes, have %d)", end, data_size));
