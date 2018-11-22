@@ -37,5 +37,5 @@ TODO list
 
 - miscellaneous
   - better library name?
-  - add protracker funk effect
+  - ~~add protracker funkit effect~~ ✓
   - write documentation
