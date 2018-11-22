@@ -260,7 +260,6 @@ void UST_Player::chanelhandler(const int pat, const int chn)
             ch.n_8_soundlength = mdata.read16b(ofs + 6);   // replength = sndlength
         }
     }
-
     // chan2
     if (ch.n_0_note) {
         paula_->stop_dma(1 << chn);                        // clear dma
@@ -270,7 +269,7 @@ void UST_Player::chanelhandler(const int pat, const int chn)
         // chan3                                           // no oneshot-sample
         ch.n_16_last_saved_note = ch.n_0_note;             // save note for effect
         paula_->set_start(chn, ch.n_4_soundstart);         // set samplestart
-        paula_->set_length(chn, ch.n_14_repeatlength);     // set samplelength
+        paula_->set_length(chn, ch.n_8_soundlength);       // set samplelength
         paula_->set_period(chn, ch.n_0_note);              // set period
         enbits |= 1 << chn;                                // store dma-bit
         ch.n_20_volume_trigger = ch.n_18_volume;           // volume trigger
