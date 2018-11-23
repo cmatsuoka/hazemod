@@ -44,8 +44,6 @@ class Paula : public Mixer {
 
     double remainder;
     double fdiv;
-    
-    int16_t sample_from_voice(int);
 
 public:
     Paula(void *ptr, uint32_t size, int sr) :

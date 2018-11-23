@@ -112,8 +112,8 @@ public:
     void play() override;
     void reset() override;
     void frame_info(haze::FrameInfo&) override;
-    void *save_state() override;
-    void restore_state(void *) override;
+    State save_state() override;
+    void restore_state(State const&) override;
 };
 
 

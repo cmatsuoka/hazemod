@@ -23,7 +23,10 @@ public:
     virtual void start() = 0;
     virtual void play() = 0;
     virtual void reset() = 0;
+    virtual int length() = 0;
     virtual void frame_info(haze::FrameInfo&) = 0;
+    virtual State save_state() = 0;
+    virtual void restore_state(State const&) = 0;
 
     Mixer *mixer() override { return mixer_; }
 };

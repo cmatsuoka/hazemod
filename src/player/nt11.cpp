@@ -74,6 +74,11 @@ void NT11_Player::reset()
 {
 }
 
+int NT11_Player::length()
+{
+    return mdata.read8(950);
+}
+
 void NT11_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = mt_songpos;
@@ -86,14 +91,14 @@ void NT11_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
-void *NT11_Player::save_state()
+State NT11_Player::save_state()
 {
-    return new NT11_Player(*this);
+    return to_state<NT11_Player>(*this);
 }
 
-void NT11_Player::restore_state(void *inst)
+void NT11_Player::restore_state(State const& state)
 {
-    *this = *static_cast<NT11_Player *>(inst);
+    from_state<NT11_Player>(state, *this);
 }
 
 //----------------------------------------------------------------------

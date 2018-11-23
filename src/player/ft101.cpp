@@ -762,6 +762,16 @@ void FT_Player::ft_get_new_note()
     }
 }
 
+State FT_Player::save_state()
+{
+    return to_state<FT_Player>(*this);
+}
+
+void FT_Player::restore_state(State const& state)
+{
+    from_state<FT_Player>(state, *this);
+}
+
 
 namespace {
 

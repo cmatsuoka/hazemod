@@ -17,6 +17,12 @@ void Scanner::scan(haze::Player *player)
     int prev_row = 9999;
     int prev_loop_count = 9999;
 
+    const int len = player->length();
+    for (int i = 0; i < len; i++) {
+        scan_cnt.push_back(std::vector<uint32_t>(256));
+    }
+    ord_data.resize(len);
+
     player->start();
 
     haze::FrameInfo fi;

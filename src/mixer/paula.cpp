@@ -62,7 +62,8 @@ void Paula::mix(float *buf, int size)
         int32_t l = 0, r = 0;
 
         for (int i = 0; i < 4; i++) {
-            int32_t val = sample_from_voice(i);
+            auto& v = channel_[i];
+            int32_t val = v->get();
             r += val;
             l += val;
         }

@@ -90,6 +90,11 @@ void PT21A_Player::reset()
 {
 }
 
+int PT21A_Player::length()
+{
+    return mdata.read8(950);
+}
+
 void PT21A_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = mt_SongPos;
@@ -102,14 +107,16 @@ void PT21A_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
-void *PT21A_Player::save_state()
+
+
+State PT21A_Player::save_state()
 {
-    return new PT21A_Player(*this);
+    return to_state<PT21A_Player>(*this);
 }
 
-void PT21A_Player::restore_state(void *inst)
+void PT21A_Player::restore_state(State const& state)
 {
-    *this = *static_cast<PT21A_Player *>(inst);
+    from_state<PT21A_Player>(state, *this);
 }
 
 //----------------------------------------------------------------------

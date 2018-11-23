@@ -76,6 +76,11 @@ void ST_Player::reset()
 {
 }
 
+int ST_Player::length()
+{
+    return mt_maxpart;
+}
+
 void ST_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = mt_partnrplay;
@@ -88,14 +93,14 @@ void ST_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
-void *ST_Player::save_state()
+State ST_Player::save_state()
 {
-    return new ST_Player(*this);
+    return to_state<ST_Player>(*this);
 }
 
-void ST_Player::restore_state(void *inst)
+void ST_Player::restore_state(State const& state)
 {
-    *this = *static_cast<ST_Player *>(inst);
+    from_state<ST_Player>(state, *this);
 }
 
 //----------------------------------------------------------------------

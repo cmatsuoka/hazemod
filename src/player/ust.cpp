@@ -76,6 +76,11 @@ void UST_Player::reset()
 {
 }
 
+int UST_Player::length()
+{
+    return numpat;
+}
+
 void UST_Player::frame_info(haze::FrameInfo& pi)
 {
     pi.pos = trkpos;
@@ -88,14 +93,14 @@ void UST_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
-void *UST_Player::save_state()
+State UST_Player::save_state()
 {
-    return new UST_Player(*this);
+    return to_state<UST_Player>(*this);
 }
 
-void UST_Player::restore_state(void *inst)
+void UST_Player::restore_state(State const& state)
 {
-    *this = *static_cast<UST_Player *>(inst);
+    from_state<UST_Player>(state, *this);
 }
 
 //----------------------------------------------------------------------

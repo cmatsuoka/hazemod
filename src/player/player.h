@@ -9,6 +9,7 @@
 #include "mixer/mixer.h"
 #include "util/databuffer.h"
 #include "util/options.h"
+#include "util/state.h"
 
 
 class FormatPlayer {
@@ -90,9 +91,10 @@ public:
     virtual void play() = 0;
     virtual void reset() = 0;
     virtual void frame_info(FrameInfo&) = 0;
+    virtual int length() = 0;
     virtual Mixer *mixer() = 0;
-    virtual void *save_state() = 0;
-    virtual void restore_state(void *) = 0;
+    virtual State save_state() = 0;
+    virtual void restore_state(State const&) = 0;
 
     uint32_t frame_size() { return frame_size_; }
     void scan();

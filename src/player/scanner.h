@@ -17,12 +17,12 @@ struct ScanData {
 };
 
 struct OrdData {
-    void *state;
+    State state;
     double time;
     bool used;
 
-    OrdData() : state(nullptr), time(0.0f), used(false) {}
-    ~OrdData() { delete static_cast<haze::Player *>(state); }
+    OrdData() : time(0.0f), used(false) {}
+    ~OrdData() {}
 };
 
 class Scanner {
