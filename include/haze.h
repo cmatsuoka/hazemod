@@ -8,6 +8,9 @@
 
 namespace haze {
 
+constexpr int MaxSequences = 16;
+
+
 struct ModuleInfo {
     std::string title;        // The module title
     std::string format_id;    // The module format identifier
@@ -33,6 +36,7 @@ struct FrameInfo {
     int frame;
     int song;
     int speed;
+    int loop_count;
     float tempo;
     float time;
 };

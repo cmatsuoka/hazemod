@@ -102,6 +102,16 @@ void PT21A_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
+void *PT21A_Player::save_state()
+{
+    return new PT21A_Player(*this);
+}
+
+void PT21A_Player::restore_state(void *inst)
+{
+    *this = *static_cast<PT21A_Player *>(inst);
+}
+
 //----------------------------------------------------------------------
 
 namespace {

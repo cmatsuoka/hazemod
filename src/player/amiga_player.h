@@ -25,6 +25,8 @@ public:
     virtual void play() = 0;
     virtual void reset() = 0;
     virtual void frame_info(haze::FrameInfo&) = 0;
+    virtual void *save_state() = 0;
+    virtual void restore_state(void *) = 0;
 
     Mixer *mixer() override { return paula_; }
 };

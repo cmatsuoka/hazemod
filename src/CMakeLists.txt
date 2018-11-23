@@ -15,6 +15,7 @@ add_library(hazemod SHARED
     mixer/softmixer_voice.cpp
     mixer/softmixer.cpp
     mixer/paula.cpp
+    player/scanner.cpp
     player/player.cpp
     player/pt21a.cpp
     player/nt11.cpp

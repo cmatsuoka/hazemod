@@ -88,6 +88,16 @@ void ST_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
+void *ST_Player::save_state()
+{
+    return new ST_Player(*this);
+}
+
+void ST_Player::restore_state(void *inst)
+{
+    *this = *static_cast<ST_Player *>(inst);
+}
+
 //----------------------------------------------------------------------
 
 namespace {

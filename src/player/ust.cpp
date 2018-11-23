@@ -88,6 +88,16 @@ void UST_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
+void *UST_Player::save_state()
+{
+    return new UST_Player(*this);
+}
+
+void UST_Player::restore_state(void *inst)
+{
+    *this = *static_cast<UST_Player *>(inst);
+}
+
 //----------------------------------------------------------------------
 
 namespace {

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <haze.h>
+#include "player/scanner.h"
 #include "mixer/mixer.h"
 #include "util/databuffer.h"
 #include "util/options.h"
@@ -51,15 +52,15 @@ protected:
     int initial_speed_;
     double initial_tempo_;
     double tempo_factor_;
+    double total_time_;
 
     int32_t frame_size_;
     int32_t frame_remain_;
 
-    int loop_count;
-    int end_point;
+    int loop_count_;
+    bool inside_loop_;
 
-    // TODO: scan_data
-    bool inside_loop;
+    Scanner scanner_;
 
     template<typename T> void fill_buffer_(T *buf, int32_t size) {
         size = size / (sizeof(T) * 2);  // stereo
@@ -76,28 +77,22 @@ protected:
         }
     }
 
-public:
-    Player(void *buf, const uint32_t size, int ch, int sr) :
-        mdata(buf, size),
-        speed_(6),
-        tempo_(125.0f),
-        time_(0.0f),
-        initial_speed_(6),
-        initial_tempo_(125.0f),
-        tempo_factor_(1.0f),
-        frame_size_(0),
-        frame_remain_(0)
-    {
-    }
+    bool check_end_of_module();
+    void scan();
 
-    virtual ~Player() {
-    }
+    friend class ::Scanner;
+
+public:
+    Player(void *, const uint32_t, int, int);
+    virtual ~Player();
 
     virtual void start() = 0;
     virtual void play() = 0;
     virtual void reset() = 0;
     virtual void frame_info(FrameInfo&) = 0;
     virtual Mixer *mixer() = 0;
+    virtual void *save_state() = 0;
+    virtual void restore_state(void *) = 0;
 
     uint32_t frame_size() { return frame_size_; }
 
@@ -108,7 +103,6 @@ public:
     void fill(float *buf, int size) {
         fill_buffer_<float>(buf, size);
     }
-
 };
 
 }  // namespace haze

@@ -86,6 +86,16 @@ void NT11_Player::frame_info(haze::FrameInfo& pi)
     pi.time = time_;
 }
 
+void *NT11_Player::save_state()
+{
+    return new NT11_Player(*this);
+}
+
+void NT11_Player::restore_state(void *inst)
+{
+    *this = *static_cast<NT11_Player *>(inst);
+}
+
 //----------------------------------------------------------------------
 
 namespace {
