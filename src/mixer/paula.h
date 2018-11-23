@@ -56,7 +56,6 @@ public:
         remainder(PAULA_HZ / rate_),
         fdiv(PAULA_HZ / rate_)
     {
-        memset(channel_, 0, sizeof(channel_));
         memset(bleps, 0, sizeof(bleps));
         channel_[0] = new PaulaChannel(data_, sr);
         channel_[1] = new PaulaChannel(data_, sr);
