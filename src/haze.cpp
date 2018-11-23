@@ -34,6 +34,7 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::s
     }
     player_info_ = fp->info();
     player_ = fp->new_player(buf, size, 44100);
+    player_->scan();
     player_->start();
 }
 

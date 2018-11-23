@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <unordered_map>
 #include <haze.h>
-#include "player/scanner.h"
 #include "mixer/mixer.h"
 #include "util/databuffer.h"
 #include "util/options.h"
@@ -38,6 +37,8 @@ public:
 };
 
 
+class Scanner;
+
 namespace haze {
 
 class Player {
@@ -60,7 +61,7 @@ protected:
     int loop_count_;
     bool inside_loop_;
 
-    Scanner scanner_;
+    Scanner *scanner_;
 
     template<typename T> void fill_buffer_(T *buf, int32_t size) {
         size = size / (sizeof(T) * 2);  // stereo
@@ -78,7 +79,6 @@ protected:
     }
 
     bool check_end_of_module();
-    void scan();
 
     friend class ::Scanner;
 
@@ -95,6 +95,7 @@ public:
     virtual void restore_state(void *) = 0;
 
     uint32_t frame_size() { return frame_size_; }
+    void scan();
 
     void fill(int16_t *buf, int size) {
         fill_buffer_<int16_t>(buf, size);

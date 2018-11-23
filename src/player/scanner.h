@@ -4,6 +4,7 @@
 #include <haze.h>
 #include <cstdint>
 #include <vector>
+#include "player/player.h"
 
 
 struct ScanData {
@@ -21,6 +22,7 @@ struct OrdData {
     bool used;
 
     OrdData() : state(nullptr), time(0.0f), used(false) {}
+    ~OrdData() { delete static_cast<haze::Player *>(state); }
 };
 
 class Scanner {

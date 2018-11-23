@@ -1,4 +1,5 @@
 #include "player/player.h"
+#include "player/scanner.h"
 #include "player/pt21a.h"
 #include "player/nt11.h"
 #include "player/st2.h"
@@ -37,9 +38,16 @@ Player::Player(void *buf, const uint32_t size, int ch, int sr) :
     frame_size_(0),
     frame_remain_(0)
 {
+    scanner_ = new Scanner;
 }
 
-Player::~Player() {
+Player::~Player()
+{
+    delete scanner_;
 }
 
+void Player::scan()
+{
+    scanner_->scan(this);
+}
 }  // namespace haze

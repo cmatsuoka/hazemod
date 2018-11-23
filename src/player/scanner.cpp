@@ -2,6 +2,14 @@
 #include "player/player.h"
 #include "util/debug.h"
 
+Scanner::Scanner() :
+    end_point(0)
+{
+}
+
+Scanner::~Scanner()
+{
+}
 
 void Scanner::scan(haze::Player *player)
 {
@@ -54,5 +62,3 @@ void Scanner::scan(haze::Player *player)
     scan_data[fi.song].ord = fi.pos;
     scan_data[fi.song].frame = fi.frame;
 }
-
-
