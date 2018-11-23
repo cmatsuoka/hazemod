@@ -15,6 +15,8 @@ Voice::Voice(int num, InterpolatorType typ) :
     mute_(false),
     loop_(false),
     //finish_(false),
+    bidir_(false),
+    forward_(true),
     start_(0),
     end_(0),
     loop_start_(0),
@@ -29,6 +31,25 @@ Voice::Voice(int num, InterpolatorType typ) :
 Voice::~Voice()
 {
     delete itp_;
+}
+
+void Voice::reset()
+{
+    pos_ = 0;
+    frac_ = 0;
+    step_ = 0.0;
+    volume_ = 256;
+    pan_ = 0;
+    mute_ = false;
+    loop_ = false;
+    bidir_ = false;
+    forward_ = true;
+    start_ = 0;
+    end_ = 0;
+    loop_start_ = 0;
+    loop_end_ = 0;
+    prev_ = -1;
+    sample_ = empty_sample;
 }
 
 void Voice::set_interpolator(InterpolatorType typ)

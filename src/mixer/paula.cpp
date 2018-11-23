@@ -32,6 +32,12 @@ void Paula::stop_dma(const uint16_t mask)
     }
 }
 
+void Paula::reset()
+{
+    for (auto& ch : channel_) {
+        ch->reset();
+    }
+}
 
 constexpr int32_t Lim16_lo = -32768;
 constexpr int32_t Lim16_hi = 32767;

@@ -49,6 +49,8 @@ public:
 
     int num() { return num_; }
 
+    void reset();
+
     int32_t get() {
         if (pos_ >= end_) {
             return 0;

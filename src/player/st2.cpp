@@ -78,7 +78,7 @@ void ST_Player::reset()
 
 int ST_Player::length()
 {
-    return mt_maxpart;
+    return mdata.read8(470);
 }
 
 void ST_Player::frame_info(haze::FrameInfo& pi)

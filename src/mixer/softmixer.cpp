@@ -29,6 +29,13 @@ void SoftMixer::add_sample(void *buf, uint32_t size, double rate, uint32_t flags
     sample.push_back(s);
 }
 
+void SoftMixer::reset()
+{
+    for (auto& v : voice) {
+        v->reset();
+    }
+}
+
 void SoftMixer::set_sample(int chn, int val)
 {
     if (chn >= num_voices || size_t(val) >= sample.size()) {

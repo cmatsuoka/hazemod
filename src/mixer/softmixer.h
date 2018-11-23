@@ -18,6 +18,7 @@ public:
     ~SoftMixer();
     void mix(int16_t *, int) override;       // mix sample data
     void mix(float *, int) override;
+    void reset();
     void add_sample(void *, uint32_t, double = 1.0, uint32_t = 0); // load sample data
     void set_sample(int, int);               // set active sample
     void set_start(int, uint32_t);           // set sample start offset

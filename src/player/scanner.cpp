@@ -23,8 +23,6 @@ void Scanner::scan(haze::Player *player)
     }
     ord_data.resize(len);
 
-    player->start();
-
     haze::FrameInfo fi;
 
     while (true) {
@@ -34,7 +32,7 @@ void Scanner::scan(haze::Player *player)
 
         if (prev_row != row || prev_pos != pos || prev_loop_count != fi.loop_count) {
 
-            Debug("scan: check %d/%d", pos, row);
+            //Debug("scan: check %d/%d", pos, row);
             if (scan_cnt[pos][row] > 0) {
                 if (player->inside_loop_) {
                     Debug("inside loop");
@@ -69,4 +67,5 @@ void Scanner::scan(haze::Player *player)
     scan_data[fi.song].frame = fi.frame;
 
     player->restore_state(ord_data[0].state);
+    player->mixer()->reset();
 }

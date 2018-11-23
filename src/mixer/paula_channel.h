@@ -78,6 +78,16 @@ public:
         stopped = false;
     }
 
+    void reset() {
+        stop_dma();
+        pos = 0;
+        frac = 0;
+        end = 0;
+        audloc = 0;
+        audlen = 0;
+        audper = 0;
+        audvol = 0;
+    }
 };
 
 #endif  // HAZE_MIXER_PAULA_CHANNEL_H_

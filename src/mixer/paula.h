@@ -73,6 +73,7 @@ public:
 
     void mix(int16_t *, int);                // mix sample data
     void mix(float *, int);
+    void reset();
     void set_cia_led(const bool val) { cia_led_ = val; }
     bool cia_led() { return cia_led_; }
     int16_t output_sample();

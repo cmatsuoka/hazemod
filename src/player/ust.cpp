@@ -63,6 +63,8 @@ void UST_Player::start()
     paula_->set_pan(1, panr);
     paula_->set_pan(2, panr);
     paula_->set_pan(3, panl);
+
+printf("pos=%d row=%d frame=%d\n", trkpos, patpos, timpos);
 }
 
 void UST_Player::play()
@@ -78,7 +80,7 @@ void UST_Player::reset()
 
 int UST_Player::length()
 {
-    return numpat;
+    return mdata.read8(470);
 }
 
 void UST_Player::frame_info(haze::FrameInfo& pi)
@@ -101,6 +103,7 @@ State UST_Player::save_state()
 void UST_Player::restore_state(State const& state)
 {
     from_state<UST_Player>(state, *this);
+printf("pos=%d row=%d frame=%d\n", trkpos, patpos, timpos);
 }
 
 //----------------------------------------------------------------------

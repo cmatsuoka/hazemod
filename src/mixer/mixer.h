@@ -23,6 +23,7 @@ public:
     virtual ~Mixer() {}
     virtual void mix(int16_t *, int) = 0;  // mix sample data
     virtual void mix(float *, int) = 0;
+    virtual void reset() = 0;
     int rate() { return srate; }
     int voices() { return num_voices; }
 };  // Mixer
