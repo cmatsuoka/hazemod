@@ -67,4 +67,6 @@ void Scanner::scan(haze::Player *player)
     scan_data[fi.song].row = fi.row;
     scan_data[fi.song].ord = fi.pos;
     scan_data[fi.song].frame = fi.frame;
+
+    player->restore_state(ord_data[0].state);
 }
