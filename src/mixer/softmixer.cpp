@@ -8,7 +8,7 @@ constexpr int32_t Lim16_hi = 32767;
 
 
 SoftMixer::SoftMixer(int num, int sr, InterpolatorType itpt) :
-    Mixer(num, sr, itpt)
+    Mixer(num, sr)
 {
     for (int i = 0; i < num; i++) {
         Voice *c = new Voice(i, itpt);

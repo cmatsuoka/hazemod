@@ -1,8 +1,6 @@
 #ifndef HAZE_MIXER_MIXER_H_
 #define HAZE_MIXER_MIXER_H_
 
-#include "mixer/interpolator.h"
-
 
 // Amiga PAL color carrier frequency (PCCF) = 4.43361825 MHz
 // Amiga CPU clock = 1.6 * PCCF = 7.0937892 MHz
@@ -16,7 +14,7 @@ protected:
     int srate;
     int num_voices;
 public:
-    Mixer(int num, int sr, InterpolatorType = NearestInterpolatorType) :
+    Mixer(int num, int sr) :
         srate(sr),
         num_voices(num)
     {}
