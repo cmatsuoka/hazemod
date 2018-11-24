@@ -1,10 +1,10 @@
 #include "player/ft101.h"
 
-/// FT101 Replayer
-///
-/// Player based on the FastTracker 1.01 replayer written by Fredrik Huss
-/// (Mr.H / Triton) in 1992-1993. (Function and variable named after the
-/// corresponding parts in the Protracker 2.1A playroutine.)
+// FT101 Replayer
+//
+// Player based on the FastTracker 1.01 replayer written by Fredrik Huss
+// (Mr.H / Triton) in 1992-1993. (Function and variable named after the
+// corresponding parts in the Protracker 2.1A playroutine.)
 
 
 namespace {
@@ -35,35 +35,30 @@ uint8_t period_to_note(const uint16_t period, const uint8_t fine)
 void FT_Player::ft_play_voice(int pat, const int chn)
 {
     const uint32_t event = mdata.read32b(1084 + pat * 1024 + ft_pattern_pos * 16 + chn * 4);
-
     const uint16_t note = (event & 0xfff0000) >> 16;
     const uint8_t cmd = (event & 0x0f00) >> 8;
     const uint8_t cmdlo = event & 0xff;
 
-    const int insnum = ((event & 0xf0000000) >> 24) | ((cmd & 0xf0) >> 4);
-
     auto& ch = ft_chantemp[chn];
 
-    if (cmd == 0) {
+    const uint8_t n_cmd = ch.n_command >> 8;  // ax
+    if (n_cmd == 0) {
         ch.output_period = ch.n_period;
-    } else {
-        uint8_t ch_cmd = ch.n_command >> 4;
-        if (ch_cmd == 4 || ch_cmd == 6) {
-            if (cmd != 4 && cmd != 6) {
-                ch.output_period = ch.n_period;
-            }
+    } else if (n_cmd == 4 || n_cmd == 6) {
+        if (cmd != 4 && cmd != 6) {
+            ch.output_period = ch.n_period;
         }
     }
 
-    ch.n_command = cmd << 8 | cmdlo;
+    ch.n_command = event & 0xffff;
 
+    const int insnum = ((event & 0xf0000000) >> 24) | ((cmd & 0xf0) >> 4);
     if (insnum) {
         const int ins = insnum - 1;
         const int ofs = 20 + 30 * (ins - 1) + 22;
         ch.n_insnum = insnum;
         ch.output_volume = ch.n_volume = mdata.read8(ofs + 3);
-        ch.n_finetune = mdata.read8(ofs + 2) & 0x0f;
-        mixer_->set_sample(chn, ch.n_insnum);
+        ch.n_finetune = mdata.read8(ofs + 2);
     }
 
     if (cmd == 3 || cmd == 5) {   // check if tone portamento
@@ -534,7 +529,7 @@ void FT_Player::ft_vibrato(const int chn, uint8_t cmdlo)
 void FT_Player::ft_vibrato_2(const int chn)
 {
     auto& ch = ft_chantemp[chn];
-    int pos = (ch.n_vibratopos >> 2) & 0x1f;
+    int pos = (ch.n_vibratopos >> 2) & 0x1f;  // al
 
     int val;
     switch (ch.n_wavecontrol & 0x03) {
@@ -543,20 +538,22 @@ void FT_Player::ft_vibrato_2(const int chn)
         break;
     case 1:  // rampdown
         pos <<= 3;
-        val = (ch.n_vibratopos & 0x80) ?  pos : pos;
+        val = (ch.n_vibratopos & 0x80) ? ~pos : pos;
         break;
     default:  // square
         val = 255;
     }
 
-    uint16_t period = ch.n_period;
-    const uint16_t amt = (val * ch.n_vibratodepth) >> 7;
+    int period = ch.n_period;
+    const int amt = (val * ch.n_vibratodepth) >> 7;
     if ((ch.n_vibratopos & 0x80) == 0) {
         period += amt;
-    } else {
         if (period > amt) {
             period -= amt;
-        } else {
+        }
+    } else {
+        period -= amt;
+        if (period < 0) {
             period = 0;
         }
     }
@@ -589,25 +586,36 @@ void FT_Player::ft_tremolo(const int chn, uint8_t cmdlo)
         }
     }
 
-    const int pos = (ch.n_tremolopos >> 2) & 0x1f;
+    int pos = (ch.n_tremolopos >> 2) & 0x1f;
 
-    /*
-    let val = match (ch.n_wavecontrol >> 4) & 0x03 {
-        0 => {  // sine
-                 FT_VIBRATO_TABLE[pos]
-             },
-        1 => {  // rampdown
-                 pos <<= 3;
-                 if (ch.n_vibratopos & 0x80 != 0 { !pos } else) { pos }  // <-- bug in FT code
-             },
-        _ => {  // square
-                 255
-             },
-    };
+    int val;
+    switch ((ch.n_wavecontrol >> 4) & 0x03) {
+    case 0:  // sine
+        val = VibratoTable[pos];
+        break;
+    case 1:  // rampdown
+        pos <<= 3;
+        val = (ch.n_vibratopos & 0x80) ? ~pos : pos;  // <-- bug in FT code
+        break;
+    default:  // square
+        val = 255;
+    }
 
-    let volume = ch.n_volume as isize;
-    let amt = ((val * ch.n_tremolodepth as usize) >> 6) as isize;
-    if (ch.n_tremolopos & 0x80 == 0) {
+    int volume = ch.n_volume;
+    const int amt = (val * ch.n_tremolodepth) >> 6;
+    if ((ch.n_tremolopos & 0x80) == 0) {
+        volume += amt;
+        if (volume > 64) {
+            volume = 64;
+        }
+    } else {
+        volume -= amt;
+        if (volume < 0) {
+            volume = 0;
+        }
+    }
+
+    if ((ch.n_tremolopos & 0x80) == 0) {
         volume += amt;
         if (volume > 64) {
             volume = 64;
@@ -621,7 +629,6 @@ void FT_Player::ft_tremolo(const int chn, uint8_t cmdlo)
 
     ch.output_volume = volume;
     ch.n_tremolopos += ch.n_tremolospeed;
-    */
 }
 
 void FT_Player::ft_retrig_note_2(const int chn, uint8_t cmdlo)
