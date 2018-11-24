@@ -31,11 +31,8 @@ namespace haze {
 
 Player::Player(void *buf, const uint32_t size, int ch, int sr) :
     mdata(buf, size),
-    speed_(6),
     tempo_(125.0f),
     time_(0.0f),
-    initial_speed_(6),
-    initial_tempo_(125.0f),
     tempo_factor_(1.0f),
     frame_size_(0),
     frame_remain_(0)

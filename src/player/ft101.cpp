@@ -7,6 +7,121 @@
 // corresponding parts in the Protracker 2.1A playroutine.)
 
 
+constexpr int InitialSpeed = 6;
+constexpr double InitialTempo = 125.0;
+
+
+haze::Player *FastTracker::new_player(void *buf, uint32_t size, int sr)
+{
+    return new FT_Player(buf, size, sr);
+}
+
+//----------------------------------------------------------------------
+
+FT_Player::FT_Player(void *buf, uint32_t size, int sr) :
+    PCPlayer(buf, size, 8, sr),
+    ft_speed(InitialSpeed),
+    ft_counter(ft_speed),
+    ft_song_pos(0),
+    ft_pbreak_pos(0),
+    ft_pos_jump_flag(false),
+    ft_pbreak_flag(false),
+    ft_patt_del_time(0),
+    ft_patt_del_time_2(0),
+    ft_pattern_pos(0),
+    ft_current_pattern(0),
+    cia_tempo(InitialTempo),
+    position_jump_cmd(false)
+{
+    memset(ft_chantemp, 0, sizeof(ft_chantemp));
+}
+
+FT_Player::~FT_Player()
+{
+}
+
+void FT_Player::start()
+{
+    tempo_ = InitialTempo;
+    time_ = 0.0f;
+
+    int num_pat = 0;
+    for (int i = 0; i < 128; i++) {
+        int pat = mdata.read8(952 + i);
+        num_pat = std::max(num_pat, pat);
+    }
+    num_pat++;
+
+    int offset = 1084 + 1024 * num_pat;
+    for (int i = 0; i < 31; i++) {
+        //ft_sample_starts[i] = offset;
+        offset += mdata.read16b(20 + 22 + 30 * i) * 2;
+    }
+
+    const int pan = options.get("pan", 70);
+    const int panl = -128 * pan / 100;
+    const int panr = 127 * pan / 100;
+
+    mixer_->set_pan(0, panl);
+    mixer_->set_pan(1, panr);
+    mixer_->set_pan(2, panr);
+    mixer_->set_pan(3, panl);
+    mixer_->set_pan(4, panl);
+    mixer_->set_pan(5, panr);
+    mixer_->set_pan(6, panr);
+    mixer_->set_pan(7, panl);
+}
+
+void FT_Player::play()
+{
+    ft_music();
+
+    tempo_ = cia_tempo;
+    time_ += 20.0 * 125.0 / tempo_;
+
+    inside_loop_  = ft_chantemp[0].inside_loop;
+    inside_loop_ |= ft_chantemp[1].inside_loop;
+    inside_loop_ |= ft_chantemp[2].inside_loop;
+    inside_loop_ |= ft_chantemp[3].inside_loop;
+    inside_loop_ |= ft_chantemp[4].inside_loop;
+    inside_loop_ |= ft_chantemp[5].inside_loop;
+    inside_loop_ |= ft_chantemp[6].inside_loop;
+    inside_loop_ |= ft_chantemp[7].inside_loop;
+}
+
+void FT_Player::reset()
+{
+}
+
+int FT_Player::length()
+{
+    return mdata.read8(950);
+}
+
+void FT_Player::frame_info(haze::FrameInfo& pi)
+{
+    pi.pos = ft_song_pos;
+    pi.row = ft_pattern_pos;
+    pi.num_rows = 64;
+    pi.frame = (ft_speed - ft_counter + 1) % ft_speed;
+    pi.song = 0;
+    pi.speed = ft_speed;
+    pi.tempo = cia_tempo;
+    pi.time = time_;
+}
+
+State FT_Player::save_state()
+{
+    return to_state<FT_Player>(*this);
+}
+
+void FT_Player::restore_state(State const& state)
+{
+    from_state<FT_Player>(state, *this);
+}
+
+//----------------------------------------------------------------------
+
 namespace {
 
 extern const uint8_t ArpeggioTable[32];
@@ -767,16 +882,6 @@ void FT_Player::ft_get_new_note()
     for (int chn = 0; chn < channels; chn++) {
         ft_play_voice(pat, chn);
     }
-}
-
-State FT_Player::save_state()
-{
-    return to_state<FT_Player>(*this);
-}
-
-void FT_Player::restore_state(State const& state)
-{
-    from_state<FT_Player>(state, *this);
 }
 
 

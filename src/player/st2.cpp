@@ -33,12 +33,8 @@ ST_Player::~ST_Player()
 
 void ST_Player::start()
 {
-    speed_ = 6;
     tempo_ = 125.0;
     time_ = 0.0f;
-
-    initial_speed_ = speed_;
-    initial_tempo_ = tempo_;
 
     mt_maxpart = mdata.read8(470);
 

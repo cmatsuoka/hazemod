@@ -35,7 +35,7 @@ void Scanner::scan(haze::Player *player)
             //Debug("scan: check %d/%d", pos, row);
             if (scan_cnt[pos][row] > 0) {
                 if (player->inside_loop_) {
-                    Debug("inside loop");
+                    //Debug("inside loop");
                 } else {
                     Debug("scan: already visited");
                     break;

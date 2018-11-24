@@ -48,12 +48,8 @@ PT21A_Player::~PT21A_Player()
 
 void PT21A_Player::start()
 {
-    speed_ = InitialSpeed;
     tempo_ = InitialTempo;
     time_ = 0.0f;
-
-    initial_speed_ = speed_;
-    initial_tempo_ = tempo_;
 
     int num_pat = 0;
     for (int i = 0; i < 128; i++) {
@@ -84,6 +80,11 @@ void PT21A_Player::play()
 
     tempo_ = cia_tempo;
     time_ += 20.0 * 125.0 / tempo_;
+
+    inside_loop_  = mt_chantemp[0].inside_loop;
+    inside_loop_ |= mt_chantemp[1].inside_loop;
+    inside_loop_ |= mt_chantemp[2].inside_loop;
+    inside_loop_ |= mt_chantemp[3].inside_loop;
 }
 
 void PT21A_Player::reset()
@@ -106,8 +107,6 @@ void PT21A_Player::frame_info(haze::FrameInfo& pi)
     pi.tempo = cia_tempo;
     pi.time = time_;
 }
-
-
 
 State PT21A_Player::save_state()
 {

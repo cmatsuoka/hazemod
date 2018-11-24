@@ -34,12 +34,8 @@ UST_Player::~UST_Player()
 
 void UST_Player::start()
 {
-    speed_ = 6;
     tempo_ = 125.0;
     time_ = 0.0f;
-
-    initial_speed_ = speed_;
-    initial_tempo_ = tempo_;
 
     numpat = mdata.read8(470);
 

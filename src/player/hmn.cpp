@@ -81,12 +81,8 @@ HMN_Player::~HMN_Player()
 
 void HMN_Player::start()
 {
-    speed_ = 6;
     tempo_ = 125.0;
     time_ = 0.0f;
-
-    initial_speed_ = speed_;
-    initial_tempo_ = tempo_;
 
     int num_pat = 0;
     for (int i = 0; i < 128; i++) {

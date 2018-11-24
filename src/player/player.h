@@ -48,11 +48,8 @@ protected:
     DataBuffer mdata;
     Options options;
 
-    int speed_;
     double tempo_;
     double time_;
-    int initial_speed_;
-    double initial_tempo_;
     double tempo_factor_;
     double total_time_;
 
