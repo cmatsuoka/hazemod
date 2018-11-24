@@ -2,7 +2,7 @@ TODO list
 ---------
 
 - add scan
-  - make it optional to save memory
+  - make it optional to save memory?
   - estimate replay time
 
 - add complete player application
@@ -24,6 +24,7 @@ TODO list
 
 - add players
   - ft2
+  - ft1
   - smaksak
   - ~~D.O.C SoundTracker V2.0~~ ✓
   - Scream Tracker 2
@@ -33,6 +34,8 @@ TODO list
 
 - api
   - get list of instruments
+  - get channel info (volume, pan, instrument)
+  - get pattern data to display pattern scroll
   - allow reading sample data for scopes, etc
 
 - miscellaneous
