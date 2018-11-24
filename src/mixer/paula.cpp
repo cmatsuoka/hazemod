@@ -95,7 +95,7 @@ int16_t Paula::output_sample()
         output -= winsinc_integral[tabnum][age] * level;
     }
     output >>= BLEP_SCALE;
-    std::clamp(output, -32768, 32767);
+    output = std::clamp(output, -32768, 32767);
 
     return output;
 }
