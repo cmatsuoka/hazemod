@@ -77,16 +77,17 @@ int ST_Player::length()
     return mdata.read8(470);
 }
 
-void ST_Player::frame_info(haze::FrameInfo& pi)
+void ST_Player::frame_info(haze::FrameInfo& fi)
 {
-    pi.pos = mt_partnrplay;
-    pi.row = mt_partnote;
-    pi.num_rows = 64;
-    pi.frame = mt_counter;
-    pi.song = 0;
-    pi.speed = mt_speed;
-    pi.tempo = 125.0;
-    pi.time = time_;
+    fi.pos = mt_partnrplay;
+    fi.row = mt_partnote;
+    fi.num_rows = 64;
+    fi.frame = mt_counter;
+    fi.song = 0;
+    fi.speed = mt_speed;
+    fi.tempo = 125.0;
+
+    haze::Player::frame_info(fi);
 }
 
 State ST_Player::save_state()

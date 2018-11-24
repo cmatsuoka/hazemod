@@ -79,16 +79,17 @@ int UST_Player::length()
     return mdata.read8(470);
 }
 
-void UST_Player::frame_info(haze::FrameInfo& pi)
+void UST_Player::frame_info(haze::FrameInfo& fi)
 {
-    pi.pos = trkpos;
-    pi.row = patpos;
-    pi.num_rows = 64;
-    pi.frame = timpos;
-    pi.song = 0;
-    pi.speed = 6;
-    pi.tempo = 125.0;
-    pi.time = time_;
+    fi.pos = trkpos;
+    fi.row = patpos;
+    fi.num_rows = 64;
+    fi.frame = timpos;
+    fi.song = 0;
+    fi.speed = 6;
+    fi.tempo = 125.0;
+
+    haze::Player::frame_info(fi);
 }
 
 State UST_Player::save_state()

@@ -74,16 +74,17 @@ int NT11_Player::length()
     return mdata.read8(950);
 }
 
-void NT11_Player::frame_info(haze::FrameInfo& pi)
+void NT11_Player::frame_info(haze::FrameInfo& fi)
 {
-    pi.pos = mt_songpos;
-    pi.row = mt_pattpos;
-    pi.num_rows = 64;
-    pi.frame = mt_speed - mt_counter;
-    pi.song = 0;
-    pi.speed = mt_speed;
-    pi.tempo = 125;
-    pi.time = time_;
+    fi.pos = mt_songpos;
+    fi.row = mt_pattpos;
+    fi.num_rows = 64;
+    fi.frame = mt_speed - mt_counter;
+    fi.song = 0;
+    fi.speed = mt_speed;
+    fi.tempo = 125;
+
+    haze::Player::frame_info(fi);
 }
 
 State NT11_Player::save_state()

@@ -96,16 +96,17 @@ int PT21A_Player::length()
     return mdata.read8(950);
 }
 
-void PT21A_Player::frame_info(haze::FrameInfo& pi)
+void PT21A_Player::frame_info(haze::FrameInfo& fi)
 {
-    pi.pos = mt_SongPos;
-    pi.row = mt_PatternPos;
-    pi.num_rows = 64;
-    pi.frame = mt_speed - mt_counter;
-    pi.song = 0;
-    pi.speed = mt_speed;
-    pi.tempo = cia_tempo;
-    pi.time = time_;
+    fi.pos = mt_SongPos;
+    fi.row = mt_PatternPos;
+    fi.num_rows = 64;
+    fi.frame = mt_speed - mt_counter;
+    fi.song = 0;
+    fi.speed = mt_speed;
+    fi.tempo = cia_tempo;
+
+    haze::Player::frame_info(fi);
 }
 
 State PT21A_Player::save_state()

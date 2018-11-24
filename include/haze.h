@@ -30,15 +30,16 @@ struct PlayerInfo {
 };
 
 struct FrameInfo {
-    int pos;
-    int row;
-    int num_rows;
-    int frame;
-    int song;
-    int speed;
-    int loop_count;
-    float tempo;
-    float time;
+    int pos;         // Current position
+    int row;         // Current row in pattern
+    int num_rows;    // Number of rows in current pattern
+    int frame;       // Current frame
+    int song;        // Current song
+    int speed;       // Current speed
+    int loop_count;  // Loop counter
+    int tempo;       // Current tempo
+    int time;        // Current replay time
+    int total_time;  // Total replay time
 };
 
 class Player;

@@ -87,7 +87,7 @@ public:
     virtual void start() = 0;
     virtual void play() = 0;
     virtual void reset() = 0;
-    virtual void frame_info(FrameInfo&) = 0;
+    virtual void frame_info(FrameInfo&);
     virtual int length() = 0;
     virtual Mixer *mixer() = 0;
     virtual State save_state() = 0;

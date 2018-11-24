@@ -98,16 +98,17 @@ int FT_Player::length()
     return mdata.read8(950);
 }
 
-void FT_Player::frame_info(haze::FrameInfo& pi)
+void FT_Player::frame_info(haze::FrameInfo& fi)
 {
-    pi.pos = ft_song_pos;
-    pi.row = ft_pattern_pos;
-    pi.num_rows = 64;
-    pi.frame = (ft_speed - ft_counter + 1) % ft_speed;
-    pi.song = 0;
-    pi.speed = ft_speed;
-    pi.tempo = cia_tempo;
-    pi.time = time_;
+    fi.pos = ft_song_pos;
+    fi.row = ft_pattern_pos;
+    fi.num_rows = 64;
+    fi.frame = (ft_speed - ft_counter + 1) % ft_speed;
+    fi.song = 0;
+    fi.speed = ft_speed;
+    fi.tempo = cia_tempo;
+
+    haze::Player::frame_info(fi);
 }
 
 State FT_Player::save_state()

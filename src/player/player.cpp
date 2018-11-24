@@ -49,4 +49,11 @@ void Player::scan()
 {
     scanner_->scan(this);
 }
+
+void Player::frame_info(FrameInfo& pi)
+{
+    pi.time = time_;
+    pi.total_time = total_time_;
+}
+
 }  // namespace haze
