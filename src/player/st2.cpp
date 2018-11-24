@@ -107,7 +107,8 @@ void ST_Player::restore_state(State const& state)
 
 namespace {
 
-int16_t mt_arpeggio[39] = {
+#define ARPEGGIO_LEN 39
+int16_t mt_arpeggio[ARPEGGIO_LEN] = {
     0x0358, 0x0328, 0x02fa, 0x02d0, 0x02a6, 0x0280, 0x025c,
     0x023a, 0x021a, 0x01fc, 0x01e0, 0x01c5, 0x01ac, 0x0194, 0x017d,
     0x0168, 0x0153, 0x0140, 0x012e, 0x011d, 0x010d, 0x00fe, 0x00f0,
@@ -188,7 +189,7 @@ void ST_Player::mt_arpegrt(const int chn)
     // mt_cont
     for (int i = 0; i < 36; i++) {
         if (ch.n_16_period == mt_arpeggio[i]) {
-            if (i + val < 39) {  // add sanity check
+            if (i + val < ARPEGGIO_LEN) {  // add sanity check
                 // mt_endpart
                 paula_->set_period(chn, mt_arpeggio[i + val]);  // move.w  d2,6(a5)
                 return;
