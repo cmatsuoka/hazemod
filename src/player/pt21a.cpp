@@ -709,7 +709,7 @@ void PT21A_Player::mt_VolSlideDown(const int chn)
 void PT21A_Player::mt_PositionJump(const int chn)
 {
     auto& ch = mt_chantemp[chn];
-    mt_SongPos = --ch.n_cmdlo;
+    mt_SongPos = ch.n_cmdlo - 1;
     // mt_pj2
     mt_PBreakPos = 0;
     mt_PosJumpFlag = true;

@@ -454,7 +454,7 @@ void NT11_Player::mt_pattbreak()
 void NT11_Player::mt_posjmp(const int chn)
 {
     auto& ch = mt_voice[chn];
-    mt_songpos -= ch.n_3_cmdlo;
+    mt_songpos = ch.n_3_cmdlo - 1;
     mt_break = !mt_break;
 }
 
