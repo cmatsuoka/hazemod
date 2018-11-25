@@ -106,7 +106,13 @@ int main(int argc, char** argv)
 
     while (playing) {
         hz.frame_info(fi);
-        snprintf(buf, 50, "pos:%3d/%3d  row:%3d/%3d\r", fi.pos, mi.length, fi.row, fi.num_rows);
+        snprintf(buf, 50, "pos:%3d/%3d  row:%3d/%3d  %02d:%02d:%02d.%d\r",
+            fi.pos, mi.length - 1,
+            fi.row, fi.num_rows - 1,
+            fi.time / (1000 * 60 * 60),
+            (fi.time / (1000 * 60)) % 60,
+            (fi.time / 1000) % 60,
+            (fi.time / 100) % 10);
         std::cout << buf << std::flush;
         SDL_Delay(10);
     }
