@@ -2,11 +2,12 @@
 #include "mixer/softmixer.cpp"
 #include <algorithm>
 #include <iterator>
+#include "util/options.h"
 
 
 TEST_SUITE("softmixer") {
     TEST_CASE("mix::1_channel") {
-        SoftMixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_sample(0, 0);
@@ -31,7 +32,7 @@ TEST_SUITE("softmixer") {
     }
 
     TEST_CASE("mix::small_buffer") {
-        SoftMixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_sample(0, 0);
@@ -54,7 +55,7 @@ TEST_SUITE("softmixer") {
     }
 
     TEST_CASE("mix::volume") {
-        SoftMixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_period(0, 428.0);
@@ -85,7 +86,7 @@ TEST_SUITE("softmixer") {
     }
 
     TEST_CASE("mix::pan") {
-        SoftMixer m(1, 8287.0);
+        SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
         m.set_volume(0, 256);
@@ -115,6 +116,4 @@ TEST_SUITE("softmixer") {
         };
         CHECK(std::equal(std::begin(res), std::end(res), std::begin(ref2)));
     }
-
-
 }

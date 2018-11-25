@@ -8,13 +8,14 @@
 #include "mixer/sample.h"
 #include "mixer/softmixer_voice.h"
 #include "mixer/interpolator.h"
+#include "util/options.h"
 
 
 class SoftMixer : public Mixer {
     std::vector<Sample> sample;
     std::vector<Voice *> voice;
 public:
-    SoftMixer(int, int, InterpolatorType = NearestInterpolatorType);
+    SoftMixer(int, int, Options);
     ~SoftMixer();
     void mix(int16_t *, int) override;       // mix sample data
     void mix(float *, int) override;

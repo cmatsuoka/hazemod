@@ -97,7 +97,7 @@ void HMN_Player::start()
         offset += mdata.read16b(20 + 22 + 30 * i) * 2;
     }
 
-    const int pan = options.get("pan", 70);
+    const int pan = options_.get("pan", 70);
     const int panl = -128 * pan / 100;
     const int panr = 127 * pan / 100;
 

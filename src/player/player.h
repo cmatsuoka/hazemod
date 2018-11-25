@@ -46,7 +46,7 @@ class Player {
 
 protected:
     DataBuffer mdata;
-    Options options;
+    Options options_;
 
     double tempo_;
     double time_;

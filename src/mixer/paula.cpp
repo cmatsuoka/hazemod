@@ -52,6 +52,12 @@ void Paula::mix(int16_t *buf, int size)
             l += (val * (0x80 + v->pan())) >> 8;
         }
 
+        if (disable_a500_) {
+            *b++ = r;
+            *b++ = l;
+            return;
+        }
+
         // sample input
         const int num_in = remainder / MINIMUM_INTERVAL;
         for (int i = 0; i < num_in - 1; i++) {

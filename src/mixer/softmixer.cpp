@@ -7,9 +7,18 @@ constexpr int32_t Lim16_lo = -32768;
 constexpr int32_t Lim16_hi = 32767;
 
 
-SoftMixer::SoftMixer(int num, int sr, InterpolatorType itpt) :
+SoftMixer::SoftMixer(int num, int sr, Options opt) :
     Mixer(num, sr)
 {
+    auto iname = opt.get("interpolator", "");
+
+    InterpolatorType itpt = LinearInterpolatorType;
+    if (iname == "nearest") {
+        itpt = NearestInterpolatorType;
+    } else if (iname == "spline") {
+        itpt = SplineInterpolatorType;
+    }
+
     for (int i = 0; i < num; i++) {
         Voice *c = new Voice(i, itpt);
         voice.push_back(c);

@@ -6,6 +6,7 @@
 #include "mixer/mixer.h"
 #include "mixer/paula_channel.h"
 #include "util/databuffer.h"
+#include "util/options.h"
 
 
 // 131072 to 0, 2048 entries
@@ -59,6 +60,7 @@ class Paula : public Mixer {
     int rate_;
     PaulaChannel *channel_[4];
     bool cia_led_;      // CIAA led setting (0BFE001 bit 1)
+    bool disable_a500_;
 
     DataBuffer data_;
     Simulator simr;
@@ -68,7 +70,7 @@ class Paula : public Mixer {
     float fdiv;
 
 public:
-    Paula(void *ptr, uint32_t size, int sr) :
+    Paula(void *ptr, uint32_t size, int sr, Options opt) :
         Mixer(4, sr),
         rate_(sr),
         cia_led_(false),
@@ -82,6 +84,8 @@ public:
         channel_[1] = new PaulaChannel(data_, sr);
         channel_[2] = new PaulaChannel(data_, sr);
         channel_[3] = new PaulaChannel(data_, sr);
+
+        disable_a500_ = opt.has_option("disable-model");
     }
 
     ~Paula() {

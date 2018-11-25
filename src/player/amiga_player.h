@@ -14,7 +14,7 @@ public:
     AmigaPlayer(void *buf, const uint32_t size, int sr) :
         haze::Player(buf, size, 4, sr)
     {
-        paula_ = new Paula(buf, size, sr);
+        paula_ = new Paula(buf, size, sr, options_);
     }
 
     virtual ~AmigaPlayer() {

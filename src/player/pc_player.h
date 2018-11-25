@@ -13,7 +13,7 @@ public:
     PCPlayer(void *buf, const uint32_t size, int ch, int sr) :
         haze::Player(buf, size, ch, sr)
     {
-        mixer_ = new SoftMixer(ch, sr);
+        mixer_ = new SoftMixer(ch, sr, options_);
     }
 
     virtual ~PCPlayer() {
