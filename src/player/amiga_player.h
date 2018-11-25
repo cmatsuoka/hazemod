@@ -21,14 +21,6 @@ public:
         delete paula_;
     }
 
-    virtual void start() override = 0;
-    virtual void play() override = 0;
-    virtual void reset() override = 0;
-    virtual int length() override = 0;
-    virtual void frame_info(haze::FrameInfo&) override = 0;
-    virtual State save_state() override = 0;
-    virtual void restore_state(State const&) override = 0;
-
     Mixer *mixer() override { return paula_; }
 };
 
