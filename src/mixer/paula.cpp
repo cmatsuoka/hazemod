@@ -2,10 +2,6 @@
 #include <algorithm>
 #include "util/debug.h"
 
-//
-// Based on Antti S. Lankila's reference code
-//
-
 
 namespace {
 
@@ -51,13 +47,33 @@ void Paula::mix(int16_t *buf, int size)
 
         for (int i = 0; i < 4; i++) {
             auto& v = channel_[i];
-            int32_t val = v->get();
-            r += (val * (0x80 - v->pan())) >> 7;
-            l += (val * (0x80 + v->pan())) >> 7;
+            const int16_t val = v->get();
+            r += (val * (0x80 - v->pan())) >> 8;
+            l += (val * (0x80 + v->pan())) >> 8;
         }
 
-        *b++ = std::clamp(r, Lim16_lo, Lim16_hi);
-        *b++ = std::clamp(l, Lim16_lo, Lim16_hi);
+        // sample input
+        const int num_in = remainder / MINIMUM_INTERVAL;
+        for (int i = 0; i < num_in - 1; i++) {
+            simr.input_sample(r);
+            siml.input_sample(l);
+            simr.do_clock(MINIMUM_INTERVAL);
+            siml.do_clock(MINIMUM_INTERVAL);
+        }
+        simr.input_sample(r);
+        siml.input_sample(l);
+        remainder -= num_in * MINIMUM_INTERVAL;
+        simr.do_clock(remainder);
+        siml.do_clock(remainder);
+
+        // sample output
+        *b++ = simr.output_sample(cia_led_);
+        *b++ = siml.output_sample(cia_led_);
+        const int cycles = MINIMUM_INTERVAL - int(remainder);
+        simr.do_clock(cycles);
+        siml.do_clock(cycles);
+
+        remainder += fdiv;
     }
 }
 
@@ -84,10 +100,10 @@ void Paula::mix(float *buf, int size)
 
 
 // return output simulated as series of bleps
-int16_t Paula::output_sample()
+int16_t Simulator::output_sample(bool const& filter)
 {
     int32_t output = global_output_level << BLEP_SCALE;
-    const int tabnum = cia_led_ ? 1 : 0;
+    const int tabnum = filter ? 1 : 0;
 
     for (int i = 0; i < active_bleps; i++) {
         const int age = bleps[i].age;
@@ -95,12 +111,16 @@ int16_t Paula::output_sample()
         output -= winsinc_integral[tabnum][age] * level;
     }
     output >>= BLEP_SCALE;
-    output = std::clamp(output, -32768, 32767);
+    if (output < -32768) {
+        output = -32768;
+    } else if (output > 32767) {
+        output = 32767;
+    }
 
     return output;
 }
  
-void Paula::input_sample(const int16_t sample)
+void Simulator::input_sample(const int16_t sample)
 {
     if (sample != global_output_level) {
         // Start a new blep: level is the difference, age (or phase) is 0 clocks.
@@ -124,7 +144,7 @@ void Paula::input_sample(const int16_t sample)
     }
 }
 
-void Paula::do_clock(int16_t cycles)
+void Simulator::do_clock(int16_t cycles)
 {
     if (cycles <= 0) {
         return;
