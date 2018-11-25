@@ -1,4 +1,5 @@
 #include "player/hmn.h"
+#include <cstring>
 
 // His Master's Noise Replayer
 //
@@ -303,14 +304,21 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
         ch.n_1e_finetune = mdata.read8i(ofs - 0x16 + 0x18);            // MOVE.B  -$16+$18(A3,D4.L),$1E(A6)       ;CURRSTAMM
         ch.n_1c_prog_on = false;                                       // clr.b   $1c(a6) ;prog on/off
 
-        if (mdata.read_string(0, 4) == "Mupp") {                       // CMP.L   #'Mupp',-$16(a3,d4.l)
+        if (!memcmp(mdata.ptr(ofs - 0x16), "Mupp", 4)) {               // CMP.L   #'Mupp',-$16(a3,d4.l)
             ch.n_1c_prog_on = true;                                    // move.b  #1,$1c(a6)      ;prog on
-            ch.n_4_samplestart = 1084 + 1024 * mdata.read8(ofs + 4);   // proginstr data-start
+
+            const uint8_t pattno = mdata.read8(ofs - 0x16 + 4);        // move.b  -$16+$4(a3,d4.l),d2     ;pattno
+            ch.n_4_samplestart = 1084 + 1024 * pattno;                 // mulu    #$400,d2
+                                                                       // lea     (a0,d2.l),a0
+                                                                       // move.l  a0,4(a6)        ;proginstr data-start
             ch.prog_ins = ins - 1;
             // sample data is in patterns!
             const int sdata = ch.n_4_samplestart;
             ch.n_12_volume = mdata.read8(sdata + 0x3c0) & 0x7f;        // MOVE.B  $3C0(A0),$12(A6) / AND.B   #$7F,$12(A6)
-            ch.n_a_loopstart = 32 * mdata.read8(sdata + 0x380);        // loopstartmempoi = startmempoi
+            const uint8_t wave_num = mdata.read8(sdata + 0x380);       // move.b  $380(a0),d2
+            ch.n_a_loopstart = sdata + wave_num * 32;                  // mulu    #$20,d2
+                                                                       // lea     (a0,d2.w),a0
+                                                                       // move.l  a0,$a(a6)       ;loopstartmempoi = startmempoi
             ch.n_13_volume = mdata.read8(ofs + 3);                     // move.B  $3(a3,d4.l),$13(a6)     ;volume
             ch.n_8_dataloopstart = mdata.read8(ofs - 0x16 + 5);        // move.b  -$16+$5(a3,d4.l),8(a6)  ;dataloopstart
             ch.n_9_dataloopend = mdata.read8(ofs - 0x16 + 6);          // move.b  -$16+$6(a3,d4.l),9(a6)  ;dataloopend
@@ -349,6 +357,7 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
                 break;
             default:    // JUP
                 ch.n_10_period = ch.n_0_note & 0xfff;
+                paula_->stop_dma(1 << chn);
                 ch.n_1b_vibpos = 0;                    // CLR.B   $1B(A6)
                 ch.n_1d_prog_datacou = 0;              // clr.b   $1d(a6) ;proglj-datacou
                 if (ch.n_1c_prog_on) {
@@ -363,9 +372,12 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
                 percalc(chn, ch.n_10_period & 0xfff);
                 L701_dmacon |= 1 << chn;
             }
+        } else {
+            // STOPSOUNDET
+            paula_->stop_dma(1 << chn);
         }
     }
-    // STOPSOUNDET
+
     // EFTERSTOPSUND
     // L505_L_setregs2
     L577_2_checkcom2(chn);
@@ -377,10 +389,11 @@ void HMN_Player::ProgHandler(const int chn)
 
     if (ch.n_1c_prog_on) {
         uint8_t datacou = ch.n_1d_prog_datacou;
-        int sdata = L698_samplestarts[ch.prog_ins];
+        const int ofs = 20 + 30 * ch.prog_ins + 22;
+        const int sdata = 1084 + 1024 * mdata.read8(ofs + 4);
         int index = 0x380 + datacou;
-        ch.n_12_volume = mdata.read8(sdata + index + 0x40) & 0x7f;  // progvolume
-        ch.n_a_loopstart = mdata.read8(sdata + index) * 0x20;       // loopstartmempoi
+        ch.n_12_volume = mdata.read8(sdata + index + 0x40) & 0x7f;   // progvolume
+        ch.n_a_loopstart = sdata + mdata.read8(sdata + index) * 32;  // loopstartmempoi
         datacou++;
         if (datacou > ch.n_9_dataloopend) {
             datacou = ch.n_8_dataloopstart;
