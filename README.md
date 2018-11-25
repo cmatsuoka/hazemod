@@ -26,7 +26,7 @@ TODO list
 - add players
   - ft2
   - ft1
-  - smaksak
+  - ~~smaksak~~ ✓
   - ~~D.O.C SoundTracker V2.0~~ ✓
   - Scream Tracker 2
   - Scream Tracker 3
