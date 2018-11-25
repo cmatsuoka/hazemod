@@ -7,7 +7,7 @@
 
 class FestFormat : public Format {
 public:
-    FestFormat() : Format("fest") {}
+    FestFormat() : Format{"fest", "His Master's Noise"} {}
     bool probe(void *, uint32_t, haze::ModuleInfo&) override;
 };
 

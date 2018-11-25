@@ -65,4 +65,24 @@ HazePlayer& HazePlayer::fill(int16_t *buf, int size)
     return *this;
 }
 
+std::vector<PlayerInfo> list_players()
+{
+    PlayerRegistry reg;
+    std::vector<PlayerInfo> list;
+    for (auto kv : reg) {
+        list.push_back(kv.second->info());
+    }
+    return list;
+}
+
+std::vector<FormatInfo> list_formats()
+{
+    FormatRegistry reg;
+    std::vector<FormatInfo> list;
+    for (auto fmt : reg) {
+        list.push_back(fmt->info());
+    }
+    return list;
+}
+
 }  // namespace haze

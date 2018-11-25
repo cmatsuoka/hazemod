@@ -7,7 +7,7 @@
 
 class ModFormat : public Format {
 public:
-    ModFormat() : Format("mod") {}
+    ModFormat() : Format{"mod", "Amiga Protracker/Compatible"} {}
     bool probe(void *, uint32_t, haze::ModuleInfo&) override;
 };
 

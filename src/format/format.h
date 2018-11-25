@@ -18,11 +18,14 @@ constexpr uint32_t MAGIC4(char a, char b, char c, char d) {
 // including different four channel and multichannel trackers.
 
 class Format {
-    std::string id_;
+    haze::FormatInfo info_;
 public:
-    Format(std::string const& id): id_(id) {}
+    Format(std::string const& id, std::string const& name): info_{id, name} {}
     virtual ~Format() {}
-    std::string& id() { return id_; }
+
+    haze::FormatInfo const& info() { return info_; }
+    std::string& id() { return info_.id; }
+
     virtual bool probe(void *buf, uint32_t size, haze::ModuleInfo&) = 0;
 };
 

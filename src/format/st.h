@@ -7,7 +7,7 @@
 
 class StFormat : public Format {
 public:
-    StFormat() : Format("st") {}
+    StFormat() : Format{"st", "Soundtracker"} {}
     bool probe(void *, uint32_t, haze::ModuleInfo&) override;
 };
 

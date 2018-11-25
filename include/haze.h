@@ -29,6 +29,11 @@ struct PlayerInfo {
     std::vector<std::string> formats;
 };
 
+struct FormatInfo {
+    std::string id;
+    std::string name;
+};
+
 struct FrameInfo {
     int pos;         // Current position
     int row;         // Current row in pattern
@@ -54,6 +59,7 @@ public:
     HazePlayer& frame_info(FrameInfo &);
     HazePlayer& fill(int16_t *, int);
     HazePlayer& fill(float *, int);
+    std::vector<PlayerInfo> list_players();
 };
 
 
