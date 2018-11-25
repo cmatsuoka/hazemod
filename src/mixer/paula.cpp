@@ -55,7 +55,7 @@ void Paula::mix(int16_t *buf, int size)
         if (disable_a500_) {
             *b++ = r;
             *b++ = l;
-            return;
+            continue;
         }
 
         // sample input

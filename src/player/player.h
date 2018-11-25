@@ -95,14 +95,8 @@ public:
 
     uint32_t frame_size() { return frame_size_; }
     void scan();
-
-    void fill(int16_t *buf, int size) {
-        fill_buffer_<int16_t>(buf, size);
-    }
-
-    void fill(float *buf, int size) {
-        fill_buffer_<float>(buf, size);
-    }
+    void fill(int16_t *buf, int size);
+    void fill(float *buf, int size);
 };
 
 }  // namespace haze

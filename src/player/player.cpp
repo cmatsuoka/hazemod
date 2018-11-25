@@ -56,4 +56,14 @@ void Player::frame_info(FrameInfo& pi)
     pi.total_time = total_time_;
 }
 
+void Player::fill(int16_t *buf, int size)
+{
+    Player::fill_buffer_<int16_t>(buf, size);
+}
+
+void Player::fill(float *buf, int size)
+{
+    Player::fill_buffer_<float>(buf, size);
+}
+
 }  // namespace haze
