@@ -237,7 +237,6 @@ void HMN_Player::L505_8_arpeggio(const int chn)
 void HMN_Player::L505_F_getnew()
 {
     const int pat = mdata.read8(952 + L693_songpos);
-    L692_pattpos = pat * 1024;
     L701_dmacon = 0;
 
     L505_J_playvoice(pat, 0);
@@ -260,7 +259,7 @@ void HMN_Player::L505_F_getnew()
 
     // L505_R
     // L505_HA
-    L692_pattpos +=1;
+    L692_pattpos++;
     while (true) {
         if (L692_pattpos == 64) {
             // HAHA
@@ -306,7 +305,7 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
 
         if (mdata.read_string(0, 4) == "Mupp") {                       // CMP.L   #'Mupp',-$16(a3,d4.l)
             ch.n_1c_prog_on = true;                                    // move.b  #1,$1c(a6)      ;prog on
-            ch.n_4_samplestart = 0x43c + 0x400 * mdata.read8(ofs + 4); // proginstr data-start
+            ch.n_4_samplestart = 1084 + 1024 * mdata.read8(ofs + 4);   // proginstr data-start
             ch.prog_ins = ins - 1;
             // sample data is in patterns!
             const int sdata = ch.n_4_samplestart;
@@ -322,8 +321,8 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
             ch.n_8_length = mdata.read16b(ofs);                        // MOVE.W  $0(A3,D4.L),$08(A6)
             ch.n_13_volume = mdata.read16b(ofs + 2);                   // MOVE.W  $2(A3,D4.L),$12(A6)
             ch.n_12_volume = 0x40;                                     // move.b  #$40,$12(a6)
-            const uint16_t repeat = mdata.read16b(ofs + 4);
-            if (repeat) {                                              // MOVE.W  $4(A3,D4.L),D3 / TST.W   D3
+            const uint16_t repeat = mdata.read16b(ofs + 4);            // MOVE.W  $4(A3,D4.L),D3
+            if (repeat) {                                              // TST.W   D3
                 ch.n_a_loopstart = repeat;                             // MOVE.L  D2,$A(A6)       ;LOOPSTARTPOI
                 ch.n_8_length = repeat + mdata.read16b(ofs + 6);       // MOVE.W  $4(A3,D4.L),D0  ;REPEAT
                                                                        // ADD.W   $6(A3,D4.L),D0  ;+REPLEN
