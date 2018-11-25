@@ -3,7 +3,7 @@ TODO list
 
 - add scan
   - make it optional to save memory?
-  - estimate replay time
+  - ~~estimate replay time~~ ✓
 
 - add complete player application
   - channel mute on/off
@@ -11,7 +11,8 @@ TODO list
   - seek
 
 - mixer improvements
-  - add Amiga sound modeling
+  - ~~add Amiga sound modeling~~ ✓
+  - option to disable A500 simulator to save CPU
   - bidirectional loop
   - anticlick
 
@@ -19,7 +20,7 @@ TODO list
   - s3m
   - stm
   - ft2
-  - His Master's Noise
+  - ~~His Master's Noise~~ ✓
   - ...
 
 - add players
