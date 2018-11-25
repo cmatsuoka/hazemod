@@ -41,8 +41,6 @@ struct HMN_ChannelData {
     uint8_t  n_13_volume;
     uint8_t  n_1d_prog_datacou;
     int8_t   n_1e_finetune;
-
-    int prog_ins;
 };
 
 

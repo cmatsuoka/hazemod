@@ -311,7 +311,6 @@ void HMN_Player::L505_J_playvoice(const int pat, const int chn)
             ch.n_4_samplestart = 1084 + 1024 * pattno;                 // mulu    #$400,d2
                                                                        // lea     (a0,d2.l),a0
                                                                        // move.l  a0,4(a6)        ;proginstr data-start
-            ch.prog_ins = ins - 1;
             // sample data is in patterns!
             const int datastart = ch.n_4_samplestart;
             ch.n_12_volume = mdata.read8(datastart + 0x3c0) & 0x7f;    // MOVE.B  $3C0(A0),$12(A6) / AND.B   #$7F,$12(A6)
