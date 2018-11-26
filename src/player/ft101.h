@@ -2,6 +2,7 @@
 #define HAZE_PLAYER_FT101_H_
 
 #include <cstdint>
+#include "player/player_registry.h"
 #include "player/pc_player.h"
 
 

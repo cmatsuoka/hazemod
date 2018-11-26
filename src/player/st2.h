@@ -2,6 +2,7 @@
 #define HAZE_PLAYER_ST_H_
 
 #include <cstdint>
+#include "player/player_registry.h"
 #include "player/amiga_player.h"
 
 

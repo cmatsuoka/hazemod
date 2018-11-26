@@ -18,6 +18,7 @@ add_library(hazemod SHARED
     mixer/paula.cpp
     player/scanner.cpp
     player/player.cpp
+    player/player_registry.cpp
     player/pt21a.cpp
     player/nt11.cpp
     player/st2.cpp
