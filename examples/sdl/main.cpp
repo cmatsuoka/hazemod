@@ -13,11 +13,14 @@
 
 // Example: play module using SDL audio.
 
+static bool playing;
 
 void fill_audio(void *udata, Uint8 *stream, int len)
 {
     auto hz = static_cast<haze::HazePlayer *>(udata);
-    hz->fill(reinterpret_cast<int16_t *>(stream), len);    
+    if (!hz->fill(reinterpret_cast<int16_t *>(stream), len)) {
+        playing = false;
+    }
 }
 
 int sdl_init(haze::HazePlayer *hz)
@@ -97,7 +100,7 @@ int main(int argc, char** argv)
     hz.player_info(pi);
     std::cout << "Player  : " << pi.name << std::endl;
 
-    bool playing = true;
+    playing = true;
 
     // play module
     SDL_PauseAudio(0);
@@ -116,6 +119,9 @@ int main(int argc, char** argv)
         std::cout << buf << std::flush;
         SDL_Delay(10);
     }
+
+    std::cout << std::endl;
+    SDL_CloseAudio();
 
     munmap(data, size);
     close(fd);
