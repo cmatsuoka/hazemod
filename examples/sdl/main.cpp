@@ -105,9 +105,15 @@ int main(int argc, char** argv)
     // play module
     SDL_PauseAudio(0);
     haze::FrameInfo fi;
+    hz.frame_info(fi);
     char buf[50];
 
+    snprintf(buf, 50, "Duration: %dmin%02ds",
+            fi.total_time / (1000 * 60), (fi.total_time / 1000) % 60);
+    std::cout << buf << std::endl;
+
     while (playing) {
+        char buf[50];
         hz.frame_info(fi);
         snprintf(buf, 50, "pos:%3d/%3d  row:%3d/%3d  %02d:%02d:%02d.%d\r",
             fi.pos, mi.length - 1,
