@@ -34,6 +34,7 @@ TODO list
   - ...
 
 - api
+  - ~~get list of registered formats and players~~ ✓
   - get list of instruments
   - get channel info (volume, pan, instrument)
   - get pattern data to display pattern scroll
