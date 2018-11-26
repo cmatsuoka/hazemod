@@ -18,7 +18,7 @@ NT11_Player::NT11_Player(void *buf, uint32_t size, int sr) :
     mt_speed(6),
     mt_songpos(0),
     mt_pattpos(0),
-    mt_counter(mt_speed),
+    mt_counter(0),
     mt_break(false),
     mt_dmacon(0),
     mt_samplestarts{0}
@@ -79,7 +79,7 @@ void NT11_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = mt_songpos;
     fi.row = mt_pattpos;
     fi.num_rows = 64;
-    fi.frame = mt_speed - mt_counter;
+    fi.frame = mt_counter;
     fi.song = 0;
     fi.speed = mt_speed;
     fi.tempo = 125;
