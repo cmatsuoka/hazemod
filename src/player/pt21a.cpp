@@ -27,7 +27,7 @@ PT21A_Player::PT21A_Player(void *buf, uint32_t size, int sr) :
     mt_SampleStarts{0},
     //mt_SongDataPtr(0),
     mt_speed(InitialSpeed),
-    mt_counter(mt_speed),
+    mt_counter(0),
     mt_SongPos(0),
     mt_PBreakPos(0),
     mt_PosJumpFlag(false),
@@ -101,7 +101,7 @@ void PT21A_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = mt_SongPos;
     fi.row = mt_PatternPos;
     fi.num_rows = 64;
-    fi.frame = mt_speed - mt_counter;
+    fi.frame = mt_counter;
     fi.song = 0;
     fi.speed = mt_speed;
     fi.tempo = cia_tempo;
