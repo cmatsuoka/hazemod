@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 2.8.9)
 
 include_directories(.)
 
+if(PROFILE)
+    if(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
+    endif()
+endif()
+
 add_definitions(-DHAZE_SYM_EXPORT)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 

@@ -8,13 +8,14 @@ set(VERSION_RELEASE 1)
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_RELEASE})
 
 option(BUILD_TESTS "Build tests" ON)
+option(PROFILE "Enable profiling" OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # Add -O0 to remove optimizations when using gcc
-if(CMAKE_COMPILER_IS_GNUCC)
+if(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 endif()
@@ -34,3 +35,4 @@ if(BUILD_TESTS)
     add_subdirectory(test)
     add_test(NAME full COMMAND test_hazemod)
 endif()
+
