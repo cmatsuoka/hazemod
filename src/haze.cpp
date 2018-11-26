@@ -58,10 +58,9 @@ HazePlayer& HazePlayer::frame_info(FrameInfo &fi)
     return *this;
 }
 
-HazePlayer& HazePlayer::fill(int16_t *buf, int size)
+bool HazePlayer::fill(int16_t *buf, int size)
 {
-    player_->fill(buf, size);
-    return *this;
+    return player_->fill(buf, size);
 }
 
 std::vector<PlayerInfo> list_players()

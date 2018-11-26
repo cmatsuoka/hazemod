@@ -22,19 +22,26 @@ protected:
     double time_;
     double tempo_factor_;
     double total_time_;
+    bool enable_loop_;
+    int loop_count_;
 
     int32_t frame_size_;
     int32_t frame_remain_;
 
-    int loop_count_;
     bool inside_loop_;
 
     Scanner *scanner_;
+    int end_point_;
 
-    template<typename T> void fill_buffer_(T *buf, int32_t size) {
+    template<typename T> bool fill_buffer_(T *buf, int32_t size) {
         size = size / (sizeof(T) * 2);  // stereo
         while (size > 0) {
             if (frame_remain_ == 0) {
+                const int old_loop_count = loop_count_;
+                check_end_of_module();
+                if (!enable_loop_ && loop_count_ != old_loop_count) {
+                    return false;
+                }
                 play();
                 frame_remain_ = double(mixer()->rate()) * PalRate / (tempo_factor_ * tempo_ * 100.0);
             }
@@ -44,9 +51,10 @@ protected:
             frame_remain_ -= to_fill;
             buf += to_fill * 2;
         }
+        return true;
     }
 
-    bool check_end_of_module();
+    void check_end_of_module();
 
     friend class ::Scanner;
 
@@ -65,8 +73,8 @@ public:
 
     uint32_t frame_size() { return frame_size_; }
     void scan();
-    void fill(int16_t *buf, int size);
-    void fill(float *buf, int size);
+    bool fill(int16_t *buf, int size);
+    bool fill(float *buf, int size);
 };
 
 }  // namespace haze

@@ -2,8 +2,7 @@
 #include "player/player.h"
 #include "util/debug.h"
 
-Scanner::Scanner() :
-    end_point(0)
+Scanner::Scanner()
 {
 }
 
