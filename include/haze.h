@@ -81,6 +81,8 @@ public:
 
 
 bool probe(void *, int, ModuleInfo&);
+std::vector<PlayerInfo> list_players();
+std::vector<FormatInfo> list_formats();
 
 }  // namespace haze
 
