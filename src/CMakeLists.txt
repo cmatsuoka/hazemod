@@ -8,6 +8,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 add_library(hazemod SHARED
     util/util.cpp
     format/format.cpp
+    format/format_registry.cpp
     format/mod.cpp
     format/fest.cpp
     format/st.cpp

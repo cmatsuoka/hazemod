@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <haze.h>
 
 
@@ -27,13 +26,6 @@ public:
     std::string& id() { return info_.id; }
 
     virtual bool probe(void *buf, uint32_t size, haze::ModuleInfo&) = 0;
-};
-
-
-class FormatRegistry : public std::vector<Format *> {
-public:
-    FormatRegistry();
-    ~FormatRegistry();
 };
 
 

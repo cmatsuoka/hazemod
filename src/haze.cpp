@@ -1,9 +1,8 @@
 #include <haze.h>
 #include "mixer/mixer.h"
 #include "player/player.h"
-#include "player/pt21a.h"
-#include "player/nt11.h"
-#include "format/format.h"
+#include "player/player_registry.h"
+#include "format/format_registry.h"
 
 
 namespace haze {
