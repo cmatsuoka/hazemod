@@ -5,11 +5,28 @@
 #include <vector>
 #include <memory>
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#  if defined(BUILDING_STATIC)
+#    define HAZE_EXPORT
+#  elif defined(BUILDING_DLL)
+#    define HAZE_EXPORT __declspec(dllexport)
+#  else
+#    define HAZE_EXPORT __declspec(dllimport)
+#  endif
+#elif (defined(__GNUC__) || defined(__clang__) || defined(__HP_cc)) && defined(HAZE_SYM_EXPORT)
+#  define HAZE_EXPORT __attribute__((visibility ("default")))
+#elif defined(__SUNPRO_CC) && defined(HAZE_SYM_EXPORT)
+#  define HAZE_EXPORT __global
+#elif defined(EMSCRIPTEN)
+#  define HAZE_EXPORT EMSCRIPTEN_KEEPALIVE
+#else
+#  define HAZE_EXPORT
+#endif
 
-namespace haze {
+
+namespace haze HAZE_EXPORT {
 
 constexpr int MaxSequences = 16;
-
 
 struct ModuleInfo {
     std::string title;        // The module title
