@@ -50,10 +50,8 @@ public:
 
         if (len > 2) {
             if (pos >= end) {
+                pos = audloc + pos - end;
                 end = audloc + audlen * 2;
-                while (pos >= end) {
-                    pos -= (end - audloc);
-                }
             }
         }
     }
