@@ -27,6 +27,7 @@ void Player::scan()
 {
     scanner_->scan(this);
     end_point_ = scanner_->data(0).num;
+    total_time_ = scanner_->data(0).time;
 }
 
 void Player::frame_info(FrameInfo& pi)

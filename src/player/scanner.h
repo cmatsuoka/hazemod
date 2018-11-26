@@ -12,8 +12,9 @@ struct ScanData {
     int row;
     int frame;
     int num;
+    double time;
 
-    ScanData() : ord(0), row(0), frame(0), num(0) {}
+    ScanData() : ord(0), row(0), frame(0), num(0), time(0.0) {}
 };
 
 struct OrdData {

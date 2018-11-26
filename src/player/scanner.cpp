@@ -57,13 +57,13 @@ void Scanner::scan(haze::Player *player)
         player->play();
     }
 
-    player->total_time_ = fi.time;
     Debug("end position is %d/%d", fi.pos, fi.row);
 
     scan_data[fi.song].num = scan_cnt[fi.pos][fi.row];
     scan_data[fi.song].row = fi.row;
     scan_data[fi.song].ord = fi.pos;
     scan_data[fi.song].frame = fi.frame;
+    scan_data[fi.song].time = fi.time;
 
     player->restore_state(ord_data[0].state);
     player->mixer()->reset();
