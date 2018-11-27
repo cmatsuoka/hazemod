@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <cstdint>
 #include <cstring>
-#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <haze.h>
@@ -30,8 +29,6 @@ int main(int argc, char** argv)
         std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
         exit(EXIT_SUCCESS);
     }
-
-    char *name = argv[1];
 
     // load module data
     int fd = open(argv[1], O_RDONLY, 0);

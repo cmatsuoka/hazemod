@@ -9,7 +9,7 @@
 struct Noisetracker : public FormatPlayer {
     Noisetracker() : FormatPlayer(
         "nt",
-        "NoiseReplayV1.1 + fixes",
+        "NoiseReplayV1.1",
         "A player based on the on Noisetracker V1.1 replayer",
         "Claudio Matsuoka",
         { "m.k." }
