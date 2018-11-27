@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.3)
+project(info)
+include_directories(../../include)
+link_directories(../../lib)
+add_executable(info main.cpp)
+target_link_libraries(info hazemod)
