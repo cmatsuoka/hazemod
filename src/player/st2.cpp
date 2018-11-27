@@ -226,13 +226,13 @@ void ST_Player::mt_rout2()
             }
         }
         // mt_stop
-        if (!mt_status) {
-            break;
+        if (!mt_status) {             // tst.w   mt_status
+            break;                    // beq.s   mt_stop2
         }
-        mt_status = false;
-        mt_partnote = 64;
-        break;
+        mt_status = false;            // clr.w   mt_status
+        mt_partnote = 64;             // bra.s   mt_higher
     }
+    // mt_stop2
 }
 
 void ST_Player::mt_playit(const int pat, const int chn)
@@ -305,8 +305,7 @@ void ST_Player::mt_posjmp(const int chn)
 {
     auto& ch = mt_audtemp[chn];
     mt_status = !mt_status;
-    mt_partnrplay = ch.n_3_cmdlo;
-    mt_partnrplay--;
+    mt_partnrplay = ch.n_3_cmdlo - 1;
 }
 
 void ST_Player::mt_setvol(const int chn)
