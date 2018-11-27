@@ -129,7 +129,7 @@ void HMN_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = L693_songpos;
     fi.row = L692_pattpos;
     fi.num_rows = 64;
-    fi.frame = L642_speed - L695_counter;
+    fi.frame = L695_counter;
     fi.song = 0;
     fi.speed = L642_speed;
     fi.tempo = 125;
