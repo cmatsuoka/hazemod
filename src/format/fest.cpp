@@ -15,11 +15,8 @@ bool FestFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         return false;
     }
 
-    std::vector<std::string> ins_names;
-    for (int i = 0; i < 31; i++) {
-        const auto name = d.read_string(20 + i * 30, 22);
-        ins_names.push_back(name);
-    }
+    // FEST has no real instrument names
+    std::vector<std::string> ins_names(31);
 
     mi.format_id = "fest";
     mi.title = d.read_string(0, 20);
