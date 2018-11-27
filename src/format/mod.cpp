@@ -133,12 +133,20 @@ bool ModFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         format_id = (num_ch <= 8) ? "xchn" : "xxch";
     }
 
+    std::vector<std::string> ins_names;
+    for (int i = 0; i < 31; i++) {
+        const auto name = d.read_string(20 + i * 30, 22);
+        ins_names.push_back(name);
+    }
+
     mi.format_id = format_id;
     mi.title = d.read_string(0, 20);
     mi.description = num_ch == 4 ? "Amiga Protracker/Compatible" : "Multichannel MOD";
     mi.creator = trk.name;
-    mi.channels = num_ch;
+    mi.num_channels = num_ch;
     mi.length = d.read8(950);
+    mi.num_instruments = 31;
+    mi.instruments = ins_names;
     mi.player_id = player_id;
 
     return true;

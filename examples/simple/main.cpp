@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     }
     std::cout << "Format  : " << mi.description << std::endl;
     std::cout << "Creator : " << mi.creator << std::endl;
-    std::cout << "Channels: " << mi.channels << std::endl;
+    std::cout << "Channels: " << mi.num_channels << std::endl;
     std::cout << "Title   : " << mi.title << std::endl;
 
     auto hz = haze::HazePlayer(data, size, mi.player_id, mi.format_id);

@@ -185,12 +185,20 @@ bool StFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         ust = false;
     }
 
+    std::vector<std::string> ins_names;
+    for (int i = 0; i < 15; i++) {
+        const auto name = d.read_string(20 + i * 30, 22);
+        ins_names.push_back(name);
+    }
+
     mi.format_id = "st";
     mi.title = d.read_string(0, 20);
     mi.description = "Amiga 15 instrument module";
     mi.creator = ust ? "Ultimate Soundtracker" : "Soundtracker";
-    mi.channels = 4;
+    mi.num_channels = 4;
     mi.length = len;
+    mi.num_instruments = 15;
+    mi.instruments = ins_names;
     mi.player_id = ust ? "ust" : "dst2";
 
     return true;

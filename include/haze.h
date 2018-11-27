@@ -29,13 +29,15 @@ namespace haze HAZE_EXPORT {
 constexpr int MaxSequences = 16;
 
 struct ModuleInfo {
-    std::string title;        // The module title
-    std::string format_id;    // The module format identifier
-    std::string description;  // The module format description
-    std::string creator;      // The program used to create this module (usually a tracker)
-    std::string player_id;    // The primary player for this format
-    int channels;             // The number of channels used in the module
-    int length;
+    std::string title;        // Module title
+    std::string format_id;    // Module format identifier
+    std::string description;  // Module format description
+    std::string creator;      // Program used to create this module (usually a tracker)
+    std::string player_id;    // Primary player for this format
+    int num_channels;         // Number of channels used in the module
+    int length;               // Module length in patterns
+    int num_instruments;      // Number of instruments
+    std::vector<std::string> instruments;  // Instrument names
 };
 
 struct PlayerInfo {
