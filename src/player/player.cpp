@@ -26,8 +26,8 @@ Player::~Player()
 void Player::scan()
 {
     scanner_->scan(this);
-    end_point_ = scanner_->data(0).num;
-    total_time_ = scanner_->data(0).time;
+    end_point_ = scanner_->scan_data(0).num;
+    total_time_ = scanner_->scan_data(0).time;
 }
 
 void Player::frame_info(FrameInfo& pi)
@@ -48,7 +48,7 @@ bool Player::fill(float *buf, int size)
 
 void Player::check_end_of_module()
 {
-    auto data = scanner_->data(0);  // song
+    auto data = scanner_->scan_data(0);  // song
     FrameInfo fi;
     frame_info(fi);
     if (fi.pos == data.ord && fi.row == data.row && fi.frame == data.frame) {
@@ -57,6 +57,13 @@ void Player::check_end_of_module()
             end_point_ = data.num;
         }
         end_point_--;
+    }
+}
+
+void Player::set_position(int pos)
+{
+    if (pos < length()) {
+        restore_state(scanner_->ord_data(pos).state);
     }
 }
 

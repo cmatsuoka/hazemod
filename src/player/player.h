@@ -75,6 +75,7 @@ public:
     void scan();
     bool fill(int16_t *buf, int size);
     bool fill(float *buf, int size);
+    void set_position(int);
 };
 
 }  // namespace haze

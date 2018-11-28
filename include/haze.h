@@ -78,7 +78,7 @@ public:
     HazePlayer& frame_info(FrameInfo &);
     bool fill(int16_t *, int);
     bool fill(float *, int);
-    std::vector<PlayerInfo> list_players();
+    void set_position(int);
 };
 
 

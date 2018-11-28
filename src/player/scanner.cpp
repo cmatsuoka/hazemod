@@ -18,9 +18,9 @@ void Scanner::scan(haze::Player *player)
 
     const int len = player->length();
     for (int i = 0; i < len; i++) {
-        scan_cnt.push_back(std::vector<uint32_t>(256));
+        scan_cnt_.push_back(std::vector<uint32_t>(256));
     }
-    ord_data.resize(len);
+    ord_data_.resize(len);
 
     haze::FrameInfo fi;
 
@@ -32,7 +32,7 @@ void Scanner::scan(haze::Player *player)
         if (prev_row != row || prev_pos != pos || prev_loop_count != fi.loop_count) {
 
             //Debug("scan: check %d/%d", pos, row);
-            if (scan_cnt[pos][row] > 0) {
+            if (scan_cnt_[pos][row] > 0) {
                 if (player->inside_loop_) {
                     //Debug("inside loop");
                 } else {
@@ -41,16 +41,16 @@ void Scanner::scan(haze::Player *player)
                 }
             }
 
-            scan_cnt[pos][row]++;
+            scan_cnt_[pos][row]++;
             prev_loop_count = fi.loop_count;
             prev_row = row;
 
-            if (prev_pos != pos && !ord_data[pos].used) {
-                ord_data[pos].state = player->save_state();
-                ord_data[pos].time = player->time_;
+            if (prev_pos != pos && !ord_data_[pos].used) {
+                ord_data_[pos].state = player->save_state();
+                ord_data_[pos].time = player->time_;
                 prev_pos = pos;
-                ord_data[pos].used = true;
-                Debug("scan: pos %d: time %lf", pos, ord_data[pos].time);
+                ord_data_[pos].used = true;
+                Debug("scan: pos %d: time %lf", pos, ord_data_[pos].time);
             }
         }
 
@@ -59,12 +59,12 @@ void Scanner::scan(haze::Player *player)
 
     Debug("end position is %d/%d", fi.pos, fi.row);
 
-    scan_data[fi.song].num = scan_cnt[fi.pos][fi.row];
-    scan_data[fi.song].row = fi.row;
-    scan_data[fi.song].ord = fi.pos;
-    scan_data[fi.song].frame = fi.frame;
-    scan_data[fi.song].time = fi.time;
+    scan_data_[fi.song].num = scan_cnt_[fi.pos][fi.row];
+    scan_data_[fi.song].row = fi.row;
+    scan_data_[fi.song].ord = fi.pos;
+    scan_data_[fi.song].frame = fi.frame;
+    scan_data_[fi.song].time = fi.time;
 
-    player->restore_state(ord_data[0].state);
+    player->restore_state(ord_data_[0].state);
     player->mixer()->reset();
 }

@@ -63,6 +63,11 @@ bool HazePlayer::fill(int16_t *buf, int size)
     return player_->fill(buf, size);
 }
 
+void HazePlayer::set_position(const int pos)
+{
+    player_->set_position(pos);
+}
+
 std::vector<PlayerInfo> list_players()
 {
     PlayerRegistry reg;

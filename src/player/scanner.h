@@ -27,15 +27,16 @@ struct OrdData {
 };
 
 class Scanner {
-    ScanData scan_data[haze::MaxSequences];
-    std::vector<OrdData> ord_data;
-    std::vector<std::vector<uint32_t>> scan_cnt;
+    ScanData scan_data_[haze::MaxSequences];
+    std::vector<OrdData> ord_data_;
+    std::vector<std::vector<uint32_t>> scan_cnt_;
 
 public:
     Scanner();
     ~Scanner();
     void scan(haze::Player *);
-    ScanData const& data(const int num) { return scan_data[num]; }
+    ScanData const& scan_data(const int num) { return scan_data_[num]; }
+    OrdData const& ord_data(const int num) { return ord_data_[num]; }
 };
 
 
