@@ -5,10 +5,14 @@
 TEST_SUITE("databuffer") {
     TEST_CASE("databuffer::check_buffer_size") {
         DataBuffer d(nullptr, 10);
-        CHECK_NOTHROW(d.check_buffer_size(1));
-        CHECK_NOTHROW(d.check_buffer_size(10));
-        CHECK_THROWS_AS(d.check_buffer_size(0), std::runtime_error);
-        CHECK_THROWS_AS(d.check_buffer_size(11), std::runtime_error);
+        CHECK_NOTHROW(d.check_buffer_size(1, true));
+        CHECK_NOTHROW(d.check_buffer_size(10, true));
+        CHECK_THROWS_AS(d.check_buffer_size(0, true), std::runtime_error);
+        CHECK_THROWS_AS(d.check_buffer_size(11, true), std::runtime_error);
+        CHECK(d.check_buffer_size(1, false));
+        CHECK(d.check_buffer_size(10, false));
+        CHECK_FALSE(d.check_buffer_size(0, false));
+        CHECK_FALSE(d.check_buffer_size(11, false));
     }
 
     TEST_CASE("databuffer::read8") {

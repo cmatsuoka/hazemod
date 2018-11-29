@@ -60,7 +60,7 @@ public:
         if (stopped || pos >= end) {
             return 0;
         }
-        auto x = data.read8i(pos);
+        auto x = data.read8i(pos, false);
         add_step();
         return x * audvol;
     }
