@@ -68,10 +68,6 @@ void UST_Player::play()
     time_ += 20.0;
 }
 
-void UST_Player::reset()
-{
-}
-
 int UST_Player::length()
 {
     return mdata.read8(470);

@@ -64,7 +64,7 @@ public:
 
     virtual void start() = 0;
     virtual void play() = 0;
-    virtual void reset() = 0;
+    virtual void reset();
     virtual void frame_info(FrameInfo&);
     virtual int length() = 0;
     virtual Mixer *mixer() = 0;

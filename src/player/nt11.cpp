@@ -65,10 +65,6 @@ void NT11_Player::play()
     time_ += 20.0;
 }
 
-void NT11_Player::reset()
-{
-}
-
 int NT11_Player::length()
 {
     return mdata.read8(950);

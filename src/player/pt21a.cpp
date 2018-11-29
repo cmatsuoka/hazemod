@@ -87,10 +87,6 @@ void PT21A_Player::play()
     inside_loop_ |= mt_chantemp[3].inside_loop;
 }
 
-void PT21A_Player::reset()
-{
-}
-
 int PT21A_Player::length()
 {
     return mdata.read8(950);

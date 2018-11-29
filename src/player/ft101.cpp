@@ -89,10 +89,6 @@ void FT_Player::play()
     inside_loop_ |= ft_chantemp[7].inside_loop;
 }
 
-void FT_Player::reset()
-{
-}
-
 int FT_Player::length()
 {
     return mdata.read8(950);

@@ -115,10 +115,6 @@ void HMN_Player::play()
     time_ += 20.0;
 }
 
-void HMN_Player::reset()
-{
-}
-
 int HMN_Player::length()
 {
     return mdata.read8(950);

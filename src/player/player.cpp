@@ -67,4 +67,9 @@ void Player::set_position(int pos)
     }
 }
 
+void Player::reset()
+{
+    set_position(0);
+}
+
 }  // namespace haze

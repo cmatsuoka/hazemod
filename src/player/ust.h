@@ -74,7 +74,6 @@ public:
     ~UST_Player();
     void start() override;
     void play() override;
-    void reset() override;
     int length() override;
     void frame_info(haze::FrameInfo&) override;
     State save_state() override;

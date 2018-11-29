@@ -68,10 +68,6 @@ void ST_Player::play()
     time_ += 20.0;
 }
 
-void ST_Player::reset()
-{
-}
-
 int ST_Player::length()
 {
     return mdata.read8(470);
