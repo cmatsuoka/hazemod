@@ -4,6 +4,7 @@
 #include "player/dst2.h"
 #include "player/ust.h"
 #include "player/hmn.h"
+#include "player/st2.h"
 
 
 PlayerRegistry::PlayerRegistry()
@@ -13,7 +14,8 @@ PlayerRegistry::PlayerRegistry()
         { "nt",   new Noisetracker },
         { "dst2", new DOC_Soundtracker_2 },
         { "ust",  new UltimateSoundtracker },
-        { "hmn",  new HisMastersNoise }
+        { "hmn",  new HisMastersNoise },
+        { "st2",  new St2Play }
     });
 }
 
