@@ -29,7 +29,7 @@ add_library(hazemod SHARED
     player/player_registry.cpp
     player/pt21a.cpp
     player/nt11.cpp
-    player/st2.cpp
+    player/dst2.cpp
     player/ust.cpp
     player/hmn.cpp
     player/ft101.cpp

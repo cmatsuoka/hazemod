@@ -1,4 +1,4 @@
-#include "player/st2.h"
+#include "player/dst2.h"
 
 // D.O.C SoundTracker V2.0 replayer
 //

@@ -1,7 +1,7 @@
 #include "player/player_registry.h"
 #include "player/pt21a.h"
 #include "player/nt11.h"
-#include "player/st2.h"
+#include "player/dst2.h"
 #include "player/ust.h"
 #include "player/hmn.h"
 
