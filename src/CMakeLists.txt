@@ -17,6 +17,7 @@ add_library(hazemod SHARED
     format/format.cpp
     format/format_registry.cpp
     format/mod.cpp
+    format/stm.cpp
     format/fest.cpp
     format/st.cpp
     mixer/spline.cpp

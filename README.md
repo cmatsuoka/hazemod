@@ -19,7 +19,7 @@ TODO list
 
 - add format probe
   - s3m
-  - stm
+  - ~~stm~~ ✓
   - ft2
   - ~~His Master's Noise~~ ✓
   - ...
