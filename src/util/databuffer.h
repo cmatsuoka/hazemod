@@ -12,7 +12,7 @@ class DataBuffer {
     uint32_t data_size;
 
 public:
-    //DataBuffer() { data = nullptr; data_size = 0; }
+    DataBuffer() { data = nullptr; data_size = 0; }
 
     DataBuffer(void *buf, uint32_t size) {
         data = static_cast<uint8_t *>(buf);

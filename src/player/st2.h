@@ -25,9 +25,10 @@ struct St2Play : public FormatPlayer {
 };
 
 class ST2_Player : public PCPlayer {
-    st2_context_t *context;
+    st2_context_t context;
     int length_;
     int srate_;
+    double tempo_factor_;
 
     void load(st2_context_t *, DataBuffer const&);
 public:

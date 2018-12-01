@@ -20,9 +20,27 @@ ST2_Player::ST2_Player(void *buf, uint32_t size, int sr) :
 {
     auto d = DataBuffer(buf, size);
     st2_init_tables();
-    context = st2_tracker_init();
+
+    // we can't use pointers so we'll initialize by hand
+    //context = st2_tracker_init();
+
+    memset(&context, 0, sizeof(context));
+
+    context.tempo = 0x60;
+    context.global_volume = 64;
+    context.sample_rate = sr;
+    context.frames_per_tick = 1;
+    context.current_frame = 1;
 
     int i;
+    for (i = 0; i < 32; ++i) {
+        context.samples[i].length = 0;
+        context.samples[i].loop_start = 0;
+        context.samples[i].loop_end = 0xffff;
+        context.samples[i].volume = 0;
+        context.samples[i].c2spd = 8448;
+    }
+
     uint8_t num_pat = d.read8(33);
     for (i = 0; i < 128; i++) {
         if (d.read8(48 + 31 * 32 + i) >= num_pat) {
@@ -31,12 +49,11 @@ ST2_Player::ST2_Player(void *buf, uint32_t size, int sr) :
     }
     length_ = i;
 
-    load(context, d);
+    load(&context, d);
 }
 
 ST2_Player::~ST2_Player()
 {
-    st2_tracker_destroy(context);
 }
 
 void ST2_Player::start()
@@ -53,13 +70,25 @@ void ST2_Player::start()
     mixer_->set_pan(2, panr);
     mixer_->set_pan(3, panl);
 
-    st2_tracker_start(context, srate_);
-    st2_set_position(context, 0);
+    st2_tracker_start(&context, srate_);
+    st2_set_position(&context, 0);
 }
 
 void ST2_Player::play()
 {
-    st2_process_tick(context);
+    st2_process_tick(&context);
+
+    for (int chn = 0; chn < 4; chn++) {
+        auto& ch = context.channels[chn];
+        mixer_->set_volume(chn, ch.volume_mix);
+        mixer_->set_loop_start(chn, ch.smp_loop_start);
+        mixer_->set_loop_end(chn, ch.smp_loop_end);
+        mixer_->enable_loop(chn, ch.smp_loop_start != 0xffff);
+    }
+
+    tempo_factor_ = double(context.sample_rate) / context.frames_per_tick;
+    tempo_ = 2.5 * tempo_factor_;
+    time_ += 20.0 * 125.0 / tempo_;
 }
 
 int ST2_Player::length()
@@ -69,6 +98,13 @@ int ST2_Player::length()
 
 void ST2_Player::frame_info(haze::FrameInfo& fi)
 {
+    fi.pos = context.order_current;
+    fi.row = context.channels[0].row;
+    fi.num_rows = 64;
+    fi.frame = context.current_tick;
+    fi.song = 0;
+    fi.speed = context.ticks_per_row;
+    fi.tempo = context.tempo;
 
     haze::Player::frame_info(fi);
 }
@@ -183,15 +219,13 @@ void ST2_Player::load(st2_context_t *ctx, DataBuffer const& d)
         }
     }
 
-/*
     for (i = 1; i < 32; ++i) {
-        if(ctx->samples[i].volume && ctx->samples[i].length) {
-            fseek(fp, ctx->samples[i].offset << 4, SEEK_SET);
-            ctx->samples[i].data = (uint8_t *)(malloc(ctx->samples[i].length + 1));
-            fread(ctx->samples[i].data, 1, ctx->samples[i].length, fp);
+        st2_sample_t *s = &ctx->samples[i];
+        if (s->volume && s->length) {
+            mixer_->add_sample(d.ptr(s->offset), s->length,
+                double(s->c2spd) / 8448.0);    // 8448 - 2.21; 8192 - 2.3
         }
     }
-*/
 }
 
 //----------------------------------------------------------------------

@@ -414,6 +414,7 @@ void st2_set_position(st2_context_t *ctx, uint16_t ord)
 	change_pattern(ctx);
 }
 
+// CM: Added for hz integration
 void st2_process_tick(st2_context_t *ctx)
 {
 	process_tick(ctx);
