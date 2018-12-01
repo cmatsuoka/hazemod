@@ -106,7 +106,7 @@ void ST2_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = context.order_current;
     fi.row = context.channels[0].row;
     fi.num_rows = 64;
-    fi.frame = context.current_tick;
+    fi.frame = context.ticks_per_row - context.current_tick - 1;
     fi.song = 0;
     fi.speed = context.ticks_per_row;
     fi.tempo = context.tempo;

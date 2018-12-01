@@ -30,10 +30,10 @@ void Player::scan()
     total_time_ = scanner_->scan_data(0).time;
 }
 
-void Player::frame_info(FrameInfo& pi)
+void Player::frame_info(FrameInfo& fi)
 {
-    pi.time = time_;
-    pi.total_time = total_time_;
+    fi.time = time_;
+    fi.total_time = total_time_;
 }
 
 bool Player::fill(int16_t *buf, int size)
