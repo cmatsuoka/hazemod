@@ -67,6 +67,8 @@ typedef struct st2_channel_s
 	uint16_t volume_current;
 	uint16_t volume_meter;
 	uint16_t volume_mix;
+	//
+	uint16_t trigger;
 } st2_channel_t;
 
 typedef struct st2_sample_s {

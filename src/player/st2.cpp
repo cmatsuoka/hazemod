@@ -80,13 +80,15 @@ void ST2_Player::play()
 
     for (int chn = 0; chn < 4; chn++) {
         auto& ch = context.channels[chn];
-        if (context.current_tick == context.ticks_per_row - 1 && ch.event_smp != 0) {
-            mixer_->set_sample(chn, ch.event_smp);
+        if (ch.trigger) {
+            mixer_->set_sample(chn, ch.trigger);
+            mixer_->set_loop_start(chn, ch.smp_loop_start);
+            mixer_->set_loop_end(chn, ch.smp_loop_end);
+            mixer_->enable_loop(chn, ch.smp_loop_start != 0xffff);
+            ch.trigger = 0;
         }
-        mixer_->set_volume(chn, ch.volume_mix);
-        mixer_->set_loop_start(chn, ch.smp_loop_start);
-        mixer_->set_loop_end(chn, ch.smp_loop_end);
-        mixer_->enable_loop(chn, ch.smp_loop_start != 0xffff);
+        mixer_->set_period(chn, ch.period_current / FXMULT);
+        mixer_->set_volume(chn, ch.volume_mix << 2);
     }
 
     tempo_factor_ = double(context.sample_rate) / context.frames_per_tick;
@@ -222,12 +224,10 @@ void ST2_Player::load(st2_context_t *ctx, DataBuffer const& d)
         }
     }
 
-    for (i = 1; i < 32; ++i) {
-        st2_sample_t *s = &ctx->samples[i];
-        if (s->volume && s->length) {
-            mixer_->add_sample(d.ptr(s->offset), s->length,
-                double(s->c2spd) / 8448.0);    // 8448 - 2.21; 8192 - 2.3
-        }
+    for (i = 0; i < 31; ++i) {
+        st2_sample_t *s = &ctx->samples[i - 1];
+        mixer_->add_sample(d.ptr(s->offset), s->length,
+            double(s->c2spd) / 8448.0);    // 8448 - 2.21; 8192 - 2.3
     }
 }
 

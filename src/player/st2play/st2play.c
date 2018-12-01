@@ -203,6 +203,8 @@ static void trigger_note(st2_context_t *ctx, size_t chn)
 			ch->smp_loop_end = ctx->samples[ch->event_smp].length;
 			ch->smp_loop_start = 0xffff;
 		}
+		// CM: add external trigger
+		ch->trigger = ch->event_smp;
 	}
 
 	if(ch->event_note != 255) {

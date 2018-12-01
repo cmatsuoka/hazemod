@@ -53,6 +53,8 @@ void SoftMixer::set_sample(int chn, int val)
         return;
     }
     voice[chn]->set_sample(sample[val - 1]);
+    voice[chn]->set_start(0);
+    voice[chn]->set_end(sample[val - 1].size());
 }
 
 void SoftMixer::set_start(int chn, uint32_t val)
@@ -136,8 +138,8 @@ void SoftMixer::mix(int16_t *buf, int size)
         int32_t l = 0, r = 0;
         for (auto v : voice) {
             int32_t val = (v->get() * v->volume());
-            r += (val * (0x80 - v->pan())) >> 6;
-            l += (val * (0x80 + v->pan())) >> 6;
+            r += (val * (0x80 - v->pan())) >> 8;
+            l += (val * (0x80 + v->pan())) >> 8;
         }
         *b++ = std::clamp(r >> 12, Lim16_lo, Lim16_hi);
         *b++ = std::clamp(l >> 12, Lim16_lo, Lim16_hi);
