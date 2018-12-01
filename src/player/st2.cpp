@@ -224,9 +224,9 @@ void ST2_Player::load(st2_context_t *ctx, DataBuffer const& d)
         }
     }
 
-    for (i = 0; i < 31; ++i) {
-        st2_sample_t *s = &ctx->samples[i - 1];
-        mixer_->add_sample(d.ptr(s->offset), s->length,
+    for (i = 1; i < 32; ++i) {
+        st2_sample_t *s = &ctx->samples[i];
+        mixer_->add_sample(d.ptr(s->offset << 4), s->length,
             double(s->c2spd) / 8448.0);    // 8448 - 2.21; 8192 - 2.3
     }
 }
