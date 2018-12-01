@@ -113,6 +113,7 @@ void st2_tracker_destroy(st2_context_t *ctx);
 uint16_t st2_get_position(st2_context_t *ctx);
 void st2_set_position(st2_context_t *ctx, uint16_t ord);
 void st2_process_tick(st2_context_t *ctx);
+uint8_t st2_volume_remap(uint8_t, uint8_t);
 uint8_t st2_render_sample(st2_context_t *ctx);
 
 #endif

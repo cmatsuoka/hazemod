@@ -419,3 +419,8 @@ void st2_process_tick(st2_context_t *ctx)
 {
 	process_tick(ctx);
 }
+
+uint8_t st2_volume_remap(uint8_t vol, uint8_t val)
+{
+	return vol > 64 ? 0 : volume_table[vol][val];
+}

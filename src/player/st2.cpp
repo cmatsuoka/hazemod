@@ -80,6 +80,9 @@ void ST2_Player::play()
 
     for (int chn = 0; chn < 4; chn++) {
         auto& ch = context.channels[chn];
+        if (context.current_tick == context.ticks_per_row - 1 && ch.event_smp != 0) {
+            mixer_->set_sample(chn, ch.event_smp);
+        }
         mixer_->set_volume(chn, ch.volume_mix);
         mixer_->set_loop_start(chn, ch.smp_loop_start);
         mixer_->set_loop_end(chn, ch.smp_loop_end);

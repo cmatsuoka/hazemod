@@ -2,6 +2,7 @@
 #include <cstring>
 #include <memory>
 #include <algorithm>
+#include "util/debug.h"
 
 constexpr int32_t Lim16_lo = -32768;
 constexpr int32_t Lim16_hi = 32767;
@@ -47,10 +48,11 @@ void SoftMixer::reset()
 
 void SoftMixer::set_sample(int chn, int val)
 {
-    if (chn >= num_voices || size_t(val) >= sample.size()) {
+    //Debug("%d, %d", chn, val);
+    if (chn >= num_voices || val <= 0 || size_t(val) > sample.size()) {
         return;
     }
-    voice[chn]->set_sample(sample[val]);
+    voice[chn]->set_sample(sample[val - 1]);
 }
 
 void SoftMixer::set_start(int chn, uint32_t val)
@@ -95,6 +97,7 @@ void SoftMixer::enable_loop(int chn, bool val)
 
 void SoftMixer::set_volume(int chn, int val)
 {
+    //Debug("%d, %d", chn, val);
     if (chn >= num_voices) {
         return;
     }
