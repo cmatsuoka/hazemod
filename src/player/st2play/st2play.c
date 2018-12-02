@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/*
+ * Changes by Claudio Matsuoka, Nov 2017
+ * - comment out volume_table
+ * - comment out st2_render_sample
+ * - expose process_tick
+ */
+#define HZMOD
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -30,10 +38,14 @@ static int16_t lfo_table[65] = {   0,   24,   49,   74,   97,  120,  141,  161, 
 								 255,  253,  250,  244,  235,  224,  212,  197,  180,  161,  141,  120,   97,   74,   49,   24,
 								   0,  -24,  -49,  -74,  -97, -120, -141, -161, -180, -197, -212, -224, -235, -244, -250, -253,
 								-255, -253, -250, -244, -235, -224, -212, -197, -180, -161, -141, -120,  -97,  -74,  -49,  -24, 0 };
+#ifndef HZMOD
 static uint8_t volume_table[65][256];
+#endif
 
 static void generate_period_table(void);
+#ifndef HZMOD
 static void generate_volume_table(void);
+#endif
 
 static void set_tempo(st2_context_t *ctx, uint8_t tempo);
 static void update_frequency(st2_context_t *ctx, size_t chn);
@@ -52,6 +64,7 @@ static void generate_period_table(void)
 		period_table[i + 16] = period_table[i] >> 1;
 }
 
+#ifndef HZMOD
 static void generate_volume_table(void)
 {
 	size_t i, j;
@@ -60,6 +73,7 @@ static void generate_volume_table(void)
 		for(j = 0; j < 256; ++j)
 			volume_table[i][j] = (uint8_t)((i * (int8_t)j) / 256);
 }
+#endif
 
 static void set_tempo(st2_context_t *ctx, uint8_t tempo)
 {
@@ -203,8 +217,10 @@ static void trigger_note(st2_context_t *ctx, size_t chn)
 			ch->smp_loop_end = ctx->samples[ch->event_smp].length;
 			ch->smp_loop_start = 0xffff;
 		}
+#ifdef HZMOD
 		// CM: add external trigger
 		ch->trigger = ch->event_smp;
+#endif
 	}
 
 	if(ch->event_note != 255) {
@@ -301,6 +317,8 @@ static void process_tick(st2_context_t *ctx)
 		ctx->channels[i].volume_mix = (ctx->channels[i].volume_current * ctx->global_volume) >> 6;
 }
 
+// CM: comment out unused function
+#ifndef HZMOD
 uint8_t st2_render_sample(st2_context_t *ctx)
 {
 	size_t i;
@@ -334,11 +352,14 @@ uint8_t st2_render_sample(st2_context_t *ctx)
 
 	return mix - 128;
 }
+#endif
 
 void st2_init_tables(void)
 {
 	generate_period_table();
+#ifndef HZMOD
 	generate_volume_table();
+#endif
 }
 
 st2_context_t *st2_tracker_init(void)
@@ -417,12 +438,9 @@ void st2_set_position(st2_context_t *ctx, uint16_t ord)
 }
 
 // CM: Added for hz integration
+#ifdef HZMOD
 void st2_process_tick(st2_context_t *ctx)
 {
 	process_tick(ctx);
 }
-
-uint8_t st2_volume_remap(uint8_t vol, uint8_t val)
-{
-	return vol > 64 ? 0 : volume_table[vol][val];
-}
+#endif
