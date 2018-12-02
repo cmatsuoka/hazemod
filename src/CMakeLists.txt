@@ -35,6 +35,8 @@ add_library(hazemod SHARED
     player/hmn.cpp
     player/st2play/st2play.c
     player/st2.cpp
+    player/st3play/st3play.cpp
+    player/st3.cpp
     player/ft101.cpp
     haze.cpp
 )

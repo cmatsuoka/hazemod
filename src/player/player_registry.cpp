@@ -5,6 +5,7 @@
 #include "player/ust.h"
 #include "player/hmn.h"
 #include "player/st2.h"
+#include "player/st3.h"
 
 
 PlayerRegistry::PlayerRegistry()
@@ -15,7 +16,8 @@ PlayerRegistry::PlayerRegistry()
         { "dst2", new DOC_Soundtracker_2 },
         { "ust",  new UltimateSoundtracker },
         { "hmn",  new HisMastersNoise },
-        { "st2",  new St2Play }
+        { "st2",  new St2Player },
+        { "st3",  new St3Player }
     });
 }
 
