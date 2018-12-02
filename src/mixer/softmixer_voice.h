@@ -24,7 +24,7 @@ class Voice {
     uint32_t loop_start_;
     uint32_t loop_end_;
     uint32_t prev_;
-    Sample& sample_;
+    Sample sample_;
     Interpolator *itp_;
 
 protected:
@@ -75,7 +75,7 @@ public:
     void enable_loop(bool val) { loop_ = val; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 256); }
     void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
-    void set_sample(Sample& sample) { sample_ = sample; }
+    void set_sample(Sample const& sample) { sample_ = sample; }
     void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
     void set_step(double val) { step_ = val; }
     int volume() { return volume_; }

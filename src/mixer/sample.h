@@ -31,8 +31,8 @@ public:
             (uint16_t(static_cast<int8_t *>(data_)[pos])) << 8;   // convert to 16bit
     }
 
-    uint32_t size() { return size_; }
-    double rate() { return rate_; }
+    uint32_t size() const { return size_; }
+    double rate() const { return rate_; }
 };
 
 extern Sample empty_sample;
