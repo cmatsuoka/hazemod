@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdint>
 
-#define SMIX_SHIFT 16
+#define SMIX_SHIFT 15
 
 enum InterpolatorType {
     NearestInterpolatorType,

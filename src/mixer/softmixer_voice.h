@@ -56,11 +56,10 @@ public:
             return 0;
         }
         if (prev_ != pos_) {
-            auto x = sample_.get(pos_);
-            itp_->put(x);
+            itp_->put(sample_.get(pos_));
             prev_ = pos_;
         }
-        int32_t y = itp_->get(frac_);
+        int32_t y = itp_->get(frac_>>1);
         add_step();
         return y;
     }
@@ -74,7 +73,7 @@ public:
     void set_loop_end(uint32_t val) { loop_end_ = val; }
     void enable_loop(bool val) { loop_ = val; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 256); }
-    void set_pan(int val) { pan_ = std::clamp(val, -127, 128); }
+    void set_pan(int val) { pan_ = std::clamp(val, -128, 127); }
     void set_sample(Sample const& sample) { sample_ = sample; }
     void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
     void set_step(double val) { step_ = val; }
