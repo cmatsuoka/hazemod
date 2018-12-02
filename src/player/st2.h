@@ -12,8 +12,8 @@ extern "C" {
 }
 
 
-struct St2Play : public FormatPlayer {
-    St2Play() : FormatPlayer(
+struct St2Player : public FormatPlayer {
+    St2Player() : FormatPlayer(
         "st2",
         "st2play",
         "A port of Scream Tracker 2.xx's replayer",

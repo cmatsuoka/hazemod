@@ -7,7 +7,7 @@
 // written by Sergei "x0r" Kolzun.
 
 
-haze::Player *St2Play::new_player(void *buf, uint32_t size, int sr)
+haze::Player *St2Player::new_player(void *buf, uint32_t size, int sr)
 {
     return new ST2_Player(buf, size, sr);
 }
