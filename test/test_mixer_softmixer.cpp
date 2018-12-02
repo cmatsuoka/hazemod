@@ -10,7 +10,7 @@ TEST_SUITE("softmixer") {
         SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_period(0, 428.0);
         m.set_volume(0, 1024);
         m.set_start(0, 0);
@@ -35,7 +35,7 @@ TEST_SUITE("softmixer") {
         SoftMixer m(1, 8287.0, Options{{"interpolator", "nearest"}});
         int16_t data[] = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
         m.add_sample(data, 8, 1.0, Sample16Bits);
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_period(0, 428.0);
         m.set_volume(0, 256);
         m.set_start(0, 0);
@@ -62,7 +62,7 @@ TEST_SUITE("softmixer") {
 
         int16_t res[16];
 
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_start(0, 0);
         m.set_end(0, 8);
         m.set_volume(0, 0);
@@ -73,7 +73,7 @@ TEST_SUITE("softmixer") {
         };
         CHECK(std::equal(std::begin(res), std::end(res), std::begin(ref1)));
 
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_start(0, 0);
         m.set_end(0, 8);
         m.set_volume(0, 128);
@@ -94,7 +94,7 @@ TEST_SUITE("softmixer") {
 
         int16_t res[16];
 
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_start(0, 0);
         m.set_end(0, 8);
         m.set_pan(0, -64);
@@ -105,7 +105,7 @@ TEST_SUITE("softmixer") {
         };
         CHECK(std::equal(std::begin(res), std::end(res), std::begin(ref1)));
 
-        m.set_sample(0, 0);
+        m.set_sample(0, 1);
         m.set_start(0, 0);
         m.set_end(0, 8);
         m.set_pan(0, 64);
