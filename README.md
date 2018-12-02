@@ -29,7 +29,7 @@ TODO list
   - ft1
   - ~~smaksak~~ ✓
   - ~~D.O.C SoundTracker V2.0~~ ✓
-  - Scream Tracker 2
+  - ~~Scream Tracker 2~~ ✓
   - Scream Tracker 3
   - pt3
   - ...
