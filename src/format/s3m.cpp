@@ -77,22 +77,25 @@ bool S3mFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         num_chn = i + 1;
     }
 
-    int length = d.read16l(0x20);
+    int num_ord = d.read16l(0x20);
     int num_ins = d.read16l(0x22);
 
-    int i;
+    // list instruments
     std::vector<std::string> ins_names;
-    for (i = 0; i < num_ins; i++) {
-        //const auto name = d.read_string(48 + i * 32, 12);
-        //ins_names.push_back(name);
+    for (int i = 0; i < num_ins; ++i) {
+        const uint32_t offs = (d.read16l(0x60 + num_ord + (i * 2))) << 4;
+        if (offs == 0) {
+            continue;  // empty
+        }
+        const auto name = d.read_string(offs + 0x30, 28);
+        ins_names.push_back(name);
     }
-
 
     mi.format_id = "s3m";
     mi.title = d.read_string(0, 28);
     mi.description = "Scream Tracker 3 module";
     mi.num_channels = num_chn;
-    mi.length = length;
+    mi.length = num_ord;
     mi.num_instruments = num_ins;
     mi.instruments = ins_names;
     mi.player_id = "st3";
