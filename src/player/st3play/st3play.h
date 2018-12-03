@@ -2,6 +2,7 @@
 #define HAZE_PLAYER_ST3PLAY_ST3PLAY_H
 
 #include <cstdint>
+#include "util/databuffer.h"
 
 enum {
     SOUNDCARD_GUS = 0, // default
@@ -107,6 +108,7 @@ public:
     void s_finevibrato(chn_t *);
     void s_setgvol(chn_t *);
 
+    void load_s3m(DataBuffer const&);
 };
 
 

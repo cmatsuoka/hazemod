@@ -118,6 +118,7 @@ void ST3_Player::restore_state(State const& state)
 
 void ST3_Player::load_s3m(DataBuffer const& d)
 {
+    st3play.load_s3m(d);
 }
 
 //----------------------------------------------------------------------

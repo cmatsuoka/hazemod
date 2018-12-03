@@ -21,7 +21,7 @@ public:
 
     uint8_t *ptr(const uint32_t ofs) const { return &data[ofs]; }
 
-    uint32_t size() { return data_size; }
+    uint32_t size() const { return data_size; }
 
     uint8_t read8(const uint32_t ofs, const bool fail = true) const {
         return check_buffer_size(ofs + 1, fail) ? data[ofs] : 0;
