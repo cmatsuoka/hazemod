@@ -32,15 +32,6 @@ enum {
 //typedef void (*mixRoutine)(void *, int32_t);
 
 
-struct voice_t {
-    const int8_t *m_base8;
-    const int16_t *m_base16;
-    uint8_t m_loopflag;
-    uint16_t m_vol_l, m_vol_r;
-    uint32_t m_pos, m_end, m_looplen, m_posfrac, m_speed;
-    void (*m_mixfunc)(void *, int32_t); /* function pointer to mix routine */
-};
-
 typedef void (St3Play::*effect_routine)(chn_t *ch);
 
 /* 8bitbubsy: this panning table was made sampling audio from my GUS PnP and processing it.
@@ -205,6 +196,15 @@ effect_routine sotherjmp[27] = {
 };
 
 }  // namespace
+
+
+St3Play::St3Play()
+{
+}
+
+St3Play::~St3Play()
+{
+}
 
 
 /* CODE START */
