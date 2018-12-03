@@ -58,6 +58,7 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
     PCPlayer(buf, size, 4, sr)
 {
     auto d = DataBuffer(buf, size);
+    st3play.load_s3m(d);
 }
 
 ST3_Player::~ST3_Player()
@@ -113,13 +114,4 @@ void ST3_Player::restore_state(State const& state)
 {
     from_state<ST3_Player>(state, *this);
 }
-
-//----------------------------------------------------------------------
-
-void ST3_Player::load_s3m(DataBuffer const& d)
-{
-    st3play.load_s3m(d);
-}
-
-//----------------------------------------------------------------------
 

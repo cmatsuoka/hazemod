@@ -23,8 +23,6 @@ struct St3Player : public FormatPlayer {
 class ST3_Player : public PCPlayer {
     St3Play st3play;
 
-    void load_s3m(DataBuffer const&);
-
 public:
     ST3_Player(void *, uint32_t, int);
     ~ST3_Player();
