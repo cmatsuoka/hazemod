@@ -58,7 +58,7 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
     PCPlayer(buf, size, 4, sr)
 {
     auto d = DataBuffer(buf, size);
-    st3play.load_s3m(d, sr);
+    st3play.load_s3m(d, sr, mixer_);
 
     int ordNum = std::min(int(d.read16l(0x20)), 256);
     int k;

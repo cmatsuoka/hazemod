@@ -563,7 +563,7 @@ void St3Play::doamiga(uint8_t channel)
                         /* on GUS, do no sample swapping without a note number */
                         if ((soundcardtype != SOUNDCARD_GUS) || (ch->note != 255))
                         {
-                            voiceSetSource(channel, (const int8_t *)(ins[smp].data), ins[smp].length, ins[smp].loopbeg,
+                            voiceSetSource(channel, /*(const int8_t *)(ins[smp].data)*/ smp, ins[smp].length, ins[smp].loopbeg,
                                 ins[smp].looplen, ins[smp].flags & 1, (ins[smp].flags & 4) >> 2);
                         }
                     }
@@ -1624,10 +1624,14 @@ void St3Play::s_setgvol(chn_t *ch)
 
 // ---------------------------------------------------------------------------
 
-void St3Play::voiceSetSource(uint8_t voiceNumber, const int8_t *sampleData,
+void St3Play::voiceSetSource(uint8_t voiceNumber, int smp /*const int8_t *sampleData*/,
     int32_t length, int32_t loopStart, int32_t loopLength,
     uint8_t loopFlag, uint8_t sampleIs16Bit)
 {
+    mixer_->set_sample(voiceNumber, smp);
+    mixer_->set_loop_start(voiceNumber, loopStart);
+    mixer_->set_loop_end(voiceNumber, loopStart + loopLength);
+    mixer_->enable_loop(voiceNumber, loopFlag != 0);
 }
 
 void St3Play::voiceSetSamplePosition(uint8_t voiceNumber, uint16_t value)
@@ -1636,15 +1640,18 @@ void St3Play::voiceSetSamplePosition(uint8_t voiceNumber, uint16_t value)
 
 void St3Play::voiceSetVolume(uint8_t voiceNumber, uint16_t vol, uint8_t pan)
 {
+    mixer_->set_volume(voiceNumber, vol << 2);
+    mixer_->set_pan(voiceNumber, int(pan) - 0x80);
 }
 
 // ---------------------------------------------------------------------------
 
-void St3Play::load_s3m(DataBuffer const& d, int sr)
+void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
 {
     uint32_t modLen = d.size();
 
     audioRate = sr;
+    mixer_ = mixer;
 
     memcpy(songname, d.ptr(0), 28);
     songname[28] = '\0';

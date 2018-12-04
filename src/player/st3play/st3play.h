@@ -2,6 +2,7 @@
 #define HAZE_PLAYER_ST3PLAY_ST3PLAY_H
 
 #include <cstdint>
+#include "mixer/softmixer.h"
 #include "util/databuffer.h"
 
 enum {
@@ -46,10 +47,12 @@ class St3Play {
     uint32_t samplesPerTick, audioRate, sampleCounter;
     chn_t chn[32];
     voice_t voice[32];
-    int tempo_;
 
     St3Instrument ins[100];
     //mixRoutine mixRoutineTable[8];
+
+    int tempo_;
+    SoftMixer *mixer_;
 
     void getlastnfo(chn_t *);
     void setspeed(uint8_t);
@@ -69,7 +72,7 @@ class St3Play {
     void docmd2();
     void dorow();
 
-    void voiceSetSource(uint8_t, const int8_t *, int32_t, int32_t, int32_t, uint8_t, uint8_t);
+    void voiceSetSource(uint8_t, const int /*const int8_t **/, int32_t, int32_t, int32_t, uint8_t, uint8_t);
     void voiceSetSamplePosition(uint8_t, uint16_t);
     void voiceSetVolume(uint8_t, uint16_t, uint8_t);
 
@@ -111,7 +114,7 @@ public:
     void s_finevibrato(chn_t *);
     void s_setgvol(chn_t *);
 
-    void load_s3m(DataBuffer const&, const int);
+    void load_s3m(DataBuffer const&, const int, SoftMixer *);
 };
 
 
