@@ -58,7 +58,16 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
     PCPlayer(buf, size, 4, sr)
 {
     auto d = DataBuffer(buf, size);
-    st3play.load_s3m(d);
+    st3play.load_s3m(d, sr);
+
+    int ordNum = std::min(int(d.read16l(0x20)), 256);
+    int k;
+    for (k = (ordNum - 1); k >= 0; --k) {
+        if (d.read8(0x60 + k) != 255) {
+            break;
+        }
+    }
+    length_ = k;
 }
 
 ST3_Player::~ST3_Player()
@@ -82,25 +91,19 @@ void ST3_Player::start()
 
 void ST3_Player::play()
 {
-    //time_ += 20.0 * 125.0 / tempo_;
-}
-
-int ST3_Player::length()
-{
-    return 0;
+    st3play.dorow();
+    time_ += 20.0 * 125.0 / st3play.tempo_;
 }
 
 void ST3_Player::frame_info(haze::FrameInfo& fi)
 {
-/*
-    fi.pos = context.order_current;
-    fi.row = context.channels[0].row;
+    fi.pos = st3play.np_ord - 1;
+    fi.row = st3play.np_row;
     fi.num_rows = 64;
-    fi.frame = context.ticks_per_row - context.current_tick - 1;
+    fi.frame = st3play.musiccount - 1;
     fi.song = 0;
-    fi.speed = context.ticks_per_row;
-    fi.tempo = context.tempo;
-*/
+    fi.speed = st3play.musicmax;
+    fi.tempo = st3play.tempo_;
 
     haze::Player::frame_info(fi);
 }

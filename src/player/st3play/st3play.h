@@ -46,6 +46,7 @@ class St3Play {
     uint32_t samplesPerTick, audioRate, sampleCounter;
     chn_t chn[32];
     voice_t voice[32];
+    int tempo_;
 
     St3Instrument ins[100];
     //mixRoutine mixRoutineTable[8];
@@ -71,6 +72,8 @@ class St3Play {
     void voiceSetSource(uint8_t, const int8_t *, int32_t, int32_t, int32_t, uint8_t, uint8_t);
     void voiceSetSamplePosition(uint8_t, uint16_t);
     void voiceSetVolume(uint8_t, uint16_t, uint8_t);
+
+    friend class ST3_Player;
 
 public:
     St3Play();
@@ -108,7 +111,7 @@ public:
     void s_finevibrato(chn_t *);
     void s_setgvol(chn_t *);
 
-    void load_s3m(DataBuffer const&);
+    void load_s3m(DataBuffer const&, const int);
 };
 
 

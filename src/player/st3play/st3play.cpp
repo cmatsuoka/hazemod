@@ -224,8 +224,10 @@ void St3Play::setspeed(uint8_t val)
 
 void St3Play::settempo(uint8_t val)
 {
-    if (val > 32)
+    if (val > 32) {
         samplesPerTick = (audioRate * 125) / (50 * val);
+        tempo_ = val;
+    }
 }
 
 void St3Play::setspd(chn_t *ch)
@@ -1638,9 +1640,11 @@ void St3Play::voiceSetVolume(uint8_t voiceNumber, uint16_t vol, uint8_t pan)
 
 // ---------------------------------------------------------------------------
 
-void St3Play::load_s3m(DataBuffer const& d)
+void St3Play::load_s3m(DataBuffer const& d, int sr)
 {
     uint32_t modLen = d.size();
+
+    audioRate = sr;
 
     memcpy(songname, d.ptr(0), 28);
     songname[28] = '\0';
@@ -1722,29 +1726,46 @@ void St3Play::load_s3m(DataBuffer const& d)
 
         // offs now points to sample data
 
-/*
+        if (ins[i].flags & 4) {  // 16-bit
+            ins[i].data = reinterpret_cast<int8_t *>(new int16_t[ins[i].length]);
+        } else {
+            ins[i].data = new int8_t[ins[i].length];
+        }
+
         if (ins[i].flags & 4) {
             // 16-bit
-            if (signedSamples) {
-                ins[i].data = d.ptr(offs);
+            if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) {
+                memcpy(ins[i].data, d.ptr(offs), ins[i].length * 2);
             } else {
-                smpReadPtr16  = (int16_t *)(&dat[offs]);
-                smpWritePtr16 = (int16_t *)(ins[i].data);
-
-                for (j = 0; j < ins[i].length; ++j)
-                    smpWritePtr16[j] = smpReadPtr16[j] + 32768;
+                // copy converting to native endian
+                int8_t *src = reinterpret_cast<int8_t *>(d.ptr(offs));
+                int8_t *dst = ins[i].data;
+                for (uint32_t j = 0; j < ins[i].length; ++j) {
+                    *dst++ = src[1];
+                    *dst++ = *src;
+                    src += 2;
+                }
+            }
+            if (!signedSamples) {
+                int16_t *d = reinterpret_cast<int16_t *>(ins[i].data);
+                for (uint32_t j = 0; j < ins[i].length; ++j) {
+                    *d += 32768;
+                }
             }
         } else {
             // 8-bit
             if (signedSamples) {
-                ins[i].data = d.ptr(offs), ins[i].length;
+                memcpy(ins[i].data, d.ptr(offs), ins[i].length);
             } else {
-                for (int j = 0; j < ins[i].length; ++j) {
-                    ins[i].data[j] = dat[offs + j] + 128;
+                // copy converting to signed samples
+                int8_t *src = reinterpret_cast<int8_t *>(d.ptr(offs));
+                int8_t *dst = ins[i].data;
+                for (uint32_t j = 0; j < ins[i].length; ++j) {
+                    *dst++ = *src + 128;
+                    src++;
                 }
             }
         }
-*/
     }
 
     // set up pans

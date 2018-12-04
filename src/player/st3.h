@@ -22,13 +22,14 @@ struct St3Player : public FormatPlayer {
 
 class ST3_Player : public PCPlayer {
     St3Play st3play;
+    int length_;
 
 public:
     ST3_Player(void *, uint32_t, int);
     ~ST3_Player();
     void start() override;
     void play() override;
-    int length() override;
+    int length() override { return length_; }
     void frame_info(haze::FrameInfo&) override;
     State save_state() override;
     void restore_state(State const&) override;
