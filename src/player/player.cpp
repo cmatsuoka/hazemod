@@ -34,6 +34,7 @@ void Player::frame_info(FrameInfo& fi)
 {
     fi.time = time_;
     fi.total_time = total_time_;
+    fi.loop_count = loop_count_;
 }
 
 bool Player::fill(int16_t *buf, int size)
