@@ -274,6 +274,10 @@ void St3Play::setspd(chn_t *ch)
             ch->aspd = tmpspd;
     }
 
+    if (tmpspd > 0) {
+        mixer_->set_period(ch->channelnum, double(tmpspd) / 4.0);
+    }
+
     /* ST3 actually uses 14317056 (0xDA7600, main timer 3.579264MHz*4) instead of 14317456 (1712*8363) */
 
     if (tmpspd <= 0xDA)
@@ -294,8 +298,7 @@ void St3Play::setspd(chn_t *ch)
         deltalo = (uint16_t)((tmp32 << 16) / audioRate);
     }
 
-    uint32_t spd = voice[ch->channelnum].m_speed = (deltahi << 16) | deltalo;
-    mixer_->set_period(ch->channelnum, spd >> 2);
+    voice[ch->channelnum].m_speed = (deltahi << 16) | deltalo;
 }
 
 void St3Play::setglobalvol(int8_t vol)
@@ -1637,7 +1640,7 @@ void St3Play::voiceSetSource(uint8_t voiceNumber, int smp /*const int8_t *sample
     int32_t length, int32_t loopStart, int32_t loopLength,
     uint8_t loopFlag, uint8_t sampleIs16Bit)
 {
-    mixer_->set_sample(voiceNumber, smp);
+    mixer_->set_sample(voiceNumber, smp + 1);
     mixer_->set_loop_start(voiceNumber, loopStart);
     mixer_->set_loop_end(voiceNumber, loopStart + loopLength);
     mixer_->enable_loop(voiceNumber, loopFlag != 0);
