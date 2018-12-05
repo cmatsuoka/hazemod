@@ -81,7 +81,7 @@ ST3_Player::~ST3_Player()
 
 void ST3_Player::start()
 {
-    tempo_ = 125.0;
+    tempo_ = st3play.tempo_;
     time_ = 0.0f;
 
     const int pan = options_.get("pan", 70);
@@ -97,7 +97,8 @@ void ST3_Player::start()
 void ST3_Player::play()
 {
     st3play.dorow();
-    time_ += 20.0 * 125.0 / st3play.tempo_;
+    tempo_ = st3play.tempo_;
+    time_ += 20.0 * 125.0 / tempo_;
     inside_loop_ = st3play.inside_loop_;
 }
 

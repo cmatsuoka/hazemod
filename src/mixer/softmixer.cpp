@@ -133,7 +133,7 @@ void SoftMixer::set_period(int chn, double val)
         v->set_enable(false);
     } else {
         v->set_enable(true);
-        v->set_step(C4Period * C4PalRate * v->sample().rate() / srate / val);
+        v->set_step(C4Period * C4PalRate * v->sample().rate() / (srate * val));
     }
 }
 

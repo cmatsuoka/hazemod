@@ -1872,4 +1872,3 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
     lastachannelused = 1;
 }
 
-
