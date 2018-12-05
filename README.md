@@ -18,20 +18,20 @@ TODO list
   - anticlick
 
 - add format probe
-  - s3m
-  - ~~stm~~ ✓
-  - ft2
+  - ~~S3M~~ ✓
+  - ~~STM~~ ✓
+  - XM
   - ~~His Master's Noise~~ ✓
   - ...
 
 - add players
-  - ft2
-  - ft1
+  - FastTracker 1.01
+  - FastTracker II
   - ~~smaksak~~ ✓
   - ~~D.O.C SoundTracker V2.0~~ ✓
   - ~~Scream Tracker 2~~ ✓
   - Scream Tracker 3
-  - pt3
+  - Protracker 3.x
   - ...
 
 - api
