@@ -202,6 +202,8 @@ effect_routine sotherjmp[27] = {
 St3Play::St3Play() :
     inside_loop_(false)
 {
+    memset(chn, 0, sizeof(chn));
+    memset(voice, 0, sizeof(voice));
 }
 
 St3Play::~St3Play()
