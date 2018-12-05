@@ -288,7 +288,8 @@ void St3Play::setspd(chn_t *ch)
         deltalo = (uint16_t)((tmp32 << 16) / audioRate);
     }
 
-    voice[ch->channelnum].m_speed = (deltahi << 16) | deltalo;
+    uint32_t spd = voice[ch->channelnum].m_speed = (deltahi << 16) | deltalo;
+    mixer_->set_period(ch->channelnum, spd >> 2);
 }
 
 void St3Play::setglobalvol(int8_t vol)
@@ -1773,6 +1774,9 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
                 }
             }
         }
+
+        mixer_->add_sample(ins[i].data, ins[i].length, double(ins[i].c2spd) / 8363.0,
+            ins[i].flags & 4 ? Sample16Bits : 0);
     }
 
     // set up pans
