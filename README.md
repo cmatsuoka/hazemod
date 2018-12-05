@@ -30,7 +30,7 @@ TODO list
   - ~~smaksak~~ ✓
   - ~~D.O.C SoundTracker V2.0~~ ✓
   - ~~Scream Tracker 2~~ ✓
-  - Scream Tracker 3
+  - ~~Scream Tracker 3~~ ✓
   - Protracker 3.x
   - ...
 
