@@ -22,7 +22,7 @@ public:
     Sample(void *buf, uint32_t size, double rate = 1.0, uint32_t flags = 0) :
         flags_(flags),
         data_(buf),
-        size_(size),
+        size_(flags & Sample16Bits ? size * 2 : size),
         rate_(rate) {}
 
     int16_t get(uint32_t pos) {

@@ -9,6 +9,7 @@
 
 class Voice {
     int num_;
+    bool enable_;
     uint32_t pos_;
     uint32_t frac_;
     double step_;
@@ -77,9 +78,11 @@ public:
     void set_sample(Sample const& sample) { sample_ = sample; }
     void set_voicepos(double d) { pos_ = uint32_t(d); frac_ = uint32_t(double(1 << 16) * (d - int(d))); }
     void set_step(double val) { step_ = val; }
+    void set_enable(bool val) { enable_ = val; }
     int volume() { return volume_; }
     int pan() { return pan_; }
     double step() { return step_; }
+    bool enable() { return enable_; }
     bool loop() { return loop_; }
     void set_interpolator(InterpolatorType);
     Sample& sample() { return sample_; }

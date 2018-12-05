@@ -7,6 +7,7 @@
 
 Voice::Voice(int num, InterpolatorType typ) :
     num_(num),
+    enable_(false),
     pos_(0),
     frac_(0),
     step_(0.0),

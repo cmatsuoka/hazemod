@@ -127,8 +127,14 @@ void SoftMixer::set_period(int chn, double val)
     if (chn >= num_voices) {
         return;
     }
+
     Voice *v = voice[chn];
-    v->set_step(C4Period * C4PalRate * v->sample().rate() / srate / val);
+    if (val < 0.1) {
+        v->set_enable(false);
+    } else {
+        v->set_enable(true);
+        v->set_step(C4Period * C4PalRate * v->sample().rate() / srate / val);
+    }
 }
 
 void SoftMixer::mix(int16_t *buf, int size)
@@ -137,6 +143,9 @@ void SoftMixer::mix(int16_t *buf, int size)
     while (b < buf + size) {
         int32_t l = 0, r = 0;
         for (auto v : voice) {
+            if (!v->enable()) {
+                continue;
+            }
             int32_t val = (v->get() * v->volume());
             r += (val * (0x80 - v->pan())) >> 6;
             l += (val * (0x80 + v->pan())) >> 6;
