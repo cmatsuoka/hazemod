@@ -93,6 +93,7 @@ void ST3_Player::play()
 {
     st3play.dorow();
     time_ += 20.0 * 125.0 / st3play.tempo_;
+    inside_loop_ = st3play.inside_loop_;
 }
 
 void ST3_Player::frame_info(haze::FrameInfo& fi)

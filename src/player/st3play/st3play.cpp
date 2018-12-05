@@ -199,12 +199,16 @@ effect_routine sotherjmp[27] = {
 }  // namespace
 
 
-St3Play::St3Play()
+St3Play::St3Play() :
+    inside_loop_(false)
 {
 }
 
 St3Play::~St3Play()
 {
+    for (int i = 0; i < insNum; i++) {
+        delete [] ins[i].data;
+    }
 }
 
 
@@ -963,11 +967,13 @@ void St3Play::s_patloop(chn_t *ch)
         patloopcount--;
         jumptorow = patloopstart;
         np_patoff = -1; /* force reseek */
+        inside_loop_ = true;
     }
     else
     {
         patloopcount = 0;
         patloopstart = np_row + 1;
+        inside_loop_ = false;
     }
 }
 

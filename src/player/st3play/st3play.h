@@ -53,6 +53,7 @@ class St3Play {
 
     int tempo_;
     SoftMixer *mixer_;
+    bool inside_loop_;
 
     void getlastnfo(chn_t *);
     void setspeed(uint8_t);
