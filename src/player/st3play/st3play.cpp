@@ -1731,15 +1731,18 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
     for (int i = 0; i < insNum; ++i) {
         uint32_t offs = (d.read16l(0x60 + ordNum + (i * 2))) << 4;
         if (offs == 0) {
+            mixer_->add_sample(ins[i].data, 0);
             continue;  // empty
         }
 
         if ((ins[i].length <= 0) || (ins[i].type != 1) || (d.read8(offs + 0x1E) != 0)) {
+            mixer_->add_sample(ins[i].data, 0);
             continue;  // sample not supported
         }
 
         offs = ((d.read8(offs + 0xd) << 16) | d.read16l(offs + 0x0e)) << 4;
         if (offs == 0) {
+            mixer_->add_sample(ins[i].data, 0);
             continue;  // empty
         }
 
@@ -1786,7 +1789,7 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
             }
         }
 
-        mixer_->add_sample(ins[i].data, ins[i].length, double(ins[i].c2spd) / 8363.0,
+        mixer_->add_sample(ins[i].data, ins[i].length, 1.0,
             ins[i].flags & 4 ? Sample16Bits : 0);
     }
 
