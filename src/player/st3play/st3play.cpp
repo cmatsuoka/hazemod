@@ -1653,7 +1653,7 @@ void St3Play::voiceSetSamplePosition(uint8_t voiceNumber, uint16_t value)
 void St3Play::voiceSetVolume(uint8_t voiceNumber, uint16_t vol, uint8_t pan)
 {
     mixer_->set_volume(voiceNumber, vol << 2);
-    mixer_->set_pan(voiceNumber, int(pan) - 0x80);
+    mixer_->set_pan(voiceNumber, int(pan << 4) - 0x80);
 }
 
 // ---------------------------------------------------------------------------
