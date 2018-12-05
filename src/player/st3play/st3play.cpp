@@ -1648,6 +1648,7 @@ void St3Play::voiceSetSource(uint8_t voiceNumber, int smp /*const int8_t *sample
 
 void St3Play::voiceSetSamplePosition(uint8_t voiceNumber, uint16_t value)
 {
+    mixer_->set_voicepos(voiceNumber, value);
 }
 
 void St3Play::voiceSetVolume(uint8_t voiceNumber, uint16_t vol, uint8_t pan)
