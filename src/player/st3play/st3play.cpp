@@ -432,7 +432,8 @@ int16_t St3Play::neworder() /* rewritten to be more safe */
             }
         }
 
-        if ((patt == PATT_END) || (np_ord > ordNum)) /* end reached, start at beginning of order list */
+        // CM: changed test to ordNum+1 to play last order
+        if ((patt == PATT_END) || (np_ord > (ordNum + 1))) /* end reached, start at beginning of order list */
         {
             numSeparators = 0;
             np_ord = 1; /* yes */
@@ -1810,7 +1811,7 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
         }
     }
 
-    /* count real amount of orders */
+    // count real amount of orders
     int k;
     for (k = (ordNum - 1); k >= 0; --k) {
         if (d.read8(0x60 + k) != 255) {

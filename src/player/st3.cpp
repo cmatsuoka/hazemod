@@ -72,7 +72,7 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
             break;
         }
     }
-    length_ = k;
+    length_ = k + 1;
 }
 
 ST3_Player::~ST3_Player()
