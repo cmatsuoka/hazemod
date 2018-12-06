@@ -107,7 +107,7 @@ void ST3_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = st3play.np_ord - 1;
     fi.row = st3play.np_row;
     fi.num_rows = 64;
-    fi.frame = st3play.musiccount - 1;
+    fi.frame = st3play.musiccount;
     fi.song = 0;
     fi.speed = st3play.musicmax;
     fi.tempo = st3play.tempo_;
