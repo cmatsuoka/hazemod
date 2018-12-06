@@ -21,7 +21,7 @@ struct St2Player : public FormatPlayer {
         { "stm" }
     ) {}
 
-    haze::Player *new_player(void *, uint32_t, int) override;
+    haze::Player *new_player(void *, uint32_t, std::string const&, int) override;
 };
 
 class ST2_Player : public PCPlayer {

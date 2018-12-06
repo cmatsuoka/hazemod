@@ -47,14 +47,14 @@
 //
 
 
-haze::Player *St3Player::new_player(void *buf, uint32_t size, int sr)
+haze::Player *St3Player::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
-    return new ST3_Player(buf, size, sr);
+    return new ST3_Player(buf, size, id, sr);
 }
 
 //----------------------------------------------------------------------
 
-ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
+ST3_Player::ST3_Player(void *buf, uint32_t size, std::string const& id, int sr) :
     PCPlayer(buf, size, 32, sr)
 {
     st3play.soundcardtype = SOUNDCARD_GUS;
@@ -63,16 +63,20 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, int sr) :
     }
 
     auto d = DataBuffer(buf, size);
-    st3play.load_s3m(d, sr, mixer_);
 
-    int ordNum = std::min(int(d.read16l(0x20)), 256);
-    int k;
-    for (k = (ordNum - 1); k >= 0; --k) {
-        if (d.read8(0x60 + k) != 255) {
-            break;
+    if (id == "s3m") {
+        st3play.load_s3m(d, sr, mixer_);
+
+        int ordNum = std::min(int(d.read16l(0x20)), 256);
+        int k;
+        for (k = (ordNum - 1); k >= 0; --k) {
+            if (d.read8(0x60 + k) != 255) {
+                break;
+            }
         }
+        length_ = k + 1;
+    } else {
     }
-    length_ = k + 1;
 }
 
 ST3_Player::~ST3_Player()

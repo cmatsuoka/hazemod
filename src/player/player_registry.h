@@ -24,7 +24,7 @@ public:
         return std::find(info_.formats.begin(), info_.formats.end(), fmt) != info_.formats.end();
     }
 
-    virtual haze::Player *new_player(void *, uint32_t, int) = 0;
+    virtual haze::Player *new_player(void *, uint32_t, std::string const&, int) = 0;
 };
 
 

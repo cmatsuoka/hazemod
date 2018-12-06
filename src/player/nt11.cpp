@@ -6,7 +6,7 @@
 // and Anders Berkeman (Mahoney & Kaktus - HALLONSOFT 1989).
 
 
-haze::Player *Noisetracker::new_player(void *buf, uint32_t size, int sr)
+haze::Player *Noisetracker::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new NT11_Player(buf, size, sr);
 }

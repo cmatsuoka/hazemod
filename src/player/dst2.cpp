@@ -6,7 +6,7 @@
 // "omptimized" by Unknown of D.O.C, Based on the playroutine from TJC.
 
 
-haze::Player *DOC_Soundtracker_2::new_player(void *buf, uint32_t size, int sr)
+haze::Player *DOC_Soundtracker_2::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new ST_Player(buf, size, sr);
 }

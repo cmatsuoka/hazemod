@@ -9,7 +9,7 @@
 // > -- Olav "8bitbubsy" Sørensen
 
 
-haze::Player *UltimateSoundtracker::new_player(void *buf, uint32_t size, int sr)
+haze::Player *UltimateSoundtracker::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new UST_Player(buf, size, sr);
 }

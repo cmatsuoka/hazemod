@@ -15,7 +15,7 @@ struct UltimateSoundtracker : public FormatPlayer {
         { "st" }
     ) {}
 
-    haze::Player *new_player(void *, uint32_t, int) override;
+    haze::Player *new_player(void *, uint32_t, std::string const&, int) override;
 };
 
 //------------------------------------------------

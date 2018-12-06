@@ -17,7 +17,7 @@ struct St3Player : public FormatPlayer {
         { "s3m", "m.k.", "xchn" }
     ) {}
 
-    haze::Player *new_player(void *, uint32_t, int) override;
+    haze::Player *new_player(void *, uint32_t, std::string const&, int) override;
 };
 
 class ST3_Player : public PCPlayer {
@@ -25,7 +25,7 @@ class ST3_Player : public PCPlayer {
     int length_;
 
 public:
-    ST3_Player(void *, uint32_t, int);
+    ST3_Player(void *, uint32_t, std::string const&, int);
     ~ST3_Player();
     void start() override;
     void play() override;

@@ -56,7 +56,7 @@
 // "patterns" of the song.
 
 
-haze::Player *HisMastersNoise::new_player(void *buf, uint32_t size, int sr)
+haze::Player *HisMastersNoise::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new HMN_Player(buf, size, sr);
 }

@@ -15,7 +15,7 @@ constexpr int InitialSpeed = 6;
 constexpr double InitialTempo = 125.0;
 
 
-haze::Player *Protracker2::new_player(void *buf, uint32_t size, int sr)
+haze::Player *Protracker2::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new PT21A_Player(buf, size, sr);
 }

@@ -11,7 +11,7 @@ constexpr int InitialSpeed = 6;
 constexpr double InitialTempo = 125.0;
 
 
-haze::Player *FastTracker::new_player(void *buf, uint32_t size, int sr)
+haze::Player *FastTracker::new_player(void *buf, uint32_t size, std::string const& id, int sr)
 {
     return new FT_Player(buf, size, sr);
 }

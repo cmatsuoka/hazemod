@@ -15,7 +15,7 @@ struct Noisetracker : public FormatPlayer {
         { "m.k." }
     ) {}
 
-    haze::Player *new_player(void *, uint32_t, int) override;
+    haze::Player *new_player(void *, uint32_t, std::string const&, int) override;
 };
 
 struct NT11_ChannelData {
