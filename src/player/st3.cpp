@@ -76,6 +76,7 @@ ST3_Player::ST3_Player(void *buf, uint32_t size, std::string const& id, int sr) 
         }
         length_ = k + 1;
     } else {
+        st3play.load_mod(d, sr, mixer_);
     }
 }
 

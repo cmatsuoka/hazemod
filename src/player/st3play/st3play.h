@@ -115,7 +115,8 @@ public:
     void s_finevibrato(chn_t *);
     void s_setgvol(chn_t *);
 
-    void load_s3m(DataBuffer const&, const int, SoftMixer *);
+    void load_s3m(DataBuffer const&, const int, SoftMixer *);  // native format loader
+    void load_mod(DataBuffer const&, const int, SoftMixer *);  // importer
 };
 
 
