@@ -5,6 +5,14 @@
 #include "mixer/softmixer.h"
 #include "util/databuffer.h"
 
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+
+/* fast 32-bit -> 16-bit clamp */
+#define CLAMP16(i) \
+    if ((int16_t)(i) != i) \
+        i = 0x7FFF ^ (i >> 31); \
+
+
 enum {
     SOUNDCARD_GUS = 0, // default
     SOUNDCARD_SB  = 1
