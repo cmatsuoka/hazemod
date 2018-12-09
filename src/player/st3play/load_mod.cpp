@@ -241,7 +241,7 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
         ins[i].looplen = d.read16b(offs + 28) * 2;
         ins[i].vol     = CLAMP(d.read8(offs + 25), 0, 63);
         ins[i].flags   = 0;
-        ins[i].c2spd   = 0; //d.read16l(offs + 0x20);  // ST3 only reads the lower word of this one
+        ins[i].c2spd   = finetune_table[d.read8(offs + 24) & 0x0f];
 
         // reduce sample length if it overflows the module size
         //offs = ((d.read8(offs + 0xd) << 16) | d.read16l(offs + 0x0e)) << 4;
