@@ -69,6 +69,7 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
             patdata[i] = d.ptr(offs + 2);
         }
     }
+    patterns_in_place = true;
 
     // load sample data
     for (int i = 0; i < insNum; ++i) {
@@ -135,6 +136,7 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
         mixer_->add_sample(ins[i].data, ins[i].length, 1.0,
             ins[i].flags & 4 ? Sample16Bits : 0);
     }
+    instruments_in_place = false;
 
     // set up pans
     for (int i = 0; i < 32; ++i) {

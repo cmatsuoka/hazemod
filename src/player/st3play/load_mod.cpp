@@ -176,10 +176,10 @@ uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
                 data.push_back(b); size++;
             }
             if (b & 0x20) {
-                uint8_t note = period_to_note(note & 0xfff);
-                note = (note == 0) ? 255 : (((note / 12) - 1) << 4) | (note % 12);  // hi=oct, lo=note, 255=empty note
+                uint8_t n = period_to_note(note & 0xfff);
+                n = (n == 0) ? 255 : (((n / 12) - 1) << 4) | (n % 12);  // hi=oct, lo=note, 255=empty note
                 uint8_t ins = ((note & 0xf000) >> 8) | ((cmd & 0xf0) >> 4);
-                data.push_back(note); size++;
+                data.push_back(n); size++;
                 data.push_back(ins); size++;
             }
             if (b & 0x40) {
@@ -207,7 +207,7 @@ uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
 
 void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
 {
-    const uint32_t modLen = d.size();
+    //const uint32_t modLen = d.size();
 
     audioRate = sr;
     mixer_ = mixer;
@@ -222,55 +222,54 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
     insNum = 31;
     patNum = 0;
     for (int i = 0; i < 128; i++) {
-        uint16_t pat = d.read8(952 + i);
-        patNum = std::max(patNum, pat);
+	uint16_t pat = d.read8(952 + i);
+	patNum = std::max(patNum, pat);
     }
     patNum++;
 
-    memcpy(order,       d.ptr(952), ordNum);
-    //memcpy(chnsettings, d.ptr(0x40), 32);
+    memcpy(order, d.ptr(952), ordNum);
+    memset(chnsettings, 255, 32);
+    for (int i = 0; i < num_chn; i++) {
+        chnsettings[i] = (((i + 1) / 2) % 2) * 8;
+    }
 
     // load instrument headers
     memset(ins, 0, sizeof (ins));
     for (int i = 0; i < insNum; ++i) {
-        uint32_t offs = 20 + 30 * i;
+	uint32_t offs = 20 + 30 * i;
 
-        ins[i].type    = 0;
-        ins[i].length  = d.read16b(offs + 22) * 2;
-        ins[i].loopbeg = d.read16b(offs + 26) * 2;
-        ins[i].looplen = d.read16b(offs + 28) * 2;
-        ins[i].vol     = CLAMP(d.read8(offs + 25), 0, 63);
-        ins[i].flags   = 0;
-        ins[i].c2spd   = finetune_table[d.read8(offs + 24) & 0x0f];
+	ins[i].type    = 0;
+	ins[i].length  = d.read16b(offs + 22) * 2;
+	ins[i].loopbeg = d.read16b(offs + 26) * 2;
+	ins[i].looplen = d.read16b(offs + 28) * 2;
+	ins[i].vol     = CLAMP(d.read8(offs + 25), 0, 63);
+	ins[i].flags   = 0;
+	ins[i].c2spd   = finetune_table[d.read8(offs + 24) & 0x0f];
 
-        // reduce sample length if it overflows the module size
-        //offs = ((d.read8(offs + 0xd) << 16) | d.read16l(offs + 0x0e)) << 4;
-        //if ((offs + ins[i].length) >= modLen) {
-        //    ins[i].length = modLen - offs;
-        //}
+	// reduce sample length if it overflows the module size
+	//offs = ((d.read8(offs + 0xd) << 16) | d.read16l(offs + 0x0e)) << 4;
+	//if ((offs + ins[i].length) >= modLen) {
+	//    ins[i].length = modLen - offs;
+	//}
 
-        int loopEnd = ins[i].loopbeg + ins[i].looplen;
+	uint32_t loopEnd = ins[i].loopbeg + ins[i].looplen;
 
-        if ((ins[i].loopbeg >= ins[i].length) || (loopEnd > ins[i].length)) {
-            ins[i].flags &= 0xFE;  // turn off loop
-        }
+	if ((ins[i].loopbeg >= ins[i].length) || (loopEnd > ins[i].length)) {
+	    ins[i].flags &= 0xFE;  // turn off loop
+	}
 
-        ins[i].looplen = loopEnd - ins[i].loopbeg;
-        if ((ins[i].looplen == 0) || ((ins[i].loopbeg + ins[i].looplen) > ins[i].length)) {
-            ins[i].flags &= 0xFE;  // turn off loop
-        }
+	ins[i].looplen = loopEnd - ins[i].loopbeg;
+	if ((ins[i].looplen == 0) || ((ins[i].loopbeg + ins[i].looplen) > ins[i].length)) {
+	    ins[i].flags &= 0xFE;  // turn off loop
+	}
     }
 
     // load pattern data
     memset(patdata, 0, sizeof (patdata));
     for (int i = 0; i < patNum; ++i) {
-        uint32_t offs = 1084 + 1024 * i;
-
-        //uint16_t patDataLen = d.read16l(offs);
-        //if (patDataLen > 0) {
-        //    patdata[i] = d.ptr(offs + 2);
-        //}
+	patdata[i] = encode_pattern(d, i, num_chn);
     }
+    patterns_in_place = false;
 
     // load sample data
     for (int i = 0; i < insNum; ++i) {
@@ -280,20 +279,13 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
 
         mixer_->add_sample(ins[i].data, ins[i].length, 1.0);
     }
+    instruments_in_place = true;
 
     // set up pans
     for (int i = 0; i < 32; ++i) {
         chn[i].apanpos = 0x7;
         if (chnsettings[i] != 0xFF) {
             chn[i].apanpos = (chnsettings[i] & 8) ? 0xC : 0x3;
-        }
-
-        if ((soundcardtype == SOUNDCARD_GUS) && (d.read8(0x35) == 252)) {
-            // non-default pannings
-            uint8_t pan = d.read8(0x60 + ordNum + (insNum * 2) + (patNum * 2) + i);
-            if (pan & 32) {
-                chn[i].apanpos = pan & 0x0F;
-            }
         }
     }
 

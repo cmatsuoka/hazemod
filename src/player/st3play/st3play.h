@@ -85,6 +85,9 @@ class St3Play {
     void voiceSetSamplePosition(uint8_t, uint16_t);
     void voiceSetVolume(uint8_t, uint16_t, uint8_t);
 
+    bool instruments_in_place;
+    bool patterns_in_place;
+
     friend class ST3_Player;
 
 public:

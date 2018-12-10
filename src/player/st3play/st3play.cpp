@@ -200,8 +200,16 @@ St3Play::St3Play() :
 
 St3Play::~St3Play()
 {
-    for (int i = 0; i < insNum; i++) {
-        delete [] ins[i].data;
+    if (!patterns_in_place) {
+        for (int i = 0; i < insNum; i++) {
+            delete [] patdata[i];
+        }
+    }
+
+    if (!instruments_in_place) {
+        for (int i = 0; i < insNum; i++) {
+            delete [] ins[i].data;
+        }
     }
 }
 
