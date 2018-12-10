@@ -176,10 +176,10 @@ uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
                 data.push_back(b); size++;
             }
             if (b & 0x20) {
-                uint8_t n = period_to_note(note & 0xfff);
-                n = (n == 0) ? 255 : (((n / 12) - 1) << 4) | (n % 12);  // hi=oct, lo=note, 255=empty note
+                uint8_t num = period_to_note(note & 0xfff);
+                num = (num == 0) ? 255 : (((num / 12) - 1) << 4) | (num % 12);  // hi=oct, lo=note, 255=empty note
                 uint8_t ins = ((note & 0xf000) >> 8) | ((cmd & 0xf0) >> 4);
-                data.push_back(n); size++;
+                data.push_back(num); size++;
                 data.push_back(ins); size++;
             }
             if (b & 0x40) {
@@ -238,7 +238,7 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
     for (int i = 0; i < insNum; ++i) {
 	uint32_t offs = 20 + 30 * i;
 
-	ins[i].type    = 0;
+	ins[i].type    = 1;
 	ins[i].length  = d.read16b(offs + 22) * 2;
 	ins[i].loopbeg = d.read16b(offs + 26) * 2;
 	ins[i].looplen = d.read16b(offs + 28) * 2;
