@@ -201,7 +201,7 @@ St3Play::St3Play() :
 St3Play::~St3Play()
 {
     if (!patterns_in_place) {
-        for (int i = 0; i < insNum; i++) {
+        for (int i = 0; i < patNum; i++) {
             delete [] patdata[i];
         }
     }
