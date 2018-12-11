@@ -161,7 +161,7 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
             break;
         }
     }
-    ordNum = k;
+    ordNum = k + 1;
 
     setspeed(6);
     settempo(125);
