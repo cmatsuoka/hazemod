@@ -148,11 +148,8 @@ uint16_t convert_cmd(const uint8_t cmd, const uint8_t info)
 
 uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
 {
-    int size = 2;
+    int size = 0;
     std::vector<uint8_t> data;
-
-    data.push_back(0);   // make room for pattern size
-    data.push_back(0);
 
     for (int r = 0; r < 64; r++) {
         for (int c = 0; c < num_chn; c++) {
@@ -196,8 +193,6 @@ uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
 
     uint8_t *buffer = new uint8_t[size];
     std::copy(data.begin(), data.end(), buffer);
-    buffer[0] = size & 0xff;
-    buffer[1] = size >> 8;
 
     return buffer;
 }
