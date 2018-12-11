@@ -432,8 +432,7 @@ int16_t St3Play::neworder() /* rewritten to be more safe */
             }
         }
 
-        // CM: changed test to ordNum+1 to play last order
-        if ((patt == PATT_END) || (np_ord > (ordNum + 1))) /* end reached, start at beginning of order list */
+        if ((patt == PATT_END) || (np_ord > ordNum)) /* end reached, start at beginning of order list */
         {
             numSeparators = 0;
             np_ord = 1; /* yes */
