@@ -243,7 +243,7 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
 	ins[i].loopbeg = d.read16b(offs + 26) * 2;
 	ins[i].looplen = d.read16b(offs + 28) * 2;
 	ins[i].vol     = CLAMP(d.read8(offs + 25), 0, 63);
-	ins[i].flags   = 0;
+	ins[i].flags   = ins[i].looplen > 2 ? 1 : 0;
 	ins[i].c2spd   = finetune_table[d.read8(offs + 24) & 0x0f];
 
 	// reduce sample length if it overflows the module size
@@ -272,8 +272,8 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
     patterns_in_place = false;
 
     // load sample data
+    uint32_t offs = 1084 + 1024 * patNum;
     for (int i = 0; i < insNum; ++i) {
-        uint32_t offs = 1084 + 1024 * patNum;
         ins[i].data = reinterpret_cast<int8_t *>(d.ptr(offs));
         offs += ins[i].length;
 
