@@ -5,13 +5,16 @@
 //
 // ST3PLAY v0.88 - 28th of November 2018 - https://16-bits.org
 // ===========================================================
-// Modified by Claudio Matsuoka, Nov 2018
-// - Port to C++
-//
 // Very accurate C port of Scream Tracker 3.21's replayer,
 // by Olav "8bitbubsy" Sørensen. Using the original asm source codes
 // by Sami "PSI" Tammilehto (Future Crew) with permission.
 //
+
+// Modified by Claudio Matsuoka, Nov 2018
+// - Port to C++
+// - Changes to use new mixer subsystem
+// - Changes to be big-endian safe
+// - Add mod file importer (to play ST3 M.K. files correctly)
 
 namespace {
 
