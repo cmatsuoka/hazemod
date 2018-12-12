@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -197,6 +198,93 @@ typedef struct
     uint8_t *_ptr, *_base;
     int32_t _eof;
     uint32_t _cnt, _bufsiz;
+
+    uint16_t read32l() {
+        if (_cnt < 4) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return 0;
+        }
+        uint16_t ret = _ptr[0] + (_ptr[1] << 8) + (_ptr[2] << 16) + (_ptr[3] << 24);
+        _cnt -= 4;
+        _ptr += 4;
+        return ret;
+    }
+
+    uint16_t read16l() {
+        if (_cnt < 2) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return 0;
+        }
+        uint16_t ret = _ptr[0] + (_ptr[1] << 8);
+        _cnt -= 2;
+        _ptr += 2;
+        return ret;
+    }
+
+    uint16_t read16b() {
+        if (_cnt < 2) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return 0;
+        }
+        uint16_t ret = (_ptr[0] << 8) + _ptr[1];
+        _cnt -= 2;
+        _ptr += 2;
+        return ret;
+    }
+
+    uint16_t read8() {
+        if (_cnt < 1) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return 0;
+        }
+        uint8_t ret = *_ptr;
+        _cnt--;
+        _ptr++;
+        return ret;
+    }
+
+    uint16_t read8i() {
+        if (_cnt < 1) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return 0;
+        }
+        int8_t ret = *_ptr;
+        _cnt--;
+        _ptr++;
+        return ret;
+    }
+
+    size_t read(void *buffer, size_t wrcnt) {
+        int32_t pcnt;
+
+        if (_eof) {
+            return 0;
+        }
+
+        pcnt = ((uint32_t)(_cnt) > wrcnt) ? wrcnt : _cnt;
+        memcpy(buffer, _ptr, pcnt);
+
+        _cnt -= pcnt;
+        _ptr += pcnt;
+
+        if (_cnt <= 0) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+        }
+
+        return pcnt;
+    }
 } MEM;
 
 

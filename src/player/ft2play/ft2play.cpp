@@ -1,7 +1,6 @@
 /*
 ** FT2PLAY v0.97 - 27th of November 2018 - https://16-bits.org
 ** ===========================================================
-**                 - NOT BIG ENDIAN SAFE! -
 **
 ** Very accurate C port of Fasttracker 2's replayer (.XM/.MOD/.FT),
 ** by Olav "8bitbubsy" Sørensen. Using the original pascal+asm source
@@ -71,6 +70,132 @@ const uint8_t vibTab[32] =
     255,253,250,244,235,224,212,197,
     180,161,141,120, 97, 74, 49, 24
 };
+
+
+// Read non-packed data structures in a big-endian safe way
+
+int read_mod_instrument(songMODInstrHeaderTyp *h, MEM *f)
+{
+    h->len = f->read16b();
+    h->fine = f->read8();
+    h->vol = f->read8();
+    h->repS = f->read16b();
+    h->repS = f->read16b();
+
+    return 0;
+}
+
+int read_mod31_header(songMOD31HeaderTyp *h, MEM *f)
+{
+    f->read(h->name, 20);
+    for (int i = 0; i < 31; i++) {
+        read_mod_instrument(&h->instr[i], f);
+    }
+    h->len = f->read8();
+    h->repS = f->read8();
+    f->read(h->songTab, 128);
+    f->read(h->sig, 4);
+
+    return 0;
+}
+
+int read_mod15_header(songMOD15HeaderTyp *h, MEM *f)
+{
+    f->read(h->name, 20);
+    for (int i = 0; i < 15; i++) {
+        read_mod_instrument(&h->instr[i], f);
+    }
+    h->len = f->read8();
+    h->repS = f->read8();
+    f->read(h->songTab, 128);
+
+    return 0;
+}
+
+int read_song_header(songHeaderTyp *h, MEM *f)
+{
+    f->read(h->sig, 17);
+    f->read(h->name, 21);
+    f->read(h->progName, 20);
+    h->ver = f->read16l();
+    h->headerSize = f->read32l();
+    h->len = f->read16l();
+    h->repS = f->read16l();
+    h->antChn = f->read16l();
+    h->antPtn = f->read16l();
+    h->antInstrs = f->read16l();
+    h->flags = f->read16l();
+    h->defTempo = f->read16l();
+    h->defSpeed = f->read16l();
+    f->read(h->songTab, 256);
+
+    return 0;
+}
+
+int read_sample_header(sampleHeaderTyp *h, MEM *f)
+{
+    h->len = f->read32l();
+    h->repS = f->read32l();
+    h->repL = f->read32l();
+    h->vol = f->read8();
+    h->fine =f->read8i();
+    h->typ = f->read8();
+    h->pan = f->read8();
+    h->relTon =f->read8i();
+    h->skrap = f->read8();
+    f->read(h->name, 22);
+
+    return 0;
+}
+
+int read_envelope(int16_t env[12][2], MEM *f)
+{
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < 12; i++) {
+            env[i][j] = f->read16l();
+        }
+    }
+
+    return 0;
+}
+
+int read_instrument_header(instrHeaderTyp *h, MEM *f)
+{
+    h->instrSize = f->read32l();
+    f->read(h->name, 22);
+    h->typ = f->read8();
+    h->antSamp = f->read16l(); 
+    h->sampleSize = f->read32l();
+    f->read(h->ta, 96);
+    read_envelope(h->envVP, f);
+    read_envelope(h->envPP, f);
+    h->envVPAnt = f->read8();
+    h->envPPAnt = f->read8();
+    h->envVSust = f->read8();
+    h->envVRepS = f->read8();
+    h->envVRepE = f->read8();
+    h->envPSust = f->read8();
+    h->envPRepS = f->read8();
+    h->envPRepE = f->read8();
+    h->envVTyp = f->read8();
+    h->envPTyp = f->read8();
+    h->vibTyp = f->read8();
+    h->vibSweep = f->read8();
+    h->vibDepth = f->read8();
+    h->vibRate = f->read8();
+    h->fadeOut = f->read16l();
+    h->midiOn = f->read8();
+    h->midiChannel = f->read8();
+    h->midiProgram = f->read16l();
+    h->midiBend = f->read16l();
+    h->mute = f->read8();
+    f->read(h->reserved, 15);
+    for (int i = 0; i < 32; i++) {
+        read_sample_header(&h->samp[i], f);
+    }
+
+    return 0;
+}
 
 
 }  // namespace
@@ -4698,13 +4823,15 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
 
     memset(&ih, 0, INSTR_HEADER_SIZE);
 
-    mread(&ih.instrSize, 4, 1, f);
+    ih.instrSize = f->read32l();
 
     readSize = ih.instrSize;
     if ((readSize < 4) || (readSize > INSTR_HEADER_SIZE))
         readSize = INSTR_HEADER_SIZE;
 
-    mread(ih.name, readSize - 4, 1, f); /* -4 = skip ih.instrSize */
+    mseek(f, -4, SEEK_CUR);
+    read_instrument_header(&ih, f);
+    mseek(f, readSize - 248, SEEK_CUR);
 
     /* FT2 bugfix: skip instrument header data if instrSize is above INSTR_HEADER_SIZE */
     if (ih.instrSize > INSTR_HEADER_SIZE)
@@ -4744,7 +4871,9 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
         if (instr[i]->envPRepE > 11) instr[i]->envPRepE = 11;
         if (instr[i]->envPSust > 11) instr[i]->envPSust = 11;
 
-        mread(ih.samp, ih.antSamp * sizeof (sampleHeaderTyp), 1, f);
+        for (j = 0; j < ih.antSamp; ++j) {
+            read_sample_header(&ih.samp[j], f);
+        }
 
         for (j = 0; j < ih.antSamp; ++j)
         {
@@ -4994,14 +5123,14 @@ int8_t Ft2Play::loadPatterns(MEM *f, uint16_t antPtn)
 
     for (i = 0; i < antPtn; ++i)
     {
-        mread(&ph.patternHeaderSize, 4, 1, f);
+        ph.patternHeaderSize = f->read32l();
         mread(&ph.typ, 1, 1, f);
 
         ph.pattLen = 0;
         if (song.ver == 0x0102)
         {
             mread(&tmpLen, 1, 1, f);
-            mread(&ph.dataLen, 2, 1, f);
+            ph.dataLen = f->read16l();
             ph.pattLen = (uint16_t)(tmpLen) + 1; /* +1 in v1.02 */
 
             if (ph.patternHeaderSize > 8)
@@ -5009,8 +5138,8 @@ int8_t Ft2Play::loadPatterns(MEM *f, uint16_t antPtn)
         }
         else
         {
-            mread(&ph.pattLen, 2, 1, f);
-            mread(&ph.dataLen, 2, 1, f);
+            ph.pattLen = f->read16l();
+            ph.dataLen = f->read16l();
 
             if (ph.patternHeaderSize > 9)
                 mseek(f, ph.patternHeaderSize - 9, SEEK_CUR);
@@ -5084,7 +5213,7 @@ int8_t Ft2Play::loadMusicMOD(MEM *f, uint32_t fileLength)
 
     mseek(f, 0, SEEK_SET);
 
-    if (mread(&h_MOD31, sizeof (h_MOD31), 1, f) != 1)
+    if (read_mod31_header(&h_MOD31, f) != 0)
     {
         mclose(&f);
         return (false);
@@ -5164,7 +5293,7 @@ int8_t Ft2Play::loadMusicMOD(MEM *f, uint32_t fileLength)
         }
 
         mseek(f, 0, SEEK_SET);
-        if (mread(&h_MOD15, sizeof (h_MOD15), 1, f) != 1)
+        if (read_mod15_header(&h_MOD15, f) != 0)
         {
             mclose(&f);
             return (false);
@@ -5374,7 +5503,7 @@ int8_t Ft2Play::loadMusicMOD(MEM *f, uint32_t fileLength)
             if (modIsUST)
                 s->repS /= 2;
 
-            s->repL = 2 * SWAP16(h_MOD31.instr[a].repL);
+            s->repL = 2 * h_MOD31.instr[a].repL;
 
             if (s->repL <= 2)
             {
@@ -5488,7 +5617,7 @@ int8_t Ft2Play::loadMusic(const uint8_t *moduleData, uint32_t dataLength)
     if (f == NULL) return (0);
 
     /* start loading */
-    mread(&h, sizeof (h), 1, f);
+    read_song_header(&h, f);
 
     if (memcmp(h.sig, "Extended Module: ", 17) != 0)
         return (loadMusicMOD(f, dataLength));
