@@ -233,13 +233,13 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
     for (int i = 0; i < insNum; ++i) {
 	uint32_t offs = 20 + 30 * i;
 
-	ins[i].type    = 1;
 	ins[i].length  = d.read16b(offs + 22) * 2;
 	ins[i].loopbeg = d.read16b(offs + 26) * 2;
 	ins[i].looplen = d.read16b(offs + 28) * 2;
 	ins[i].vol     = CLAMP(d.read8(offs + 25), 0, 63);
 	ins[i].flags   = ins[i].looplen > 2 ? 1 : 0;
 	ins[i].c2spd   = finetune_table[d.read8(offs + 24) & 0x0f];
+	ins[i].type    = ins[i].length > 0 ? 1 : 0;
 
 	// reduce sample length if it overflows the module size
 	//offs = ((d.read8(offs + 0xd) << 16) | d.read16l(offs + 0x0e)) << 4;
