@@ -5863,7 +5863,9 @@ void Ft2Play::ft2play_FillAudioBuffer(int16_t *buffer, int32_t samples)
 
 void Ft2Play::ft2play_Close()
 {
+#if 0
     closeMixer();
+#endif
 
     freeAllInstr();
     freeAllPatterns();
@@ -6051,11 +6053,13 @@ int8_t Ft2Play::ft2play_PlaySong(const uint8_t *moduleData, uint32_t dataLength,
     setPos(0, 0);
     songPlaying = true;
 
+#if 0
     if (!openMixer(realReplayRate))
     {
         ft2play_Close();
         return (false);
     }
+#endif
 
     musicPaused = false;
     return (true);
@@ -6152,171 +6156,6 @@ void Ft2Play::mseek(MEM *buf, int32_t offset, int32_t whence)
     }
 }
 
-#if 0
-/* the following must be changed if you want to use another audio API than WinMM */
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <windows.h>
-#include <mmsystem.h>
-
-#define MIX_BUF_NUM 2
-
-volatile BOOL audioRunningFlag;
-uint8_t currBuffer;
-int16_t *mixBuffer[MIX_BUF_NUM];
-HANDLE hThread, hAudioSem;
-WAVEHDR waveBlocks[MIX_BUF_NUM];
-HWAVEOUT hWave;
-
-DWORD WINAPI mixThread(LPVOID lpParam)
-{
-    WAVEHDR *waveBlock;
-
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-
-    while (audioRunningFlag)
-    {
-        waveBlock = &waveBlocks[currBuffer];
-        ft2play_FillAudioBuffer((int16_t *)(waveBlock->lpData), MIX_BUF_SAMPLES);
-        waveOutWrite(hWave, waveBlock, sizeof (WAVEHDR));
-        currBuffer = (currBuffer + 1) % MIX_BUF_NUM;
-
-        /* wait for buffer fill request */
-        WaitForSingleObject(hAudioSem, INFINITE);
-    }
-
-    ()(lpParam); /* make compiler happy! */
-
-    return (0);
-}
-
-void CALLBACK waveProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
-{
-    if (uMsg == WOM_DONE)
-        ReleaseSemaphore(hAudioSem, 1, NULL);
-
-    /* make compiler happy! */
-    ()(hWaveOut);
-    ()(uMsg);
-    ()(dwInstance);
-    ()(dwParam1);
-    ()(dwParam2);
-}
-
-void closeMixer()
-{
-    int32_t i;
-
-    audioRunningFlag = false; /* make thread end when it's done */
-
-    if (hAudioSem != NULL)
-        ReleaseSemaphore(hAudioSem, 1, NULL);
-
-    if (hThread != NULL)
-    {
-        WaitForSingleObject(hThread, INFINITE);
-        CloseHandle(hThread);
-        hThread = NULL;
-    }
-
-    if (hAudioSem != NULL)
-    {
-        CloseHandle(hAudioSem);
-        hAudioSem = NULL;
-    }
-
-    if (hWave != NULL)
-    {
-        waveOutReset(hWave);
-
-        for (i = 0; i < MIX_BUF_NUM; ++i)
-        {
-            if (waveBlocks[i].dwUser != 0xFFFF)
-                waveOutUnprepareHeader(hWave, &waveBlocks[i], sizeof (WAVEHDR));
-        }
-
-        waveOutClose(hWave);
-        hWave = NULL;
-    }
-
-    for (i = 0; i < MIX_BUF_NUM; ++i)
-    {
-        if (mixBuffer[i] != NULL)
-        {
-            free(mixBuffer[i]);
-            mixBuffer[i] = NULL;
-        }
-    }
-}
-
-int8_t openMixer(uint32_t audioFreq)
-{
-    int32_t i;
-    DWORD threadID;
-    WAVEFORMATEX wfx;
-
-    /* don't unprepare headers on error */
-    for (i = 0; i < MIX_BUF_NUM; ++i)
-        waveBlocks[i].dwUser = 0xFFFF;
-
-    closeMixer();
-
-    ZeroMemory(&wfx, sizeof (wfx));
-    wfx.nSamplesPerSec  = audioFreq;
-    wfx.wBitsPerSample  = 16;
-    wfx.nChannels       = 2;
-    wfx.wFormatTag      = WAVE_FORMAT_PCM;
-    wfx.nBlockAlign     = wfx.nChannels * (wfx.wBitsPerSample / 8);
-    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-
-    pmpLeft    = 0;
-    currBuffer = 0;
-
-    if (waveOutOpen(&hWave, WAVE_MAPPER, &wfx, (DWORD_PTR)(&waveProc), 0, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
-        goto omError;
-
-    /* create semaphore for buffer fill requests */
-    hAudioSem = CreateSemaphore(NULL, MIX_BUF_NUM - 1, MIX_BUF_NUM, NULL);
-    if (hAudioSem == NULL)
-        goto omError;
-
-    /* allocate WinMM mix buffers */
-    for (i = 0; i < MIX_BUF_NUM; ++i)
-    {
-        mixBuffer[i] = (int16_t *)(calloc(MIX_BUF_SAMPLES, wfx.nBlockAlign));
-        if (mixBuffer[i] == NULL)
-            goto omError;
-    }
-
-    /* initialize WinMM mix headers */
-    memset(waveBlocks, 0, sizeof (waveBlocks));
-    for (i = 0; i < MIX_BUF_NUM; ++i)
-    {
-        waveBlocks[i].lpData = (LPSTR)(mixBuffer[i]);
-        waveBlocks[i].dwBufferLength = MIX_BUF_SAMPLES * wfx.nBlockAlign;
-        waveBlocks[i].dwFlags = WHDR_DONE;
-
-        if (waveOutPrepareHeader(hWave, &waveBlocks[i], sizeof (WAVEHDR)) != MMSYSERR_NOERROR)
-            goto omError;
-    }
-
-    /* create main mixer thread */
-    audioRunningFlag = true;
-    hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(mixThread), NULL, 0, &threadID);
-    if (hThread == NULL)
-        goto omError;
-
-    return (TRUE);
-
-omError:
-    closeMixer();
-    return (FALSE);
-}
-
-#endif
 
 }  // namespace ft2play
 
