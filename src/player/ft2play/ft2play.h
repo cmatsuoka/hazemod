@@ -18,14 +18,6 @@
 #define MIX_BUF_SAMPLES 4096
 
 
-#if 0
-#define SWAP16(value) \
-( \
-    (((uint16_t)((value) & 0x00FF)) << 8) | \
-    (((uint16_t)((value) & 0xFF00)) >> 8)   \
-)
-#endif
-
 /* fast 32-bit -> 16-bit clamp */
 #define CLAMP16(i) \
     if ((int16_t)(i) != i) \
