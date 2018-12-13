@@ -291,7 +291,7 @@ class Ft2Play {
     bool moduleLoaded, musicPaused, songPlaying;
     int16_t *linearPeriods, *amigaPeriods, *note2Period;
     uint16_t pattLens[256];
-    int32_t masterVol, amp, quickVolSizeVal, pmpLeft, soundBufferSize, *mixBufferL, *mixBufferR;
+    int32_t masterVol, amp, quickVolSizeVal, pmpLeft, soundBufferSize /*, *mixBufferL, *mixBufferR*/;
     uint32_t *logTab, speedVal, sampleCounter, realReplayRate, frequenceDivFactor, frequenceMulFactor;
     songTyp song;
     tonTyp *patt[256];
@@ -383,6 +383,20 @@ class Ft2Play {
     friend class ::FT2_Player;
 
 public:
+    Ft2Play() :
+        vibSineTab(nullptr), linearFrqTab(0), interpolationFlag(false), volumeRampingFlag(false),
+        moduleLoaded(false), musicPaused(false), songPlaying(false),
+        linearPeriods(nullptr), amigaPeriods(nullptr), note2Period(nullptr),
+        pattLens{0},
+        masterVol(0), amp(0), quickVolSizeVal(0), pmpLeft(0), soundBufferSize(0), //mixBufferL(nullptr), mixBufferR(nullptr),
+        logTab(nullptr), speedVal(0), sampleCounter(0), realReplayRate(0), frequenceDivFactor(0), frequenceMulFactor(0)
+    {
+    }
+
+    ~Ft2Play()
+    {
+    }
+
     int8_t ft2play_PlaySong(const uint8_t *, uint32_t, bool, bool, uint32_t);
     void ft2play_Close();
     void ft2play_PauseSong(bool);         // true/false
