@@ -389,7 +389,11 @@ public:
         linearPeriods(nullptr), amigaPeriods(nullptr), note2Period(nullptr),
         pattLens{0},
         masterVol(0), amp(0), quickVolSizeVal(0), pmpLeft(0), soundBufferSize(0), //mixBufferL(nullptr), mixBufferR(nullptr),
-        logTab(nullptr), speedVal(0), sampleCounter(0), realReplayRate(0), frequenceDivFactor(0), frequenceMulFactor(0)
+        logTab(nullptr), speedVal(0), sampleCounter(0), realReplayRate(0), frequenceDivFactor(0), frequenceMulFactor(0),
+        patt{},
+        stm{},
+        instr{},
+        inside_loop_(false)
     {
     }
 
