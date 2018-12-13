@@ -31,6 +31,11 @@
     if ((int16_t)(i) != i) \
         i = 0x7FFF ^ (i >> 31); \
 
+
+class FT2_Player;
+
+namespace ft2play {
+
 enum
 {
     IS_Vol      = 1,
@@ -383,7 +388,7 @@ class Ft2Play {
 
     bool inside_loop_;
 
-    friend class FT2_Player;
+    friend class ::FT2_Player;
 
 public:
     int8_t ft2play_PlaySong(const uint8_t *, uint32_t, bool, bool, uint32_t);
@@ -399,5 +404,6 @@ public:
     uint32_t ft2play_GetMixerTicks();     // returns the amount of milliseconds of mixed audio (not realtime)
 };
 
+}  // namespace ft2play
 
 #endif  // HAZE_PLAYER_FT2PLAY_FT2PLAY_H_

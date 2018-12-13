@@ -21,7 +21,7 @@ struct Ft2Player : public FormatPlayer {
 };
 
 class FT2_Player : public PCPlayer {
-    Ft2Play ft2play;
+    ft2play::Ft2Play ft2play;
     int length_;
 
 public:

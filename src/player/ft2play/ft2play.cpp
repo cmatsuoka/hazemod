@@ -15,7 +15,7 @@
 #include <cmath>
 
 
-namespace {
+namespace ft2play {
 
 /* TABLES AND VARIABLES */
 const uint32_t panningTab[257] =
@@ -196,9 +196,6 @@ int read_instrument_header(instrHeaderTyp *h, MEM *f)
 
     return 0;
 }
-
-
-}  // namespace
 
 
 /* CODE START */
@@ -6319,7 +6316,10 @@ omError:
     return (FALSE);
 }
 
+#endif
+
+}  // namespace ft2play
+
 /* --------------------------------------------------------------------------- */
 
 /* END OF FILE (phew...) */
-#endif
