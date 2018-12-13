@@ -1,6 +1,8 @@
 #include "player/st3play/st3play.h"
 
 
+namespace st3play {
+
 void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
 {
     uint32_t modLen = d.size();
@@ -216,4 +218,6 @@ void St3Play::load_s3m(DataBuffer const& d, int sr, SoftMixer *mixer)
 
     lastachannelused = 1;
 }
+
+}  // namespace st3play
 

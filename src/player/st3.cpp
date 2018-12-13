@@ -57,9 +57,9 @@ haze::Player *St3Player::new_player(void *buf, uint32_t size, std::string const&
 ST3_Player::ST3_Player(void *buf, uint32_t size, std::string const& id, int sr) :
     PCPlayer(buf, size, 32, sr)
 {
-    st3play.soundcardtype = SOUNDCARD_GUS;
+    st3play.soundcardtype = st3play::SOUNDCARD_GUS;
     if (options_.get("card", "gus") == "sb") {
-        st3play.soundcardtype = SOUNDCARD_SB;
+        st3play.soundcardtype = st3play::SOUNDCARD_SB;
     }
 
     auto d = DataBuffer(buf, size);

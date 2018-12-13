@@ -2,6 +2,7 @@
 #include <cmath>
 #include "format/format.h"
 
+
 namespace {
 
 constexpr uint32_t MAGIC_M_K_ = MAGIC4('M', '.', 'K', '.');
@@ -200,6 +201,8 @@ uint8_t *encode_pattern(DataBuffer d, const int pat, const int num_chn)
 }  // namespace
 
 
+namespace st3play {
+
 void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
 {
     //const uint32_t modLen = d.size();
@@ -332,3 +335,5 @@ void St3Play::load_mod(DataBuffer const& d, int sr, SoftMixer *mixer)
 
     lastachannelused = 1;
 }
+
+}  // namespace st3play

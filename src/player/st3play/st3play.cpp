@@ -16,7 +16,7 @@
 // - Changes to be big-endian safe
 // - Add mod file importer (to play ST3 M.K. files correctly)
 
-namespace {
+namespace st3play {
 
 enum {
     PATT_SEP = 254,
@@ -190,8 +190,6 @@ effect_routine sotherjmp[27] = {
     &St3Play::s_ret,         // Y
     &St3Play::s_ret          // Z
 };
-
-}  // namespace
 
 
 St3Play::St3Play() :
@@ -1659,4 +1657,6 @@ void St3Play::voiceSetVolume(uint8_t voiceNumber, uint16_t vol, uint8_t pan)
     mixer_->set_volume(voiceNumber, vol << 2);
     mixer_->set_pan(voiceNumber, int(pan << 4) - 0x80);
 }
+
+}  // namespace st3play
 

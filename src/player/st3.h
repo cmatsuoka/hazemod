@@ -21,7 +21,7 @@ struct St3Player : public FormatPlayer {
 };
 
 class ST3_Player : public PCPlayer {
-    St3Play st3play;
+    st3play::St3Play st3play;
     int length_;
 
 public:

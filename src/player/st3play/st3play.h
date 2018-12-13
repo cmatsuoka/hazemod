@@ -12,6 +12,9 @@
     if ((int16_t)(i) != i) \
         i = 0x7FFF ^ (i >> 31); \
 
+class ST3_Player;
+
+namespace st3play {
 
 enum {
     SOUNDCARD_GUS = 0, // default
@@ -88,7 +91,7 @@ class St3Play {
     bool instruments_in_place;
     bool patterns_in_place;
 
-    friend class ST3_Player;
+    friend class ::ST3_Player;
 
 public:
     St3Play();
@@ -130,6 +133,7 @@ public:
     void load_mod(DataBuffer const&, const int, SoftMixer *);  // importer
 };
 
+} // namespace st3play
 
 #endif  // HAZE_PLAYER_ST3PLAY_ST3PLAY_H
 
