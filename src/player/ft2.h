@@ -11,10 +11,10 @@
 struct Ft2Player : public FormatPlayer {
     Ft2Player() : FormatPlayer(
         "ft2",
-        "ft2play 0.82",
+        "ft2play 0.97",
         "A port of Fasttracker 2's replayer",
         R"(Olav "8bitbubsy" Sørensen)",
-        { "xm", "m.k.", "xchn" }
+        { "xm", "m.k.", "xchn", "xxch", "st" }
     ) {}
 
     haze::Player *new_player(void *, uint32_t, std::string const&, int) override;
