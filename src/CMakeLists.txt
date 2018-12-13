@@ -21,6 +21,7 @@ add_library(hazemod SHARED
     format/s3m.cpp
     format/fest.cpp
     format/st.cpp
+    format/xm.cpp
     mixer/spline.cpp
     mixer/sample.cpp
     mixer/softmixer_voice.cpp
