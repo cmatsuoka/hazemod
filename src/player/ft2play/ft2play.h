@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
+#include "mixer/softmixer.h"
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -329,33 +330,9 @@ class Ft2Play {
     void vibrato(stmTyp *);
     void doEffects(stmTyp *);
     void voiceUpdateVolumes(uint8_t, uint8_t);
-    void voiceSetSource(uint8_t, const int8_t *, int32_t, int32_t, int32_t, int32_t, int8_t, int8_t, int32_t);
+    void voiceSetSource(uint8_t, const int, const int8_t *, int32_t, int32_t, int32_t, int32_t, int8_t, int8_t, int32_t);
     void mix_SaveIPVolumes() /* for volume ramping */;
     void mix_UpdateChannelVolPanFrq();
-    void mix8bNoLoop(voice_t *, uint32_t);
-    void mix8bLoop(voice_t *, uint32_t);
-    void mix8bBidiLoop(voice_t *, uint32_t);
-    void mix8bNoLoopLerp(voice_t *, uint32_t);
-    void mix8bLoopLerp(voice_t *, uint32_t);
-    void mix8bBidiLoopLerp(voice_t *, uint32_t);
-    void mix8bRampNoLoop(voice_t *, uint32_t);
-    void mix8bRampLoop(voice_t *, uint32_t);
-    void mix8bRampBidiLoop(voice_t *, uint32_t);
-    void mix8bRampNoLoopLerp(voice_t *, uint32_t);
-    void mix8bRampLoopLerp(voice_t *, uint32_t);
-    void mix8bRampBidiLoopLerp(voice_t *, uint32_t);
-    void mix16bNoLoop(voice_t *, uint32_t);
-    void mix16bLoop(voice_t *, uint32_t);
-    void mix16bBidiLoop(voice_t *, uint32_t);
-    void mix16bNoLoopLerp(voice_t *, uint32_t);
-    void mix16bLoopLerp(voice_t *, uint32_t);
-    void mix16bBidiLoopLerp(voice_t *, uint32_t);
-    void mix16bRampNoLoop(voice_t *, uint32_t);
-    void mix16bRampLoop(voice_t *, uint32_t);
-    void mix16bRampBidiLoop(voice_t *, uint32_t);
-    void mix16bRampNoLoopLerp(voice_t *, uint32_t);
-    void mix16bRampLoopLerp(voice_t *, uint32_t);
-    void mix16bRampBidiLoopLerp(voice_t *, uint32_t);
     void noNewAllChannels();
     void getNextPos();
     void mainPlayer() /* periodically called from mixer */;
@@ -378,6 +355,7 @@ class Ft2Play {
     int8_t loadMusic(const uint8_t *, uint32_t);
     void mixAudio(int16_t *, int32_t);
 
+    SoftMixer *mixer_;
     bool inside_loop_;
 
     friend class ::FT2_Player;
