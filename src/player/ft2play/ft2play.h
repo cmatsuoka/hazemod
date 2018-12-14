@@ -355,7 +355,6 @@ class Ft2Play {
     int8_t loadMusic(const uint8_t *, uint32_t);
     void mixAudio(int16_t *, int32_t);
 
-    SoftMixer *mixer_;
     bool inside_loop_;
 
     friend class ::FT2_Player;

@@ -1953,7 +1953,6 @@ void Ft2Play::voiceUpdateVolumes(uint8_t i, uint8_t status)
     v = &voice[i];
 
     volL = v->SVol * amp;
-    mixer_->set_volume(i, volL);
 
     volR = (volL * panningTab[      v->SPan]) >> (32 - 28); /* 0..267386880 */
     volL = (volL * panningTab[256 - v->SPan]) >> (32 - 28); /* 0..267386880 */
@@ -2020,7 +2019,6 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
 
     if ((sampleData == NULL) || (sampleLength < 1))
     {
-        mixer_->set_period(i, 0);
         v->mixRoutine = NULL; /* shut down voice */
         return;
     }
@@ -2042,12 +2040,6 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
     if (sampleLoopLength < 1)
         loopFlag = false;
 
-    mixer_->set_sample(i, smp);
-    mixer_->set_end(i, loopFlag ? sampleLoopEnd : sampleLength);
-    mixer_->set_loop_start(i, sampleLoopBegin);
-    mixer_->set_loop_end(i, sampleLoopBegin + sampleLoopLength);
-    mixer_->set_voicepos(i, position);
-
     v->backwards = false;
     v->SLen      = loopFlag ? sampleLoopEnd : sampleLength;
     v->SRepS     = sampleLoopBegin;
@@ -2058,7 +2050,6 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
     /* test if 9xx position overflows */
     if (position >= (loopFlag ? sampleLoopEnd : sampleLength))
     {
-        mixer_->set_period(i, 0);
         v->mixRoutine = NULL; /* shut down voice */
         return;
     }
@@ -2111,7 +2102,6 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
 
             if (status & IS_Pan) {
                 v->SPan = ch->finalPan;
-                mixer_->set_pan(i, ch->finalPan);
             }
 
             if (status & (IS_Vol | IS_Pan))
@@ -2119,7 +2109,6 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
 
             if (status & IS_Period) {
                 v->SFrq = getFrequenceValue(ch->finalPeriod);
-                mixer_->set_period(i, ch->finalPeriod);
             }
 
             if (status & IS_NyTon)
