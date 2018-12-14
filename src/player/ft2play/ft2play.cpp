@@ -2047,6 +2047,9 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
     v->SPos      = position;
     v->SPosDec   = 0; /* position fraction */
 
+    //
+    v->smp = smp;
+
     /* test if 9xx position overflows */
     if (position >= (loopFlag ? sampleLoopEnd : sampleLength))
     {

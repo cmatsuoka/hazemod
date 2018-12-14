@@ -1,4 +1,5 @@
 #include "player/ft2.h"
+#include <cmath>
 #include "util/databuffer.h"
 
 
@@ -14,6 +15,7 @@ FT2_Player::FT2_Player(void *buf, uint32_t size, std::string const& id, int sr) 
 {
     ft2play.ft2play_PlaySong(static_cast<const uint8_t *>(buf), size, false, false, sr);
     length_ = ft2play.song.len;
+    freq_factor_ = uint32_t(round(65536.0 *  1712.0 / sr * 8363.0));
 }
 
 FT2_Player::~FT2_Player()
@@ -29,7 +31,29 @@ void FT2_Player::start()
 
 void FT2_Player::play()
 {
+    for (int i = 0; i < ft2play.song.antChn; i++) {
+        ft2play::voice_t *v = &ft2play.voice[i];
+        v->smp = 0;
+    }
+
     ft2play.mainPlayer();
+
+    for (int i = 0; i < ft2play.song.antChn; i++) {
+        ft2play::voice_t *v = &ft2play.voice[i];
+        if (v->smp) {
+            mixer_->set_sample(i, v->smp);
+        }
+        mixer_->set_end(i, v->SLen);
+        mixer_->set_loop_start(i, v->SRepS);
+        mixer_->set_loop_end(i, v->SRepS + v->SRepL);
+        mixer_->set_voicepos(i, v->SPos);
+        mixer_->set_volume(i, v->SVol);
+        if (v->mixRoutine) {
+            mixer_->set_period(i, v->SFrq > 0 ? freq_factor_ / v->SFrq : 0);
+        } else {
+            mixer_->set_period(i, 0);
+        }
+    }
 
     tempo_ = ft2play.song.speed;
     time_ += 20.0 * 125.0 / tempo_;

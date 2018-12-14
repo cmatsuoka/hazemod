@@ -189,6 +189,8 @@ typedef struct
     int32_t SLVol1, SRVol1, SLVol2, SRVol2, SLVolIP, SRVolIP, SVolIPLen, SPos, SLen, SRepS, SRepL;
     uint32_t SPosDec, SFrq;
     void (*mixRoutine)(void *, int32_t); /* function pointer to mix routine */
+
+    int32_t smp;
 } voice_t;
 
 typedef struct

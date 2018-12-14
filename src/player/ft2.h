@@ -23,6 +23,7 @@ struct Ft2Player : public FormatPlayer {
 class FT2_Player : public PCPlayer {
     ft2play::Ft2Play ft2play;
     int length_;
+    uint32_t freq_factor_;
 
 public:
     FT2_Player(void *, uint32_t, std::string const&, int);
