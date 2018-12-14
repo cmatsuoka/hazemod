@@ -134,6 +134,8 @@ typedef struct sampleTyp_t  /* DO NOT TOUCH!!! (order and datatypes are importan
     uint8_t reserved;
     char name[22];
     int8_t *pek;
+
+    int sample_num_;
 } sampleTyp;
 
 typedef struct instrTyp_t  /* DO NOT TOUCH!!! (order and datatypes are important) */
@@ -358,6 +360,8 @@ class Ft2Play {
     void mixAudio(int16_t *, int32_t);
 
     bool inside_loop_;
+    SoftMixer *mixer_;
+    int sample_counter_;
 
     friend class ::FT2_Player;
 
@@ -372,7 +376,8 @@ public:
         patt{},
         stm{},
         instr{},
-        inside_loop_(false)
+        inside_loop_(false),
+        sample_counter_(0)
     {
     }
 

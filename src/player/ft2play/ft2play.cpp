@@ -2118,10 +2118,7 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
             {
                 s = ch->smpPtr;
 
-                instrTyp *ins = (instr[ch->instrNr] != NULL) ? instr[ch->instrNr] : instr[0]; /* placeholder for invalid samples */
-
-                int smp = ins->ta[ch->tonNr - 1] & 0x0F; 
-                voiceSetSource(i, smp, s->pek, s->len, s->repS, s->repL, s->repS + s->repL, s->typ & 3,
+                voiceSetSource(i, s->sample_num_, s->pek, s->len, s->repS, s->repL, s->repS + s->repL, s->typ & 3,
                     (s->typ & 16) >> 4, ch->smpStartPos);
             }
         }
@@ -2636,6 +2633,7 @@ int8_t Ft2Play::loadInstrSample(MEM *f, uint16_t i)
             s->pek = (int8_t *)(malloc(l + 2));
             if (s->pek == NULL)
                 return (false);
+            s->sample_num_ = sample_counter_++;
 
             mread(s->pek, l, 1, f);
             delta2Samp(s->pek, l, s->typ);
@@ -2650,6 +2648,8 @@ int8_t Ft2Play::loadInstrSample(MEM *f, uint16_t i)
 
                 s->pek = (int8_t *)(realloc(s->pek, s->len + 2));
             }
+
+            mixer_->add_sample(s->pek, s->len, 1.0, (s->typ & 16) ? Sample16Bits : 0);
         }
 
         /* NON-FT2 FIX: Align to 2-byte if 16-bit sample */
