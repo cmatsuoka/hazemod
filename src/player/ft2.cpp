@@ -16,7 +16,7 @@ FT2_Player::FT2_Player(void *buf, uint32_t size, std::string const& id, int sr) 
     ft2play.mixer_ = mixer_;
     ft2play.ft2play_PlaySong(static_cast<const uint8_t *>(buf), size, false, false, sr);
     length_ = ft2play.song.len;
-    freq_factor_ = uint32_t(round(16384.0 * 1712.0 / sr * 8363.0));
+    freq_factor_ = 16384.0 * 1712.0 / sr * 8363.0;
 }
 
 FT2_Player::~FT2_Player()
