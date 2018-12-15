@@ -1,6 +1,7 @@
 #ifndef HAZE_PLAYER_FT2PLAY_FT2PLAY_H_
 #define HAZE_PLAYER_FT2PLAY_FT2PLAY_H_
 
+#include <stdexcept>
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
@@ -197,72 +198,69 @@ typedef struct
 
 typedef struct
 {
+protected:
+    bool check_cnt(const uint32_t val) {
+        if (_cnt < val) {
+            _ptr = _base + _bufsiz;
+            _cnt = 0;
+            _eof = true;
+            return true;
+        }
+        return false;
+    }
+
+    void update_ptr(const uint32_t val) {
+        _cnt -= val;
+        _ptr += val;
+    }
+
+public:
     uint8_t *_ptr, *_base;
     int32_t _eof;
     uint32_t _cnt, _bufsiz;
 
-    uint16_t read32l() {
-        if (_cnt < 4) {
-            _ptr = _base + _bufsiz;
-            _cnt = 0;
-            _eof = true;
+    uint32_t read32l() {
+        if (check_cnt(4)) {
             return 0;
         }
-        uint16_t ret = _ptr[0] + (_ptr[1] << 8) + (_ptr[2] << 16) + (_ptr[3] << 24);
-        _cnt -= 4;
-        _ptr += 4;
+        uint32_t ret = _ptr[0] + (_ptr[1] << 8) + (_ptr[2] << 16) + (_ptr[3] << 24);
+        update_ptr(4);
         return ret;
     }
 
     uint16_t read16l() {
-        if (_cnt < 2) {
-            _ptr = _base + _bufsiz;
-            _cnt = 0;
-            _eof = true;
+        if (check_cnt(2)) {
             return 0;
         }
         uint16_t ret = _ptr[0] + (_ptr[1] << 8);
-        _cnt -= 2;
-        _ptr += 2;
+        update_ptr(2);
         return ret;
     }
 
     uint16_t read16b() {
-        if (_cnt < 2) {
-            _ptr = _base + _bufsiz;
-            _cnt = 0;
-            _eof = true;
+        if (check_cnt(2)) {
             return 0;
         }
         uint16_t ret = (_ptr[0] << 8) + _ptr[1];
-        _cnt -= 2;
-        _ptr += 2;
+        update_ptr(2);
         return ret;
     }
 
     uint16_t read8() {
-        if (_cnt < 1) {
-            _ptr = _base + _bufsiz;
-            _cnt = 0;
-            _eof = true;
+        if (check_cnt(1)) {
             return 0;
         }
         uint8_t ret = *_ptr;
-        _cnt--;
-        _ptr++;
+        update_ptr(1);
         return ret;
     }
 
     uint16_t read8i() {
-        if (_cnt < 1) {
-            _ptr = _base + _bufsiz;
-            _cnt = 0;
-            _eof = true;
+        if (check_cnt(1)) {
             return 0;
         }
         int8_t ret = *_ptr;
-        _cnt--;
-        _ptr++;
+        update_ptr(1);
         return ret;
     }
 
@@ -276,8 +274,7 @@ typedef struct
         pcnt = ((uint32_t)(_cnt) > wrcnt) ? wrcnt : _cnt;
         memcpy(buffer, _ptr, pcnt);
 
-        _cnt -= pcnt;
-        _ptr += pcnt;
+        update_ptr(pcnt);
 
         if (_cnt <= 0) {
             _ptr = _base + _bufsiz;
@@ -307,14 +304,6 @@ class Ft2Play {
     mixRoutine mixRoutineTable[24];
 
     /* FUNCTION DECLARATIONS */
-    MEM *mopen(const uint8_t *, uint32_t);
-    void mclose(MEM **);
-    size_t mread(void *, size_t, size_t, MEM *);
-    int32_t meof(MEM *);
-    void mseek(MEM *, int32_t, int32_t);
-    int8_t openMixer(uint32_t);
-    void closeMixer();
-
     void setSpeed(uint16_t);
     void retrigVolume(stmTyp *);
     void retrigEnvelopeVibrato(stmTyp *);
@@ -397,6 +386,13 @@ public:
     void ft2play_FillAudioBuffer(int16_t *, int32_t);
     uint32_t ft2play_GetMixerTicks();     // returns the amount of milliseconds of mixed audio (not realtime)
 };
+
+
+MEM *mopen(const uint8_t *, uint32_t);
+void mclose(MEM **);
+size_t mread(void *, size_t, size_t, MEM *);
+int32_t meof(MEM *);
+void mseek(MEM *, int32_t, int32_t);
 
 }  // namespace ft2play
 

@@ -115,7 +115,8 @@ int read_mod15_header(songMOD15HeaderTyp *h, MEM *f)
 int read_song_header(songHeaderTyp *h, MEM *f)
 {
     f->read(h->sig, 17);
-    f->read(h->name, 21);
+    f->read(h->name, 20);
+    f->read8();
     f->read(h->progName, 20);
     h->ver = f->read16l();
     h->headerSize = f->read32l();
@@ -159,6 +160,7 @@ int read_envelope(int16_t env[12][2], MEM *f)
     return 0;
 }
 
+// We can't use packed structures, it may cause SIGBUS in RISC machines.
 int read_instrument_header(instrHeaderTyp *h, MEM *f)
 {
     h->instrSize = f->read32l();
@@ -190,9 +192,6 @@ int read_instrument_header(instrHeaderTyp *h, MEM *f)
     h->midiBend = f->read16l();
     h->mute = f->read8();
     f->read(h->reserved, 15);
-    for (int i = 0; i < 32; i++) {
-        read_sample_header(&h->samp[i], f);
-    }
 
     return 0;
 }
@@ -2449,7 +2448,7 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
 
     mseek(f, -4, SEEK_CUR);
     read_instrument_header(&ih, f);
-    mseek(f, readSize - 248, SEEK_CUR);
+    mseek(f, readSize - INSTR_HEADER_SIZE, SEEK_CUR);
 
     /* FT2 bugfix: skip instrument header data if instrSize is above INSTR_HEADER_SIZE */
     if (ih.instrSize > INSTR_HEADER_SIZE)
@@ -2497,7 +2496,7 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
         {
             s = &instr[i]->samp[j];
 
-            memcpy(s, &ih.samp[j], 12 + 4 + 24);
+            memcpy(s, &ih.samp[j], sizeof (sampleHeaderTyp));
 
             /* sanitize stuff for malicious modules */
             if (s->vol > 64) s->vol = 64;
@@ -3611,7 +3610,7 @@ int8_t Ft2Play::ft2play_PlaySong(const uint8_t *moduleData, uint32_t dataLength,
     return (true);
 }
 
-MEM *Ft2Play::mopen(const uint8_t *src, uint32_t length)
+MEM *mopen(const uint8_t *src, uint32_t length)
 {
     MEM *b;
 
@@ -3627,11 +3626,11 @@ MEM *Ft2Play::mopen(const uint8_t *src, uint32_t length)
     b->_cnt    = length;
     b->_bufsiz = length;
     b->_eof    = false;
- 
+
     return (b);
 }
 
-void Ft2Play::mclose(MEM **buf)
+void mclose(MEM **buf)
 {
     if (*buf != NULL)
     {
@@ -3640,7 +3639,7 @@ void Ft2Play::mclose(MEM **buf)
     }
 }
 
-size_t Ft2Play::mread(void *buffer, size_t size, size_t count, MEM *buf)
+size_t mread(void *buffer, size_t size, size_t count, MEM *buf)
 {
     size_t wrcnt;
     int32_t pcnt;
@@ -3668,7 +3667,7 @@ size_t Ft2Play::mread(void *buffer, size_t size, size_t count, MEM *buf)
     return (pcnt / size);
 }
 
-int32_t Ft2Play::meof(MEM *buf)
+int32_t meof(MEM *buf)
 {
     if (buf == NULL)
         return (true);
@@ -3676,7 +3675,7 @@ int32_t Ft2Play::meof(MEM *buf)
     return (buf->_eof);
 }
 
-void Ft2Play::mseek(MEM *buf, int32_t offset, int32_t whence)
+void mseek(MEM *buf, int32_t offset, int32_t whence)
 {
     if (buf == NULL)
         return;

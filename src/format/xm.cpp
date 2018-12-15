@@ -42,11 +42,14 @@ bool XmFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         const int num_smp = d.read16l(offs + 27);
 
         offs += size;
+        int total_sample_size = 0;
 
         for (int j = 0; j < num_smp; j++) {
             const uint32_t ssize = d.read32l(offs);
-            offs += 40 + ssize;
+            offs += 40;
+            total_sample_size += ssize;
         }
+        offs += total_sample_size;
         ins_names.push_back(name);
     }
 
