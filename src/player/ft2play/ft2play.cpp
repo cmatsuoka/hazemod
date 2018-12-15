@@ -2439,7 +2439,7 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
     instrHeaderTyp ih;
     sampleTyp *s;
 
-    memset(&ih, 0, INSTR_HEADER_SIZE);
+    memset(&ih, 0, sizeof (instrHeaderTyp));
 
     ih.instrSize = f->read32l();
 
@@ -2477,7 +2477,7 @@ int8_t Ft2Play::loadInstrHeader(MEM *f, uint16_t i)
         /*--------------------- */
 
         /* copy over final instrument data */
-        memcpy(instr[i], ih.ta, INSTR_SIZE);
+        memcpy(instr[i], ih.ta, sizeof (instrTyp));
         instr[i]->antSamp = ih.antSamp;
 
         if (instr[i]->envVPAnt > 12) instr[i]->envVPAnt = 12;
