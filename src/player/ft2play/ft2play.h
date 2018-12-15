@@ -182,7 +182,8 @@ typedef struct tonTyp_t
     uint8_t ton, instr, vol, effTyp, eff;
 } tonTyp;
 
-typedef void (*mixRoutine)(void *, int32_t);
+//typedef void (*mixRoutine)(void *, int32_t);
+typedef int mixRoutine;
 
 typedef struct
 {
@@ -191,8 +192,10 @@ typedef struct
     uint8_t backwards, SVol, SPan, isFadeOutVoice;
     int32_t SLVol1, SRVol1, SLVol2, SRVol2, SLVolIP, SRVolIP, SVolIPLen, SPos, SLen, SRepS, SRepL;
     uint32_t SPosDec, SFrq;
-    void (*mixRoutine)(void *, int32_t); /* function pointer to mix routine */
+    //void (*mixRoutine)(void *, int32_t); /* function pointer to mix routine */
+    int mixRoutine;
 
+    uint32_t status;
     int32_t smp;
 } voice_t;
 
@@ -323,7 +326,7 @@ class Ft2Play {
     void vibrato(stmTyp *);
     void doEffects(stmTyp *);
     void voiceUpdateVolumes(uint8_t, uint8_t);
-    void voiceSetSource(uint8_t, const int, const int8_t *, int32_t, int32_t, int32_t, int32_t, int8_t, int8_t, int32_t);
+    void voiceSetSource(uint8_t, const int8_t *, int32_t, int32_t, int32_t, int32_t, int8_t, int8_t, int32_t);
     void mix_SaveIPVolumes() /* for volume ramping */;
     void mix_UpdateChannelVolPanFrq();
     void noNewAllChannels();

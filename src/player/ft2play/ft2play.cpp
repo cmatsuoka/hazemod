@@ -2008,7 +2008,7 @@ void Ft2Play::voiceUpdateVolumes(uint8_t i, uint8_t status)
     }
 }
 
-void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
+void Ft2Play::voiceSetSource(uint8_t i, const int8_t *sampleData,
     int32_t sampleLength, int32_t sampleLoopBegin, int32_t sampleLoopLength,
     int32_t sampleLoopEnd, int8_t loopFlag, int8_t sampleIs16Bit, int32_t position)
 {
@@ -2046,9 +2046,6 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
     v->SPos      = position;
     v->SPosDec   = 0; /* position fraction */
 
-    //
-    v->smp = smp;
-
     /* test if 9xx position overflows */
     if (position >= (loopFlag ? sampleLoopEnd : sampleLength))
     {
@@ -2056,7 +2053,8 @@ void Ft2Play::voiceSetSource(uint8_t i, const int smp, const int8_t *sampleData,
         return;
     }
 
-    v->mixRoutine = mixRoutineTable[(sampleIs16Bit * 12) + (volumeRampingFlag * 6) + (interpolationFlag * 3) + loopFlag];
+    //v->mixRoutine = mixRoutineTable[(sampleIs16Bit * 12) + (volumeRampingFlag * 6) + (interpolationFlag * 3) + loopFlag];
+    v->mixRoutine = 1;
 }
 
 void Ft2Play::mix_SaveIPVolumes() /* for volume ramping */
@@ -2088,6 +2086,8 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
         ch = &stm[i];
         v  = &voice[i];
 
+        v->status = ch->status;
+
         status = ch->status;
         if (status != 0)
         {
@@ -2117,8 +2117,11 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
             {
                 s = ch->smpPtr;
 
-                voiceSetSource(i, s->sample_num_, s->pek, s->len, s->repS, s->repL, s->repS + s->repL, s->typ & 3,
+                voiceSetSource(i, s->pek, s->len, s->repS, s->repL, s->repS + s->repL, s->typ & 3,
                     (s->typ & 16) >> 4, ch->smpStartPos);
+
+                //
+                v->smp = s->sample_num_;
             }
         }
     }

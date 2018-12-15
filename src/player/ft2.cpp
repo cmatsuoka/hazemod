@@ -34,24 +34,35 @@ void FT2_Player::play()
 {
     for (int i = 0; i < ft2play.song.antChn; i++) {
         ft2play::voice_t *v = &ft2play.voice[i];
-        v->smp = 0;
+        v->status = 0;
     }
 
     ft2play.mainPlayer();
+    ft2play.mix_UpdateChannelVolPanFrq();
 
     for (int i = 0; i < ft2play.song.antChn; i++) {
         ft2play::voice_t *v = &ft2play.voice[i];
-        if (v->smp) {
+        if (v->status & ft2play::IS_NyTon) {
             mixer_->set_sample(i, v->smp);
+            mixer_->set_end(i, v->SLen);
+            mixer_->set_loop_start(i, v->SRepS);
+            mixer_->set_loop_end(i, v->SRepS + v->SRepL);
+            mixer_->set_voicepos(i, v->SPos);
         }
-        mixer_->set_end(i, v->SLen);
-        mixer_->set_loop_start(i, v->SRepS);
-        mixer_->set_loop_end(i, v->SRepS + v->SRepL);
-        mixer_->set_voicepos(i, v->SPos);
-        mixer_->set_volume(i, v->SVol);
-        if (v->mixRoutine) {
+
+        if (v->status & ft2play::IS_Period) {
             mixer_->set_period(i, v->SFrq > 0 ? freq_factor_ / v->SFrq : 0);
-        } else {
+        }
+
+        if (v->status & ft2play::IS_Vol) {
+            mixer_->set_volume(i, v->SVol << 2);
+        }
+
+        if (v->status & ft2play::IS_Pan) {
+            mixer_->set_pan(i, v->SPan);
+        }
+
+        if (!v->mixRoutine) {
             mixer_->set_period(i, 0);
         }
     }
