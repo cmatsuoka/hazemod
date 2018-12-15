@@ -7,7 +7,7 @@
 
 class XmFormat : public Format {
 public:
-    XmFormat() : Format{"xm", "Fasttracker II"} {}
+    XmFormat() : Format{"xm", "FastTracker II"} {}
     bool probe(void *, uint32_t, haze::ModuleInfo&) override;
 };
 

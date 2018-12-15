@@ -14,25 +14,45 @@ bool XmFormat::probe(void *buf, uint32_t size, haze::ModuleInfo& mi)
         return false;
     }
 
-    uint16_t ver = d.read16l(58);
+    const uint16_t ver = d.read16l(58);
     if (ver < 0x0102 || ver > 0x0104) {
         return false;
     }
 
-    int num_chn = d.read16l(68);
-    int num_ord = d.read16l(64);
-    int num_ins = d.read16l(72);
+    const int num_ord = d.read16l(64);
+    const int num_chn = d.read16l(68);
+    const int num_pat = d.read16l(70);
+    const int num_ins = d.read16l(72);
+
+    int offs = 80 + 256;
+
+    if (ver >= 0x0104) {
+        for (int i = 0; i < num_pat; i++) {
+            const uint32_t size = d.read32l(offs);
+            const uint16_t psize = d.read32l(offs + 7);
+            offs += size + psize;
+        }
+    }
 
     // list instruments
     std::vector<std::string> ins_names;
-    for (int i = 0; i < num_ins; ++i) {
-        const auto name = "";
+    for (int i = 0; i < num_ins; i++) {
+        const uint32_t size = d.read32l(offs);
+        const auto name = d.read_string(offs + 4, 22);
+        const int num_smp = d.read16l(offs + 27);
+
+        offs += size;
+
+        for (int j = 0; j < num_smp; j++) {
+            const uint32_t ssize = d.read32l(offs);
+            offs += 40 + ssize;
+        }
         ins_names.push_back(name);
     }
 
     mi.format_id = "xm";
     mi.title = d.read_string(17, 20);
-    mi.description = "Fasttracker II extended module";
+    mi.description = "FastTracker II extended module";
     mi.creator = d.read_string(38, 20);
     mi.num_channels = num_chn;
     mi.length = num_ord;
