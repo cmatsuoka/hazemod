@@ -151,8 +151,8 @@ int read_sample_header(sampleHeaderTyp *h, MEM *f)
 
 int read_envelope(int16_t env[12][2], MEM *f)
 {
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 2; j++) {
             env[i][j] = f->read16l();
         }
     }
@@ -2018,7 +2018,7 @@ void Ft2Play::voiceSetSource(uint8_t i, const int8_t *sampleData,
 
     if ((sampleData == NULL) || (sampleLength < 1))
     {
-        v->mixRoutine = NULL; /* shut down voice */
+        v->mixRoutine = false; //NULL; /* shut down voice */
         return;
     }
 
@@ -2049,12 +2049,12 @@ void Ft2Play::voiceSetSource(uint8_t i, const int8_t *sampleData,
     /* test if 9xx position overflows */
     if (position >= (loopFlag ? sampleLoopEnd : sampleLength))
     {
-        v->mixRoutine = NULL; /* shut down voice */
+        v->mixRoutine = false; //NULL; /* shut down voice */
         return;
     }
 
     //v->mixRoutine = mixRoutineTable[(sampleIs16Bit * 12) + (volumeRampingFlag * 6) + (interpolationFlag * 3) + loopFlag];
-    v->mixRoutine = 1;
+    v->mixRoutine = true;
 }
 
 void Ft2Play::mix_SaveIPVolumes() /* for volume ramping */
@@ -2106,8 +2106,10 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
                 v->SPan = ch->finalPan;
             }
 
+#if 0
             if (status & (IS_Vol | IS_Pan))
                 voiceUpdateVolumes(i, status);
+#endif
 
             if (status & IS_Period) {
                 v->SFrq = getFrequenceValue(ch->finalPeriod);
@@ -2635,7 +2637,6 @@ int8_t Ft2Play::loadInstrSample(MEM *f, uint16_t i)
             s->pek = (int8_t *)(malloc(l + 2));
             if (s->pek == NULL)
                 return (false);
-            s->sample_num_ = sample_counter_++;
 
             mread(s->pek, l, 1, f);
             delta2Samp(s->pek, l, s->typ);
@@ -2651,7 +2652,11 @@ int8_t Ft2Play::loadInstrSample(MEM *f, uint16_t i)
                 s->pek = (int8_t *)(realloc(s->pek, s->len + 2));
             }
 
-            mixer_->add_sample(s->pek, s->len, 1.0, (s->typ & 16) ? Sample16Bits : 0);
+            //
+            s->sample_num_ = sample_counter_++;
+            int length = s->len;
+            if (s->typ & 16) { length >>= 1; }
+            mixer_->add_sample(s->pek, length, 1.0, (s->typ & 16) ? Sample16Bits : 0);
         }
 
         /* NON-FT2 FIX: Align to 2-byte if 16-bit sample */

@@ -48,7 +48,7 @@ void SoftMixer::reset()
 
 void SoftMixer::set_sample(int chn, int val)
 {
-    Debug("%d, %d", chn, val);
+    //Debug("%d, %d", chn, val);
     if (chn >= num_voices || val <= 0 || size_t(val) > sample.size()) {
         return;
     }
@@ -59,7 +59,7 @@ void SoftMixer::set_sample(int chn, int val)
 
 void SoftMixer::set_start(int chn, uint32_t val)
 {
-    Debug("%d, %d", chn, val);
+    //Debug("%d, %d", chn, val);
     if (chn >= num_voices) {
         return;
     }
@@ -68,7 +68,7 @@ void SoftMixer::set_start(int chn, uint32_t val)
 
 void SoftMixer::set_end(int chn, uint32_t val)
 {
-    Debug("%d, %d", chn, val);
+    //Debug("%d, %d", chn, val);
     if (chn >= num_voices) {
         return;
     }
@@ -101,7 +101,7 @@ void SoftMixer::enable_loop(int chn, bool val)
 
 void SoftMixer::set_volume(int chn, int val)
 {
-    Debug("%d, %d", chn, val);
+    //Debug("%d, %d", chn, val);
     if (chn >= num_voices) {
         return;
     }
@@ -118,7 +118,7 @@ void SoftMixer::set_pan(int chn, int val)
 
 void SoftMixer::set_voicepos(int chn, double val)
 {
-    Debug("%d, %lf", chn, val);
+    //Debug("%d, %lf", chn, val);
     if (chn >= num_voices) {
         return;
     }
@@ -127,7 +127,7 @@ void SoftMixer::set_voicepos(int chn, double val)
 
 void SoftMixer::set_period(int chn, double val)
 {
-    Debug("%d, %lf", chn, val);
+    //Debug("%d, %lf", chn, val);
     if (chn >= num_voices) {
         return;
     }

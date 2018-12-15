@@ -183,7 +183,7 @@ typedef struct tonTyp_t
 } tonTyp;
 
 //typedef void (*mixRoutine)(void *, int32_t);
-typedef int mixRoutine;
+typedef bool mixRoutine;
 
 typedef struct
 {
@@ -193,7 +193,7 @@ typedef struct
     int32_t SLVol1, SRVol1, SLVol2, SRVol2, SLVolIP, SRVolIP, SVolIPLen, SPos, SLen, SRepS, SRepL;
     uint32_t SPosDec, SFrq;
     //void (*mixRoutine)(void *, int32_t); /* function pointer to mix routine */
-    int mixRoutine;
+    bool mixRoutine;
 
     uint32_t status;
     int32_t smp;
@@ -369,7 +369,7 @@ public:
         stm{},
         instr{},
         inside_loop_(false),
-        sample_counter_(0)
+        sample_counter_(1)
     {
     }
 

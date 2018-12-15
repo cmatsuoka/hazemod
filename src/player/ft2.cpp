@@ -16,7 +16,7 @@ FT2_Player::FT2_Player(void *buf, uint32_t size, std::string const& id, int sr) 
     ft2play.mixer_ = mixer_;
     ft2play.ft2play_PlaySong(static_cast<const uint8_t *>(buf), size, false, false, sr);
     length_ = ft2play.song.len;
-    freq_factor_ = uint32_t(round(65536.0 *  1712.0 / sr * 8363.0));
+    freq_factor_ = uint32_t(round(16384.0 * 1712.0 / sr * 8363.0));
 }
 
 FT2_Player::~FT2_Player()
@@ -48,6 +48,7 @@ void FT2_Player::play()
             mixer_->set_loop_start(i, v->SRepS);
             mixer_->set_loop_end(i, v->SRepS + v->SRepL);
             mixer_->set_voicepos(i, v->SPos);
+            mixer_->enable_loop(i, v->SRepL > 0);
         }
 
         if (v->status & ft2play::IS_Period) {
@@ -55,11 +56,11 @@ void FT2_Player::play()
         }
 
         if (v->status & ft2play::IS_Vol) {
-            mixer_->set_volume(i, v->SVol << 2);
+            mixer_->set_volume(i, v->SVol);
         }
 
         if (v->status & ft2play::IS_Pan) {
-            mixer_->set_pan(i, v->SPan);
+            mixer_->set_pan(i, int(v->SPan) - 128);
         }
 
         if (!v->mixRoutine) {
