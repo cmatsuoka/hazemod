@@ -20,13 +20,13 @@ TODO list
 - add format probe
   - ~~S3M~~ ✓
   - ~~STM~~ ✓
-  - XM
+  - ~~XM~~ ✓
   - ~~His Master's Noise~~ ✓
   - ...
 
 - add players
   - FastTracker 1.01
-  - FastTracker II
+  - ~~FastTracker II~~ ✓
   - ~~smaksak~~ ✓
   - ~~D.O.C SoundTracker V2.0~~ ✓
   - ~~Scream Tracker 2~~ ✓
