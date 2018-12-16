@@ -26,7 +26,7 @@ public:
     void set_end(int, uint32_t);             // set sample end offset
     void set_loop_start(int, uint32_t);      // set loop start offset
     void set_loop_end(int, uint32_t);        // set loop end offset
-    void enable_loop(int, bool);             // enable or disable sample loop
+    void enable_loop(int, bool, bool=false); // enable or disable sample loop
     void set_volume(int, int);               // set voice volume
     void set_pan(int, int);                  // set voice pan
     void set_voicepos(int, double);          // set voice position

@@ -10,7 +10,7 @@
 class Voice {
     int num_;
     bool enable_;
-    uint32_t pos_;
+    int32_t pos_;
     uint32_t frac_;
     double step_;
     int volume_;
@@ -21,11 +21,11 @@ class Voice {
     bool dir_;             // loop direction
     //bool finish_;        // single-shot sample finished
     bool forward_;         // current loop direction
-    uint32_t start_;
-    uint32_t end_;
-    uint32_t loop_start_;
-    uint32_t loop_end_;
-    uint32_t prev_;
+    int32_t start_;
+    int32_t end_;
+    int32_t loop_start_;
+    int32_t loop_end_;
+    int32_t prev_;
     Sample sample_;
     Interpolator *itp_;
 
@@ -58,8 +58,8 @@ protected:
                     pos_ -= loop_len;
                 }
             } else if (!dir_) {
+                // forward loop
                 if (pos_ >= loop_end_) {
-                    // forward loop
                     const uint32_t loop_len = loop_end_ - loop_start_;
                     do {
                         pos_ -= loop_len;
@@ -68,8 +68,8 @@ protected:
                     dir_ = true;
                 }
             } else {
+                // backward loop
                 if (pos_ < loop_start_) {
-                    // backward loop
                     const uint32_t loop_len = loop_end_ - loop_start_;
                     do {
                         pos_ += loop_len;
@@ -109,7 +109,7 @@ public:
     void set_end(uint32_t val) { end_ = val; }
     void set_loop_start(uint32_t val) { loop_start_ = val; fix_loop(); }
     void set_loop_end(uint32_t val) { loop_end_ = val; fix_loop(); }
-    void enable_loop(bool val, bool bidir = false) { loop_ = val; bidir_ = bidir; }
+    void enable_loop(bool val, bool bidir = false) { loop_ = val; bidir_ = bidir; dir_ = false; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 256); }
     void set_pan(int val) { pan_ = std::clamp(val, -128, 127); }
     void set_sample(Sample const& sample) { sample_ = sample; }

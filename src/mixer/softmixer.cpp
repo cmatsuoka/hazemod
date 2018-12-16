@@ -91,12 +91,12 @@ void SoftMixer::set_loop_end(int chn, uint32_t val)
     voice[chn]->set_loop_end(val);
 }
 
-void SoftMixer::enable_loop(int chn, bool val)
+void SoftMixer::enable_loop(int chn, bool val, bool bidir)
 {
     if (chn >= num_voices) {
         return;
     }
-    voice[chn]->enable_loop(val);
+    voice[chn]->enable_loop(val, bidir);
 }
 
 void SoftMixer::set_volume(int chn, int val)
