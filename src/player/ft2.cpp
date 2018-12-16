@@ -48,7 +48,7 @@ void FT2_Player::play()
             mixer_->set_loop_start(i, v->SRepS);
             mixer_->set_loop_end(i, v->SRepS + v->SRepL);
             mixer_->set_voicepos(i, v->SPos);
-            mixer_->enable_loop(i, v->SRepL > 0);
+            mixer_->enable_loop(i, (v->typ & 0x03) != 0);
         }
 
         if (v->status & ft2play::IS_Period) {

@@ -2124,6 +2124,7 @@ void Ft2Play::mix_UpdateChannelVolPanFrq()
 
                 //
                 v->smp = s->sample_num_;
+                v->typ = s->typ;
             }
         }
     }

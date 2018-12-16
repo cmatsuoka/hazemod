@@ -197,6 +197,7 @@ typedef struct
 
     uint32_t status;
     int32_t smp;
+    uint8_t typ;
 } voice_t;
 
 typedef struct
