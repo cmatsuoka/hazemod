@@ -175,6 +175,8 @@ typedef struct stmTyp_t
     int32_t smpStartPos; /* 9xx */
     sampleTyp *smpPtr;
     instrTyp *instrPtr;
+
+    bool inside_loop;
 } stmTyp;
 
 typedef struct tonTyp_t
@@ -352,7 +354,6 @@ class Ft2Play {
     int8_t loadMusic(const uint8_t *, uint32_t);
     void mixAudio(int16_t *, int32_t);
 
-    bool inside_loop_;
     SoftMixer *mixer_;
     int sample_counter_;
 
@@ -369,7 +370,6 @@ public:
         patt{},
         stm{},
         instr{},
-        inside_loop_(false),
         sample_counter_(1)
     {
     }

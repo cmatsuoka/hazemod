@@ -68,9 +68,13 @@ void FT2_Player::play()
         }
     }
 
+    inside_loop_ = false;
+    for (int i = 0; i < ft2play.song.antChn; i++) {
+        inside_loop_ |= ft2play.stm[i].inside_loop;
+    }
+
     tempo_ = ft2play.song.speed;
     time_ += 20.0 * 125.0 / tempo_;
-    inside_loop_ = ft2play.inside_loop_;
 }
 
 void FT2_Player::frame_info(haze::FrameInfo& fi)

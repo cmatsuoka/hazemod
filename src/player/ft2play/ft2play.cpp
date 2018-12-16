@@ -590,6 +590,7 @@ void Ft2Play::checkMoreEffects(stmTyp *ch)
 
                     song.pBreakPos  = ch->pattPos;
                     song.pBreakFlag = true;
+                    ch->inside_loop = true;
                 }
                 else
                 {
@@ -597,6 +598,8 @@ void Ft2Play::checkMoreEffects(stmTyp *ch)
                     {
                         song.pBreakPos  = ch->pattPos;
                         song.pBreakFlag = true;
+                    } else {
+                        ch->inside_loop = false;
                     }
                 }
             }
