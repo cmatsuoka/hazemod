@@ -14,7 +14,7 @@ TODO list
 - mixer improvements
   - ~~add Amiga sound modeling~~ ✓
   - ~~option to disable A500 simulator to save CPU~~ ✓
-  - bidirectional loop
+  - ~~bidirectional loop~~ ✓
   - anticlick
 
 - add format probe
