@@ -17,8 +17,9 @@ class Voice {
     int pan_;
     bool mute_;            // channel is muted
     bool loop_;            // sample has loop
-    //bool finish_;        // single-shot sample finished
     bool bidir_;           // loop is bidirectional
+    bool dir_;             // loop direction
+    //bool finish_;        // single-shot sample finished
     bool forward_;         // current loop direction
     uint32_t start_;
     uint32_t end_;
@@ -28,17 +29,53 @@ class Voice {
     Sample sample_;
     Interpolator *itp_;
 
+    void fix_loop() {
+        if (loop_start_ >= end_) {
+            loop_start_ = end_ - 1;
+        }
+        if (loop_end_ > end_) {
+            loop_end_ = end_;
+        }
+        if (loop_end_ <= loop_start_) {
+            loop_end_ = loop_start_ + 1;
+        }
+    }
+
 protected:
     void add_step() {
-        // TODO: handle bidir loops
         frac_ += static_cast<uint32_t>((1 << 16) * step_);
-        pos_ += frac_ >> 16;
+        if (!dir_) {
+            pos_ += frac_ >> 16;
+        } else {
+            pos_ -= frac_ >> 16;
+        }
         frac_ &= (1 << 16) - 1;
 
         if (loop_) {
-            if (loop_end_ > loop_start_) {
+            if (!bidir_) {
+                const uint32_t loop_len = loop_end_ - loop_start_;
                 while (pos_ >= loop_end_) {
-                    pos_ -= (loop_end_ - loop_start_);
+                    pos_ -= loop_len;
+                }
+            } else if (!dir_) {
+                if (pos_ >= loop_end_) {
+                    // forward loop
+                    const uint32_t loop_len = loop_end_ - loop_start_;
+                    do {
+                        pos_ -= loop_len;
+                    } while (pos_ >= loop_end_);
+                    pos_ = loop_end_ - (pos_ - loop_start_) - 1;
+                    dir_ = true;
+                }
+            } else {
+                if (pos_ < loop_start_) {
+                    // backward loop
+                    const uint32_t loop_len = loop_end_ - loop_start_;
+                    do {
+                        pos_ += loop_len;
+                    } while (pos_ < loop_start_);
+                    pos_ = loop_start_ + (loop_end_ - pos_) - 1;
+                    dir_ = false;
                 }
             }
         }
@@ -70,9 +107,9 @@ public:
 
     void set_start(uint32_t val) { start_ = pos_ = val; }
     void set_end(uint32_t val) { end_ = val; }
-    void set_loop_start(uint32_t val) { loop_start_ = val; }
-    void set_loop_end(uint32_t val) { loop_end_ = val; }
-    void enable_loop(bool val) { loop_ = val; }
+    void set_loop_start(uint32_t val) { loop_start_ = val; fix_loop(); }
+    void set_loop_end(uint32_t val) { loop_end_ = val; fix_loop(); }
+    void enable_loop(bool val, bool bidir = false) { loop_ = val; bidir_ = bidir; }
     void set_volume(int val) { volume_ = std::clamp(val, 0, 256); }
     void set_pan(int val) { pan_ = std::clamp(val, -128, 127); }
     void set_sample(Sample const& sample) { sample_ = sample; }
@@ -84,6 +121,7 @@ public:
     double step() { return step_; }
     bool enable() { return enable_; }
     bool loop() { return loop_; }
+    bool bidir() { return bidir_; }
     void set_interpolator(InterpolatorType);
     Sample& sample() { return sample_; }
 };

@@ -15,8 +15,9 @@ Voice::Voice(int num, InterpolatorType typ) :
     pan_(0),
     mute_(false),
     loop_(false),
-    //finish_(false),
     bidir_(false),
+    dir_(false),
+    //finish_(false),
     forward_(true),
     start_(0),
     end_(0),
@@ -44,6 +45,7 @@ void Voice::reset()
     mute_ = false;
     loop_ = false;
     bidir_ = false;
+    dir_ = false;
     forward_ = true;
     start_ = 0;
     end_ = 0;
