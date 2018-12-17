@@ -110,7 +110,6 @@ int main(int argc, char** argv)
     std::cout << buf << std::endl;
 
     while (playing) {
-        char buf[50];
         hz.frame_info(fi);
         snprintf(buf, 50, "pos:%3d/%3d  row:%3d/%3d  %02d:%02d:%02d.%d\r",
             fi.pos, mi.length - 1,
