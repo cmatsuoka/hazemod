@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.3)
+project(alsa)
+find_package(ALSA REQUIRED)
+include_directories(${ALSA_INCLUDE_DIRS})
+include_directories(../../include)
+link_directories(../../lib)
+add_executable(play-alsa main.cpp)
+target_link_libraries(play-alsa ${ALSA_LIBRARIES} hazemod)
