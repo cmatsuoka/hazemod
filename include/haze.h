@@ -72,7 +72,7 @@ class HazePlayer {
     Player *player_;
     PlayerInfo player_info_;
 public:
-    HazePlayer(void *, int, std::string const&, std::string const& = "");
+    HazePlayer(void *, int, std::string const&, std::string const& = "", int = 44100);
     ~HazePlayer();
     HazePlayer& player_info(PlayerInfo &);
     HazePlayer& frame_info(FrameInfo &);

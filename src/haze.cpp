@@ -18,7 +18,7 @@ bool probe(void *buf, int size, ModuleInfo& mi)
     return false;
 }
 
-HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::string const& format_id)
+HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::string const& format_id, int rate)
 {
     PlayerRegistry reg;
 
@@ -32,7 +32,7 @@ HazePlayer::HazePlayer(void *buf, int size, std::string const& player_id, std::s
             R"(" not accepted by player ")" + player_id + R"(")");
     }
     player_info_ = fp->info();
-    player_ = fp->new_player(buf, size, format_id, 44100);
+    player_ = fp->new_player(buf, size, format_id, rate);
     player_->start();
     player_->scan();
 }
