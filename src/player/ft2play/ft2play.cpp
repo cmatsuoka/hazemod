@@ -2180,6 +2180,9 @@ void Ft2Play::getNextPos()
 
             song.pattNr  = song.songTab[song.songPos & 0xFF];
             song.pattLen = pattLens[song.pattNr & 0xFF];
+
+            //
+            song_pos_ = song.songPos;
         }
     }
 }

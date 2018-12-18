@@ -356,6 +356,7 @@ class Ft2Play {
 
     SoftMixer *mixer_;
     int sample_counter_;
+    int song_pos_;
 
     friend class ::FT2_Player;
 
@@ -370,7 +371,8 @@ public:
         patt{},
         stm{},
         instr{},
-        sample_counter_(1)
+        sample_counter_(1),
+        song_pos_(0)
     {
     }
 

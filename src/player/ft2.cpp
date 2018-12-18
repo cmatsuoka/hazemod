@@ -79,7 +79,7 @@ void FT2_Player::play()
 
 void FT2_Player::frame_info(haze::FrameInfo& fi)
 {
-    fi.pos = ft2play.song.songPos;
+    fi.pos = ft2play.song_pos_;
     fi.row = ft2play.song.pattPos;
     fi.num_rows = ft2play.song.pattLen;
     fi.frame = ft2play.song.tempo - ft2play.song.timer;
