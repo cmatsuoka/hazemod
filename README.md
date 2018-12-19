@@ -4,6 +4,7 @@ TODO list
 - add scan
   - make it optional to save memory?
   - ~~estimate replay time~~ ✓
+  - fix row loops (farewell tears)
   - full subsong scan
 
 - add complete player application
