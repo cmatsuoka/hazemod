@@ -14,6 +14,7 @@ void Scanner::scan(haze::Player *player)
 {
     int prev_pos = 9999;
     int prev_row = 9999;
+    int prev_frame = 9999;
     int prev_loop_count = 9999;
 
     const int len = player->length();
@@ -29,30 +30,33 @@ void Scanner::scan(haze::Player *player)
         const int pos = fi.pos;
         const int row = fi.row;
 
-        if (prev_row != row || prev_pos != pos || prev_loop_count != fi.loop_count) {
+        if (prev_row != row || prev_pos != pos || prev_frame != fi.frame || prev_loop_count != fi.loop_count) {
 
-            //Debug("scan: check %d/%d", pos, row);
-            if (scan_cnt_[pos][row] > 0) {
-                if (player->inside_loop_) {
-                    //Debug("inside loop");
-                } else {
-                    Debug("scan: already visited");
-                    break;
+            //Debug("scan: check %d/%d:%d", pos, row, fi.frame);
+            if (fi.frame == 0) {
+                if (scan_cnt_[pos][row] > 0) {
+                    if (player->inside_loop_) {
+                        //Debug("inside loop");
+                    } else {
+                        Debug("scan: already visited");
+                        break;
+                    }
+                }
+
+                scan_cnt_[pos][row]++;
+                prev_loop_count = fi.loop_count;
+                prev_row = row;
+
+                if (prev_pos != pos && !ord_data_[pos].used) {
+                    ord_data_[pos].state = player->save_state();
+                    ord_data_[pos].time = player->time_;
+                    prev_pos = pos;
+                    ord_data_[pos].used = true;
+                    Debug("scan: pos %d: time %lf", pos, ord_data_[pos].time);
                 }
             }
-
-            scan_cnt_[pos][row]++;
-            prev_loop_count = fi.loop_count;
-            prev_row = row;
-
-            if (prev_pos != pos && !ord_data_[pos].used) {
-                ord_data_[pos].state = player->save_state();
-                ord_data_[pos].time = player->time_;
-                prev_pos = pos;
-                ord_data_[pos].used = true;
-                Debug("scan: pos %d: time %lf", pos, ord_data_[pos].time);
-            }
         }
+        prev_frame = fi.frame;
 
         player->play();
     }

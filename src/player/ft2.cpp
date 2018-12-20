@@ -68,7 +68,7 @@ void FT2_Player::play()
         }
     }
 
-    inside_loop_ = false;
+    inside_loop_ = ft2play.song.pattDelTime2 > 0;
     for (int i = 0; i < ft2play.song.antChn; i++) {
         inside_loop_ |= ft2play.stm[i].inside_loop;
     }
@@ -82,7 +82,7 @@ void FT2_Player::frame_info(haze::FrameInfo& fi)
     fi.pos = ft2play.song_pos_;
     fi.row = ft2play.song.pattPos;
     fi.num_rows = ft2play.song.pattLen;
-    fi.frame = ft2play.song.tempo - ft2play.song.timer;
+    fi.frame = (ft2play.song.tempo - ft2play.song.timer + 1) % ft2play.song.tempo;
     fi.song = 0;
     fi.speed = ft2play.song.tempo;
     fi.tempo = ft2play.song.speed;
