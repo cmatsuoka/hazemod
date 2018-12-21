@@ -7,11 +7,6 @@ TODO list
   - ~~fix row loops (farewell tears)~~ ✓
   - full subsong scan
 
-- add complete player application
-  - channel mute on/off
-  - set interpolator
-  - seek
-
 - mixer improvements
   - ~~add Amiga sound modeling~~ ✓
   - ~~option to disable A500 simulator to save CPU~~ ✓
